@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28010.2026
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TheRayTracerChallenge", "TheRayTracerChallenge\TheRayTracerChallenge.vcxproj", "{E739E2F1-462E-41AB-B874-D65DF61C9BF1}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TheRayTracesChallengeTests", "TheRayTracesChallengeTests\TheRayTracesChallengeTests.vcxproj", "{6068CE4E-7837-4812-B25F-4405B1D457D3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{E739E2F1-462E-41AB-B874-D65DF61C9BF1}.Release|x64.Build.0 = Release|x64
 		{E739E2F1-462E-41AB-B874-D65DF61C9BF1}.Release|x86.ActiveCfg = Release|Win32
 		{E739E2F1-462E-41AB-B874-D65DF61C9BF1}.Release|x86.Build.0 = Release|Win32
+		{6068CE4E-7837-4812-B25F-4405B1D457D3}.Debug|x64.ActiveCfg = Debug|x64
+		{6068CE4E-7837-4812-B25F-4405B1D457D3}.Debug|x64.Build.0 = Debug|x64
+		{6068CE4E-7837-4812-B25F-4405B1D457D3}.Debug|x86.ActiveCfg = Debug|Win32
+		{6068CE4E-7837-4812-B25F-4405B1D457D3}.Debug|x86.Build.0 = Debug|Win32
+		{6068CE4E-7837-4812-B25F-4405B1D457D3}.Release|x64.ActiveCfg = Release|x64
+		{6068CE4E-7837-4812-B25F-4405B1D457D3}.Release|x64.Build.0 = Release|x64
+		{6068CE4E-7837-4812-B25F-4405B1D457D3}.Release|x86.ActiveCfg = Release|Win32
+		{6068CE4E-7837-4812-B25F-4405B1D457D3}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
