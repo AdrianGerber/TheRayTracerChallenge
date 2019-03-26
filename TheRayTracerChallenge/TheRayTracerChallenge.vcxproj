@@ -118,6 +118,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Color.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="Tuple.h" />
