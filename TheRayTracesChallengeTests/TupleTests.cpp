@@ -42,6 +42,9 @@ namespace TheRayTracesChallengeTests
 
             Assert::IsFalse(t1 == t2);
             Assert::IsTrue(t1 == t1);
+            Assert::IsFalse(t1 != t1);
+            Assert::IsTrue(t1 != t2);
+
         }
 
         TEST_METHOD(PointFactory)

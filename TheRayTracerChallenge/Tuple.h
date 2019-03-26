@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Constants.h"
 
 class Tuple
@@ -10,38 +11,37 @@ public:
     Tuple(float x, float y, float z, float w);
     ~Tuple() = default;
 
+    //Creates a point (w = 1.0f)
     static Tuple CreatePoint(float x, float y, float z);
-
+    //Creates a vector (w = 0.0f)
     static Tuple CreateVector(float x, float y, float z);
-
+    //Calculating the dot product
     static float DotProduct(Tuple t1, Tuple t2);
-
+    //Calculating the cross product
     static Tuple CrossProduct(Tuple t1, Tuple t2);
-
-    bool operator== (Tuple t);
-
-    Tuple operator+ (Tuple t);
-
-    Tuple operator- (Tuple t);
-
-    Tuple operator- ();
-
-    Tuple operator* (float t);
-
-    Tuple operator/ (float t);
-
+    //Calculate a vector's magnitude
     float Magnitude();
-
+    //Normalize a vector (-> Magnitude = 1.0f)
     Tuple Normalize();
 
+    //Does the tuple represent a point?
     bool IsPoint();
-
+    //Does the tuple represent a vector?
     bool IsVector();
+
+    //Operator overloads
+    bool operator== (Tuple t);
+    bool operator!= (Tuple t);
+    Tuple operator+ (Tuple t);
+    Tuple operator- (Tuple t);
+    Tuple operator- ();
+    Tuple operator* (float t);
+    Tuple operator/ (float t);
 };
 
 Tuple::Tuple()
 {
-    x = y = z = w = 0.0f;
+   x = y = z = w = 0.0f;
 }
 
 inline Tuple::Tuple(float x, float y, float z, float w)
@@ -80,40 +80,6 @@ inline Tuple Tuple::CrossProduct(Tuple t1, Tuple t2)
     );
 }
 
-inline bool Tuple::operator==(Tuple t)
-{
-    return
-        Constants::FloatEqual(x, t.x)
-        && Constants::FloatEqual(y, t.y)
-        && Constants::FloatEqual(z, t.z)
-        && Constants::FloatEqual(w, t.w);
-}
-
-inline Tuple Tuple::operator+(Tuple t)
-{
-    return Tuple(x + t.x, y + t.y, z + t.z, w + t.w);
-}
-
-inline Tuple Tuple::operator-(Tuple t)
-{
-    return Tuple(x - t.x, y - t.y, z - t.z, w - t.w);
-}
-
-inline Tuple Tuple::operator-()
-{
-    return Tuple(-x, -y, -z, -w);
-}
-
-inline Tuple Tuple::operator*(float t)
-{
-    return Tuple(x * t, y * t, z * t, w * t);
-}
-
-inline Tuple Tuple::operator/(float t)
-{
-    return Tuple(x / t, y / t, z / t, w / t);
-}
-
 inline float Tuple::Magnitude()
 {
     return sqrtf(
@@ -144,4 +110,43 @@ inline bool Tuple::IsPoint()
 inline bool Tuple::IsVector()
 {
     return Constants::FloatEqual(w, 0.0f);
+}
+
+inline bool Tuple::operator==(Tuple t)
+{
+    return
+        Constants::FloatEqual(x, t.x)
+        && Constants::FloatEqual(y, t.y)
+        && Constants::FloatEqual(z, t.z)
+        && Constants::FloatEqual(w, t.w);
+}
+
+inline bool Tuple::operator!=(Tuple t)
+{
+    return !(*this == t);
+}
+
+inline Tuple Tuple::operator+(Tuple t)
+{
+    return Tuple(x + t.x, y + t.y, z + t.z, w + t.w);
+}
+
+inline Tuple Tuple::operator-(Tuple t)
+{
+    return Tuple(x - t.x, y - t.y, z - t.z, w - t.w);
+}
+
+inline Tuple Tuple::operator-()
+{
+    return Tuple(-x, -y, -z, -w);
+}
+
+inline Tuple Tuple::operator*(float t)
+{
+    return Tuple(x * t, y * t, z * t, w * t);
+}
+
+inline Tuple Tuple::operator/(float t)
+{
+    return Tuple(x / t, y / t, z / t, w / t);
 }
