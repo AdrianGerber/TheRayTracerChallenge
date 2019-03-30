@@ -1,10 +1,9 @@
 #include <iostream>
-
+#include "Canvas.h"
 
 int main(void) {
-    
-    std::cout << "Hello World\n";
-    
+
+
     char c;
     std::cin >> c;
     

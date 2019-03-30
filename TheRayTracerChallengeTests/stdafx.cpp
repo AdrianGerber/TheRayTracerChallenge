@@ -1,5 +1,5 @@
 // stdafx.cpp : Quelldatei, die nur die Standard-Includes einbindet.
-// TheRayTracesChallengeTests.pch ist der vorkompilierte Header.
+// TheRayTracerChallengeTests.pch ist der vorkompilierte Header.
 // stdafx.obj enthält die vorkompilierten Typinformationen.
 
 #include "stdafx.h"

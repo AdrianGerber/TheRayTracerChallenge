@@ -26,13 +26,16 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="unittest1.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
     <ClCompile Include="TupleTests.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="ColorTests.cpp">
+    <ClCompile Include="CanvasTests.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="CanvasTests.cpp">
+    <ClCompile Include="ColorTests.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
