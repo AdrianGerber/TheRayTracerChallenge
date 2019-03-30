@@ -39,7 +39,7 @@ public:
     Tuple operator/ (float t);
 };
 
-Tuple::Tuple()
+inline Tuple::Tuple()
 {
    x = y = z = w = 0.0f;
 }
