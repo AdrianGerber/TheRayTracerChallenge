@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
-#include "../TheRayTracerChallenge/Color.h"
-#include "../TheRayTracerChallenge/Constants.h"
+#include <Color.h>
+#include <Constants.h>
 #include <cmath>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;

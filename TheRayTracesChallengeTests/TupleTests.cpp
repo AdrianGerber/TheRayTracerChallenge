@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
-#include "../TheRayTracerChallenge/Tuple.h"
-#include "../TheRayTracerChallenge/Constants.h"
+#include <Tuple.h>
+#include <Constants.h>
 #include <cmath>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
