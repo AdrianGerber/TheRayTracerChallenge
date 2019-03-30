@@ -18,7 +18,7 @@ public:
     size_t GetHeight();
     size_t GetWidth();
 
-    std::string ConvertToPPM(size_t maxValue = 255);
+    std::string ConvertToPPM(unsigned int maxValue = 255, size_t maxLineLength = 70);
 
 private:
     size_t canvasSizeX, canvasSizeY, pixelCount;
