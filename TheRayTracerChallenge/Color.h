@@ -20,7 +20,7 @@ public:
     Color operator* (Color c);
 };
 
-Color::Color()
+inline Color::Color()
 {
     r = g = b = 0.0f;
 }
