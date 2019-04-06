@@ -43,5 +43,41 @@ namespace TheRayTracesChallengeTests
             Assert::IsTrue(m.Submatrix(0, 2) == expected);
         }
         
+        TEST_METHOD(Minor) {
+            Matrix3x3 m = Matrix::Create(
+                3.0f, 5.0f, 0.0f,
+                2.0f, -1.0f, -7.0f,
+                6.0f, -1.0f, 5.0f
+            );
+
+            Assert::IsTrue(Constants::FloatEqual(Matrix::Minor(m, 1, 0), 25.0f));
+        }
+
+        TEST_METHOD(Cofactor) {
+            Matrix3x3 m = Matrix::Create(
+                3.0f, 5.0f, 0.0f,
+                2.0f, -1.0f, -7.0f,
+                6.0f, -1.0f, 5.0f
+            );
+
+            Assert::IsTrue(Constants::FloatEqual(Matrix::Minor(m, 0, 0), -12.0f));
+            Assert::IsTrue(Constants::FloatEqual(Matrix::Cofactor(m, 0, 0), -12.0f));
+
+            Assert::IsTrue(Constants::FloatEqual(Matrix::Minor(m, 1, 0), 25.0f));
+            Assert::IsTrue(Constants::FloatEqual(Matrix::Cofactor(m, 1, 0), -25.0f));
+        }
+
+        TEST_METHOD(Determinant) {
+            Matrix3x3 m = Matrix::Create(
+                1.0f, 2.0f, 6.0f,
+                -5.0f, 8.0f, -4.0f,
+                2.0f, 6.0f, 4.0f
+            );
+
+            Assert::IsTrue(Constants::FloatEqual(Matrix::Cofactor(m, 0, 0),56.0f));
+            Assert::IsTrue(Constants::FloatEqual(Matrix::Cofactor(m, 0, 1),12.0f));
+            Assert::IsTrue(Constants::FloatEqual(Matrix::Cofactor(m, 0, 2),-46.0f));
+            Assert::IsTrue(Constants::FloatEqual(Matrix::Determinant(m),-196.0f));
+        }
     };
 }

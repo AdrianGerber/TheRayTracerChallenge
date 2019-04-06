@@ -3,12 +3,14 @@
 #include "Tuple.h"
 #include "Constants.h"
 #include <array>
+#include <iostream>
 
 using Matrix4x4 = MatrixTemplate<4, 4>;
 using Matrix3x3 = MatrixTemplate<3, 3>;
 using Matrix2x2 = MatrixTemplate<2, 2>;
 
 namespace Matrix {
+
     //Initializing a 2x2 matrix
     inline Matrix2x2 Create(float a, float b,
         float c, float d) {
@@ -64,11 +66,6 @@ namespace Matrix {
         }
         return result;
     }
-
-    //Calculate the determinant of a 2x2 matrix
-    inline float Determinant(Matrix2x2 matrix) {
-        return matrix.elements[0][0] * matrix.elements[1][1] - matrix.elements[1][0] * matrix.elements[0][1];
-    }
     
     //Identity matrix
     inline Matrix4x4 IndentityMatrix4x4() {
@@ -79,6 +76,69 @@ namespace Matrix {
             0.0f, 0.0f, 0.0f, 1.0f
         );
     }
+
+    //Determinant of a 2x2 Matrix
+    inline float Determinant(Matrix2x2 matrix) {
+        return matrix.elements[0][0] * matrix.elements[1][1] - matrix.elements[1][0] * matrix.elements[0][1];
+    }
+
+    //Minor
+    template<typename T>
+    inline float Minor(T matrix,  size_t row, size_t column) {
+        return Determinant(matrix.Submatrix(row, column));
+    }
+
+    //Cofactor
+    template<typename T>
+    inline float Cofactor(T matrix, size_t row, size_t column) {
+        float minor = Minor(matrix, row, column);
+
+        //The sign needs to be switched if row + column is an odd number
+        return ((row + column) % 2 != 0)?
+            (-minor):
+            (minor);
+    }
+
+    //Determinant of a matrix of any size
+    template<typename T>
+    inline float Determinant(T matrix) {
+        float determinant = 0.0f;
+
+        for (size_t column = 0; column < matrix.columns; column++) {
+            determinant += matrix.elements[0][column] * Cofactor(matrix, 0, column);
+        }
+
+        return determinant;
+    }
+
+    template<typename T>
+    bool IsInvertible(T matrix) {
+        return !Constants::FloatEqual(Determinant(matrix), 0.0f);
+    }
+
+    template<typename T>
+    inline T Invert(T matrix) {
+        if (!IsInvertible(matrix)) {
+            std::cerr << "Matrix not invertible\n";
+            return T();
+        }
+
+        
+        float det = Determinant(matrix);
+        T inversion;
+
+
+        for (size_t row = 0; row < matrix.rows; row++) {
+            for (size_t column = 0; column < matrix.columns; column++) {
+                float c = Cofactor(matrix, row, column);
+
+                //switching column and row accomplishes the transpose operation
+                inversion.elements[column][row] = c / det;
+            }
+        }
+        return inversion;
+    }
+
 }
 
 

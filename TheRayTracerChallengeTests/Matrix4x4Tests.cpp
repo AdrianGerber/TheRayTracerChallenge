@@ -120,5 +120,133 @@ namespace TheRayTracesChallengeTests
             Assert::IsTrue(m.Submatrix(2, 1) == expected);
         }
         
+        TEST_METHOD(Determinant) {
+            Matrix4x4 m = Matrix::Create(
+                -2.0f, -8.0f, 3.0f, 5.0f,
+                -3.0f, 1.0f, 7.0f, 3.0f,
+                1.0f, 2.0f, -9.0f, 6.0f,
+                -6.0f, 7.0f, 7.0f, -9.0f
+            );
+
+            Assert::IsTrue(Constants::FloatEqual(Matrix::Cofactor(m, 0, 0), 690.0f));
+            Assert::IsTrue(Constants::FloatEqual(Matrix::Cofactor(m, 0, 1), 447.0f));
+            Assert::IsTrue(Constants::FloatEqual(Matrix::Cofactor(m, 0, 2), 210.0f));
+            Assert::IsTrue(Constants::FloatEqual(Matrix::Cofactor(m, 0, 3), 51.0f));
+            Assert::IsTrue(Constants::FloatEqual(Matrix::Determinant(m), -4071.0f));
+        }
+
+        TEST_METHOD(InvertibilityTest) {
+            Matrix4x4 m1 = Matrix::Create(
+                6.0f, 4.0f, 4.0f, 4.0f,
+                5.0f, 5.0f, 7.0f, 6.0f,
+                4.0f, -9.0f, 3.0f, -7.0f,
+                9.0f, 1.0f, 7.0f, -6.0f
+            );
+
+            Matrix4x4 m2 = Matrix::Create(
+                -4.0f, 2.0f, -2.0f, -3.0f,
+                9.0f, 6.0f, 2.0f, 6.0f,
+                0.0f, -5.0f, 1.0f, -5.0f,
+                0.0f, 0.0f, 0.0f, 0.0f
+            );
+
+            Assert::IsTrue(Matrix::IsInvertible(m1));
+            Assert::IsFalse(Matrix::IsInvertible(m2));
+
+            Assert::IsTrue(Constants::FloatEqual(Matrix::Determinant(m1), -2120.0f));
+            Assert::IsTrue(Constants::FloatEqual(Matrix::Determinant(m2), 0.0f));
+
+        }
+
+        TEST_METHOD(InversionBasic) {
+            Matrix4x4 m1 = Matrix::Create(
+                -5.0f, 2.0f, 6.0f, -8.0f,
+                1.0f, -5.0f, 1.0f, 8.0f,
+                7.0f, 7.0f, -6.0f, -7.0f,
+                1.0f, -3.0f, 7.0f, 4.0f
+            );
+
+            Matrix4x4 m2 = Matrix::Invert(m1);
+            Matrix4x4 expected = Matrix::Create(
+                0.21805f, 0.45113f, 0.24060f, -0.04511f,
+                -0.80827f, -1.45677f, -0.44361f, 0.52068f,
+                -0.07895f, -0.22368f, -0.05263f, 0.19737f,
+                -0.52256f, -0.81391f, -0.30075f, 0.30639f
+            );
+
+
+            Assert::IsTrue(Constants::FloatEqual(Matrix::Determinant(m1), 532.0f));
+            Assert::IsTrue(Constants::FloatEqual(Matrix::Cofactor(m1, 2, 3), -160.0f));
+            Assert::IsTrue(Constants::FloatEqual(m2.elements[3][2], -160.0f/532.0f));
+            Assert::IsTrue(Constants::FloatEqual(Matrix::Cofactor(m1, 3, 2), 105.0f));
+            Assert::IsTrue(Constants::FloatEqual(m2.elements[2][3], 105.0f/532.0f));
+
+            for (size_t row = 0; row < expected.rows; row++) {
+                for (size_t column = 0; column < expected.columns; column++) {
+                    if (!Constants::FloatEqual(m2.elements[row][column], expected.elements[row][column])) {
+                        std::string log = std::to_string(m2.elements[row][column]) + " != " + std::to_string(expected.elements[row][column]);
+                        Logger::WriteMessage(log.c_str());
+
+                        log = std::to_string(m2.elements[row][column] - expected.elements[row][column]);
+                        Logger::WriteMessage(log.c_str());
+                    }
+                }
+            }
+
+            Assert::IsTrue(m2 == expected);
+        }
+
+        TEST_METHOD(Inversion) {
+            Matrix4x4 m1 = Matrix::Create(
+                8.0f, -5.0f, 9.0f, 2.0f,
+                7.0f, 5.0f, 6.0f, 1.0f,
+                -6.0f, 0.0f, 9.0f, 6.0f,
+                -3.0f, 0.0f, -9.0f, -4.0f
+            );
+
+            Matrix4x4 expected1 = Matrix::Create(
+                -0.15385f, -0.15385f, -0.28205f, -0.53846f,
+                -0.07692f, 0.12308f, 0.02564f, 0.03077f,
+                0.35897f, 0.35897f, 0.43590f, 0.92308f,
+                -0.69231f, -0.69231f, -0.76923f, -1.92308f
+            );
+
+            Matrix4x4 m2 = Matrix::Create(
+                9.0f, 3.0f, 0.0f, 9.0f,
+                -5.0f, -2.0f, -6.0f, -3.0f,
+                -4.0f, 9.0f, 6.0f, 4.0f,
+                -7.0f, 6.0f, 6.0f, 2.0f
+            );
+
+            Matrix4x4 expected2 = Matrix::Create(
+                -0.04074f, -0.07778f, 0.14444f, -0.22222f,
+                -0.07778f, 0.03333f, 0.36667f, -0.33333f,
+                -0.02901f, -0.14630f, -0.10926f, 0.12963f,
+                0.17778f, 0.06667f, -0.26667f, 0.33333f
+            );
+
+            Assert::IsTrue(Matrix::Invert(m1) == expected1);
+            Assert::IsTrue(Matrix::Invert(m2) == expected2);
+        }
+
+        TEST_METHOD(InversionMultiplication) {
+            Matrix4x4 m1 = Matrix::Create(
+                3.0f, -9.0f, 7.0f, 3.0f,
+                3.0f, -8.0f, 2.0f, -9.0f,
+                -4.0f, 4.0f, 4.0f, 1.0f,
+                -6.0f, 5.0f, -1.0f, 1.0f
+            );
+
+            Matrix4x4 m2 = Matrix::Create(
+                8.0f, 2.0f, 2.0f, 2.0f,
+                3.0f, -1.0f, 7.0f, 0.0f,
+                7.0f, 0.0f, 5.0f, 4.0f,
+                6.0f, -2.0f, 0.0f, 5.0f
+            );
+
+            Matrix4x4 m3 = m1 * m2;
+
+            Assert::IsTrue(m3 * Matrix::Invert(m2) == m1);
+        }
     };
 }
