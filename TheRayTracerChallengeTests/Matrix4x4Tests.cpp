@@ -97,10 +97,10 @@ namespace TheRayTracesChallengeTests
                 0.0f, 8.0f, 3.0f, 8.0f
             );
 
-            Assert::IsTrue(Matrix::Transpose(m) == mTransposed);
+            Assert::IsTrue(m.Transpose() == mTransposed);
 
             //Indentity matrix shouldn't change when transposed
-            Assert::IsTrue(Matrix::Transpose(Matrix::IndentityMatrix4x4()) == Matrix::IndentityMatrix4x4());
+            Assert::IsTrue(Matrix::IndentityMatrix4x4().Transpose() == Matrix::IndentityMatrix4x4());
         }
         
         TEST_METHOD(Submatrix4x4) {
@@ -128,11 +128,11 @@ namespace TheRayTracesChallengeTests
                 -6.0f, 7.0f, 7.0f, -9.0f
             );
 
-            Assert::IsTrue(Constants::FloatEqual(Matrix::Cofactor(m, 0, 0), 690.0f));
-            Assert::IsTrue(Constants::FloatEqual(Matrix::Cofactor(m, 0, 1), 447.0f));
-            Assert::IsTrue(Constants::FloatEqual(Matrix::Cofactor(m, 0, 2), 210.0f));
-            Assert::IsTrue(Constants::FloatEqual(Matrix::Cofactor(m, 0, 3), 51.0f));
-            Assert::IsTrue(Constants::FloatEqual(Matrix::Determinant(m), -4071.0f));
+            Assert::IsTrue(Constants::FloatEqual(m.Cofactor(0, 0), 690.0f));
+            Assert::IsTrue(Constants::FloatEqual(m.Cofactor(0, 1), 447.0f));
+            Assert::IsTrue(Constants::FloatEqual(m.Cofactor(0, 2), 210.0f));
+            Assert::IsTrue(Constants::FloatEqual(m.Cofactor(0, 3), 51.0f));
+            Assert::IsTrue(Constants::FloatEqual(m.Determinant(), -4071.0f));
         }
 
         TEST_METHOD(InvertibilityTest) {
@@ -150,11 +150,11 @@ namespace TheRayTracesChallengeTests
                 0.0f, 0.0f, 0.0f, 0.0f
             );
 
-            Assert::IsTrue(Matrix::IsInvertible(m1));
-            Assert::IsFalse(Matrix::IsInvertible(m2));
+            Assert::IsTrue(m1.IsInvertible());
+            Assert::IsFalse(m2.IsInvertible());
 
-            Assert::IsTrue(Constants::FloatEqual(Matrix::Determinant(m1), -2120.0f));
-            Assert::IsTrue(Constants::FloatEqual(Matrix::Determinant(m2), 0.0f));
+            Assert::IsTrue(Constants::FloatEqual(m1.Determinant(), -2120.0f));
+            Assert::IsTrue(Constants::FloatEqual(m2.Determinant(), 0.0f));
 
         }
 
@@ -166,7 +166,7 @@ namespace TheRayTracesChallengeTests
                 1.0f, -3.0f, 7.0f, 4.0f
             );
 
-            Matrix4x4 m2 = Matrix::Invert(m1);
+            Matrix4x4 m2 = m1.Inversion();
             Matrix4x4 expected = Matrix::Create(
                 0.21805f, 0.45113f, 0.24060f, -0.04511f,
                 -0.80827f, -1.45677f, -0.44361f, 0.52068f,
@@ -175,10 +175,10 @@ namespace TheRayTracesChallengeTests
             );
 
 
-            Assert::IsTrue(Constants::FloatEqual(Matrix::Determinant(m1), 532.0f));
-            Assert::IsTrue(Constants::FloatEqual(Matrix::Cofactor(m1, 2, 3), -160.0f));
+            Assert::IsTrue(Constants::FloatEqual(m1.Determinant(), 532.0f));
+            Assert::IsTrue(Constants::FloatEqual(m1.Cofactor(2, 3), -160.0f));
             Assert::IsTrue(Constants::FloatEqual(m2.elements[3][2], -160.0f/532.0f));
-            Assert::IsTrue(Constants::FloatEqual(Matrix::Cofactor(m1, 3, 2), 105.0f));
+            Assert::IsTrue(Constants::FloatEqual(m1.Cofactor(3, 2), 105.0f));
             Assert::IsTrue(Constants::FloatEqual(m2.elements[2][3], 105.0f/532.0f));
 
             for (size_t row = 0; row < expected.rows; row++) {
@@ -225,8 +225,8 @@ namespace TheRayTracesChallengeTests
                 0.17778f, 0.06667f, -0.26667f, 0.33333f
             );
 
-            Assert::IsTrue(Matrix::Invert(m1) == expected1);
-            Assert::IsTrue(Matrix::Invert(m2) == expected2);
+            Assert::IsTrue(m1.Inversion() == expected1);
+            Assert::IsTrue(m2.Inversion() == expected2);
         }
 
         TEST_METHOD(InversionMultiplication) {
@@ -246,7 +246,8 @@ namespace TheRayTracesChallengeTests
 
             Matrix4x4 m3 = m1 * m2;
 
-            Assert::IsTrue(m3 * Matrix::Invert(m2) == m1);
+            Assert::IsTrue(m3 * m2.Inversion() == m1);
         }
+        
     };
 }

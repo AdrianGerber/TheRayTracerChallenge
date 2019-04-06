@@ -1,9 +1,138 @@
 #pragma once
-#include "MatrixTemplate.h"
 #include "Tuple.h"
 #include "Constants.h"
 #include <array>
 #include <iostream>
+
+template <size_t nRows, size_t nColumns> class MatrixTemplate {
+public:
+    //The matrix's dimensions
+    const float rows = nRows, columns = nColumns;
+
+    //All stored values
+    std::array<std::array<float, nColumns>, nRows> elements;
+
+    MatrixTemplate() = default;
+    ~MatrixTemplate() = default;
+
+    //Creating a smaller matrix by removing a row and a column
+    MatrixTemplate<nRows - 1, nColumns - 1> Submatrix(size_t removedRow, size_t removedColumn) {
+        MatrixTemplate < nRows - 1, nColumns - 1> submatrix;
+
+        //Current position inside the submatrix
+        size_t newRow = 0, newColumn = 0;
+
+        //Go through all rows of the original matrix
+        for (size_t row = 0; row < rows; row++) {
+
+            //Skip the specified row
+            if (row != removedRow) {
+                newColumn = 0;
+                //Go through all collumns of the original matrix
+                for (size_t column = 0; column < columns; column++) {
+                    //Skip the specified column
+                    if (column != removedColumn) {
+                        //Copy the elements to the submatrix
+                        submatrix.elements[newRow][newColumn] = elements[row][column];
+                        newColumn++;
+                    }
+                }
+                //A row was copied -> next row inside submatrix
+                newRow++;
+            }
+        }
+        return submatrix;
+    }
+
+    //Comparison operators
+    bool operator==(MatrixTemplate<nRows, nColumns> m) {
+        for (size_t row = 0; row < rows; row++)
+            for (size_t column = 0; column < columns; column++)
+                //Not equal, if any element is different
+                if (!Constants::FloatEqual(m.elements[row][column], elements[row][column]))
+                    return false;
+        //All elements are equal
+        return true;
+    }
+
+    bool operator!=(MatrixTemplate<nRows, nColumns> m) {
+        return !(*this == m);
+    }
+
+
+    //Transposing a matrix
+    inline MatrixTemplate<nRows, nColumns> Transpose() {
+        MatrixTemplate<nRows, nColumns> result;
+
+        //Switch rows and columns
+        for (size_t row = 0; row < rows; row++) {
+            for (size_t column = 0; column < columns; column++) {
+                result.elements[column][row] = elements[row][column];
+            }
+        }
+        return result;
+    }
+
+
+    //Minor
+    inline float Minor(size_t row, size_t column) {
+        auto submatrix = Submatrix(row, column);
+        return submatrix.Determinant();
+    }
+
+    //Cofactor
+    inline float Cofactor(size_t row, size_t column) {
+        float minor = Minor(row, column);
+
+        //The sign needs to be switched if row + column is an odd number
+        return ((row + column) % 2 != 0) ?
+            (-minor) :
+            (minor);
+    }
+
+    //Determinant of a matrix of any size
+    inline float Determinant() {
+        float determinant = 0.0f;
+
+        for (size_t column = 0; column < columns; column++) {
+            determinant += elements[0][column] * Cofactor(0, column);
+        }
+
+        return determinant;
+    }
+
+    bool IsInvertible() {
+        return !Constants::FloatEqual(Determinant(), 0.0f);
+    }
+
+    inline MatrixTemplate<nRows, nColumns> Inversion() {
+        if (!IsInvertible()) {
+            std::cerr << "Matrix not invertible\n";
+            return MatrixTemplate<nRows, nColumns>();
+        }
+
+
+        float det = Determinant();
+        MatrixTemplate<nRows, nColumns> inversion;
+
+
+        for (size_t row = 0; row < rows; row++) {
+            for (size_t column = 0; column < columns; column++) {
+                float c = Cofactor(row, column);
+
+                //switching column and row accomplishes the transpose operation
+                inversion.elements[column][row] = c / det;
+            }
+        }
+        return inversion;
+    }
+};
+
+//Template specialization for 2x2 matrices
+template <>
+inline float MatrixTemplate<2, 2>::Determinant() {
+    return elements[0][0] * elements[1][1] - elements[1][0] * elements[0][1];
+}
 
 using Matrix4x4 = MatrixTemplate<4, 4>;
 using Matrix3x3 = MatrixTemplate<3, 3>;
@@ -53,19 +182,7 @@ namespace Matrix {
         return matrix;
     }
 
-    //Transposing a matrix
-    template<typename T>
-    inline T Transpose(T matrix) {
-        T result;
-
-        //Switch rows and columns
-        for (size_t row = 0; row < matrix.rows; row++) {
-            for (size_t column = 0; column < matrix.columns; column++) {
-                result.elements[column][row] = matrix.elements[row][column];
-            }
-        }
-        return result;
-    }
+   
     
     //Identity matrix
     inline Matrix4x4 IndentityMatrix4x4() {
@@ -76,69 +193,6 @@ namespace Matrix {
             0.0f, 0.0f, 0.0f, 1.0f
         );
     }
-
-    //Determinant of a 2x2 Matrix
-    inline float Determinant(Matrix2x2 matrix) {
-        return matrix.elements[0][0] * matrix.elements[1][1] - matrix.elements[1][0] * matrix.elements[0][1];
-    }
-
-    //Minor
-    template<typename T>
-    inline float Minor(T matrix,  size_t row, size_t column) {
-        return Determinant(matrix.Submatrix(row, column));
-    }
-
-    //Cofactor
-    template<typename T>
-    inline float Cofactor(T matrix, size_t row, size_t column) {
-        float minor = Minor(matrix, row, column);
-
-        //The sign needs to be switched if row + column is an odd number
-        return ((row + column) % 2 != 0)?
-            (-minor):
-            (minor);
-    }
-
-    //Determinant of a matrix of any size
-    template<typename T>
-    inline float Determinant(T matrix) {
-        float determinant = 0.0f;
-
-        for (size_t column = 0; column < matrix.columns; column++) {
-            determinant += matrix.elements[0][column] * Cofactor(matrix, 0, column);
-        }
-
-        return determinant;
-    }
-
-    template<typename T>
-    bool IsInvertible(T matrix) {
-        return !Constants::FloatEqual(Determinant(matrix), 0.0f);
-    }
-
-    template<typename T>
-    inline T Invert(T matrix) {
-        if (!IsInvertible(matrix)) {
-            std::cerr << "Matrix not invertible\n";
-            return T();
-        }
-
-        
-        float det = Determinant(matrix);
-        T inversion;
-
-
-        for (size_t row = 0; row < matrix.rows; row++) {
-            for (size_t column = 0; column < matrix.columns; column++) {
-                float c = Cofactor(matrix, row, column);
-
-                //switching column and row accomplishes the transpose operation
-                inversion.elements[column][row] = c / det;
-            }
-        }
-        return inversion;
-    }
-
 }
 
 

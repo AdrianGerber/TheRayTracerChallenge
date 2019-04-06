@@ -28,11 +28,10 @@ namespace TheRayTracesChallengeTests
             Assert::IsFalse(m1 == m2);
         }
         
-        
         TEST_METHOD(Determinant2x2) {
             Matrix2x2 m = Matrix::Create(1.0f, 5.0f, -3.0f, 2.0f);
 
-            Assert::IsTrue(Constants::FloatEqual(Matrix::Determinant(m), 17.0f));
+            Assert::IsTrue(Constants::FloatEqual(m.Determinant(), 17.0f));
         }
         
     };

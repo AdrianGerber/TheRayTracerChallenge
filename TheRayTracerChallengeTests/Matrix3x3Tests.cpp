@@ -50,7 +50,7 @@ namespace TheRayTracesChallengeTests
                 6.0f, -1.0f, 5.0f
             );
 
-            Assert::IsTrue(Constants::FloatEqual(Matrix::Minor(m, 1, 0), 25.0f));
+            Assert::IsTrue(Constants::FloatEqual(m.Minor(1, 0), 25.0f));
         }
 
         TEST_METHOD(Cofactor) {
@@ -60,11 +60,11 @@ namespace TheRayTracesChallengeTests
                 6.0f, -1.0f, 5.0f
             );
 
-            Assert::IsTrue(Constants::FloatEqual(Matrix::Minor(m, 0, 0), -12.0f));
-            Assert::IsTrue(Constants::FloatEqual(Matrix::Cofactor(m, 0, 0), -12.0f));
+            Assert::IsTrue(Constants::FloatEqual(m.Minor(0, 0), -12.0f));
+            Assert::IsTrue(Constants::FloatEqual(m.Cofactor(0, 0), -12.0f));
 
-            Assert::IsTrue(Constants::FloatEqual(Matrix::Minor(m, 1, 0), 25.0f));
-            Assert::IsTrue(Constants::FloatEqual(Matrix::Cofactor(m, 1, 0), -25.0f));
+            Assert::IsTrue(Constants::FloatEqual(m.Minor(1, 0), 25.0f));
+            Assert::IsTrue(Constants::FloatEqual(m.Cofactor(1, 0), -25.0f));
         }
 
         TEST_METHOD(Determinant) {
@@ -74,10 +74,11 @@ namespace TheRayTracesChallengeTests
                 2.0f, 6.0f, 4.0f
             );
 
-            Assert::IsTrue(Constants::FloatEqual(Matrix::Cofactor(m, 0, 0),56.0f));
-            Assert::IsTrue(Constants::FloatEqual(Matrix::Cofactor(m, 0, 1),12.0f));
-            Assert::IsTrue(Constants::FloatEqual(Matrix::Cofactor(m, 0, 2),-46.0f));
-            Assert::IsTrue(Constants::FloatEqual(Matrix::Determinant(m),-196.0f));
+            Assert::IsTrue(Constants::FloatEqual(m.Cofactor(0, 0),56.0f));
+            Assert::IsTrue(Constants::FloatEqual(m.Cofactor(0, 1),12.0f));
+            Assert::IsTrue(Constants::FloatEqual(m.Cofactor(0, 2),-46.0f));
+            Assert::IsTrue(Constants::FloatEqual(m.Determinant(),-196.0f));
         }
+        
     };
 }
