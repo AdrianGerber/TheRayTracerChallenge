@@ -59,6 +59,9 @@ public:
         return !(*this == m);
     }
 
+    void operator= (MatrixTemplate<nRows, nColumns> matrix) {
+        elements = matrix.elements;
+    }
 
     //Transposing a matrix
     inline MatrixTemplate<nRows, nColumns> Transpose() {
@@ -182,8 +185,6 @@ namespace Matrix {
         return matrix;
     }
 
-   
-    
     //Identity matrix
     inline Matrix4x4 IndentityMatrix4x4() {
         return Matrix::Create(

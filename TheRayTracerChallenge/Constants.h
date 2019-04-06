@@ -4,6 +4,7 @@
 
 namespace Constants {
     const float EPSILON = 0.00001f;
+    const float PI = 3.14159265358979323846f;
 
     inline bool FloatEqual(float value1, float value2) {
         return fabsf(value1 - value2) < Constants::EPSILON;
