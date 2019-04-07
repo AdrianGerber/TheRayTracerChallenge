@@ -2,6 +2,8 @@
 
 #include "Constants.h"
 
+
+
 class Tuple
 {
 public:
@@ -38,6 +40,9 @@ public:
     Tuple operator* (float t);
     Tuple operator/ (float t);
 };
+
+using Point = Tuple;
+using Vector = Tuple;
 
 inline Tuple::Tuple()
 {
