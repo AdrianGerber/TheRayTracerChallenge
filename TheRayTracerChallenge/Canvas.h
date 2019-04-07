@@ -1,5 +1,6 @@
 #pragma once
-
+#include <iostream>
+#include <fstream>
 #include "Color.h"
 #include <vector>
 #include <string>
@@ -12,6 +13,8 @@ public:
     Canvas(size_t xSize, size_t ySize);
     ~Canvas() = default;
     
+    
+
     void WritePixel(Color color, size_t xPosition, size_t yPosition);
     Color ReadPixel(size_t xPosition, size_t yPosition);
 
@@ -19,6 +22,8 @@ public:
     size_t GetWidth();
 
     std::string ConvertToPPM(unsigned int maxValue = 255, size_t maxLineLength = 70);
+
+    bool SaveToFile(std::string fileName, size_t maxValue = 255, size_t maxLineLength = 70);
 
 private:
     size_t canvasSizeX, canvasSizeY, pixelCount;
