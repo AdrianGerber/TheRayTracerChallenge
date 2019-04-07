@@ -4,8 +4,7 @@
 
 int main(void) {
 
-    DrawWatchface();
-    
+    DrawSphere();
 
     std::cout << std::endl;
     char c;
