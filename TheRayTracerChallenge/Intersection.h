@@ -9,29 +9,34 @@
 class Intersection {
     
 public:
+    const size_t invalidID = std::numeric_limits<size_t>::max();
+
     //Value of parameter 't' at the intersection
     float t;
-    std::shared_ptr<Sphere> object;
+    size_t objectID;
+
+    
 
     Intersection();
-    Intersection(float t, std::shared_ptr<Sphere> object);
+    Intersection(float t, size_t objectID);
     ~Intersection() = default;
 
 
     bool operator==(Intersection i);
+    bool IsValid() { return objectID != invalidID; }
 };
 
 inline Intersection::Intersection() {
-    object = nullptr;
+    objectID = invalidID;
 }
 
-inline Intersection::Intersection(float t, std::shared_ptr<Sphere> object) {
+inline Intersection::Intersection(float t, size_t objectID) {
     this->t = t;
-    this->object = object;
+    this->objectID = objectID;
 }
 
 inline bool Intersection::operator==(Intersection i) {
-    return Constants::FloatEqual(t, i.t) && (object == i.object);
+    return Constants::FloatEqual(t, i.t) && (objectID == i.objectID);
 }
 
 class IntersectionBuffer {

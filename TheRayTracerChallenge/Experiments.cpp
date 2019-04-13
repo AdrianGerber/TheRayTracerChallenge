@@ -107,10 +107,10 @@ void DrawSphereReflections() {
                 Intersection hit = intersections.GetFirstHit();
 
                 Point hitPoint = ray.PositionAt(hit.t);
-                Vector normal = hit.object->SurfaceNormal(hitPoint);
+                Vector normal = s->SurfaceNormal(hitPoint);
                 Vector eye = -ray.direction;
 
-                canvas.WritePixel(l.Lighting(hit.object->GetMaterial(), hitPoint, eye, normal) , x, y);
+                canvas.WritePixel(l.Lighting(s->GetMaterial(), hitPoint, eye, normal) , x, y);
 
 
             }

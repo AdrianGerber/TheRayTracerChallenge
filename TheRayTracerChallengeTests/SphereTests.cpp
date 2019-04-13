@@ -7,7 +7,6 @@
 #include <Intersection.h>
 #include <Transform.h>
 #include <memory>
-#include <cmath>
 #include <Sphere.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;

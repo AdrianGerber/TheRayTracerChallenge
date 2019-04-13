@@ -19,9 +19,23 @@ public:
     void SetMaterial(Material m) { this->material = m; }
     Material GetMaterial() { return material; }
 
+    size_t GetID() { return id; };
+    void SetID(size_t id) { this->id = id; }
+
+    bool operator==(Sphere s) {
+        return
+            transform == s.GetTransform()
+            && material == s.GetMaterial()
+            && id == s.GetID();
+    }
+
+    bool operator!=(Sphere s) { return !(*this == s); }
+
+
 private:
     Transform transform;
     Material material;
+    size_t id;  
 
 };
 

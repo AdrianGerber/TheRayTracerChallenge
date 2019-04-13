@@ -131,6 +131,13 @@ inline Transform Transform::CreateShear(float xy, float xz, float yx, float yz, 
     return t;
 }
 
+inline bool operator==(Transform transform1, Transform transform2) {
+    return transform1.matrix == transform2.matrix;
+}
+
+inline bool operator!=(Transform transform1, Transform transform2) {
+    return !(transform1 == transform2);
+}
 
 //Multiplication of transforms with matrices and tuples
 inline Tuple operator*(Tuple tuple, Transform transform) {

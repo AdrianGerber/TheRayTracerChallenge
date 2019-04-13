@@ -70,9 +70,9 @@ inline IntersectionBuffer Ray::FindIntersections(std::shared_ptr<Sphere> sphere)
     i1.t = (-b - sqrtf(discriminant)) / (2.0f * a);
     i2.t = (-b + sqrtf(discriminant)) / (2.0f * a);
     
-    i1.object = sphere;
-    i2.object = sphere;
-
+    i1.objectID = sphere->GetID();
+    i2.objectID = sphere->GetID();
+   
     return IntersectionBuffer(i1, i2);
 }
 

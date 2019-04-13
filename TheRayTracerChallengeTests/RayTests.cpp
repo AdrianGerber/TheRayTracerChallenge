@@ -1,12 +1,16 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
-#include <Matrix.h>
-#include <Constants.h>
-#include <Tuple.h>
-#include <Ray.h>
-#include <Intersection.h>
-#include <Transform.h>
+#include "../TheRayTracerChallenge/Matrix.h"
+#include "../TheRayTracerChallenge/Constants.h"
+#include "../TheRayTracerChallenge/Tuple.h"
+#include "../TheRayTracerChallenge/Ray.h"
+#include "../TheRayTracerChallenge/Intersection.h"
+#include "../TheRayTracerChallenge/Transform.h"
 #include <memory>
+#include <cmath>
+#include <vector>
+#include "../TheRayTracerChallenge/Sphere.h"
+#include "../TheRayTracerChallenge/LightSource.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -55,6 +59,9 @@ namespace TheRayTracesChallengeTests
             );
 
             auto s = std::make_shared<Sphere>();
+            s->SetID(29);
+
+            s->GetMaterial();
 
             IntersectionBuffer xs = ray.FindIntersections(s);
 
@@ -89,6 +96,7 @@ namespace TheRayTracesChallengeTests
             auto s = std::make_shared<Sphere>();
 
             IntersectionBuffer xs = ray.FindIntersections(s);
+
 
             //Ray doesn't intersect sphere
             Assert::IsTrue(xs.GetCount() == 0);
@@ -129,19 +137,22 @@ namespace TheRayTracesChallengeTests
         TEST_METHOD(IntersectionDataStructure) {
             Intersection i;
             auto s = std::make_shared<Sphere>();
-            i.object = s;
+            s->SetID(12);
+
+            i.objectID = s->GetID();
             i.t = 3.5f;
 
             Assert::IsTrue(Constants::FloatEqual(i.t, 3.5f));
-            Assert::IsTrue(i.object == s);
+            Assert::IsTrue(i.objectID == s->GetID());
         }
 
         TEST_METHOD(IntersectionAggregation) {
-            auto s = std::make_shared<Sphere>();
+            Sphere s;
+            s.SetID(1);
             IntersectionBuffer i;
 
-            i.Add(Intersection(1.0f, s));
-            i.Add(Intersection(2.0f, s));
+            i.Add(Intersection(1.0f, s.GetID()));
+            i.Add(Intersection(2.0f, s.GetID()));
 
             Assert::IsTrue(i.GetCount() == 2);
 
@@ -157,18 +168,21 @@ namespace TheRayTracesChallengeTests
 
             auto s = std::make_shared<Sphere>();
 
+            s->SetID(29);
+
             IntersectionBuffer xs = ray.FindIntersections(s);
 
             Assert::IsTrue(xs.GetCount() == 2);
-            Assert::IsTrue(xs[0].object == s);
-            Assert::IsTrue(xs[1].object == s);
+            Assert::IsTrue(xs[0].objectID == s->GetID());
+            Assert::IsTrue(xs[1].objectID == s->GetID());
         }
 
         TEST_METHOD(Hit1) {
             auto s = std::make_shared<Sphere>();
+            s->SetID(9);
             //Positive t
-            Intersection i1 = Intersection(1.0f, s);
-            Intersection i2 = Intersection(2.0f, s);
+            Intersection i1 = Intersection(1.0f, s->GetID());
+            Intersection i2 = Intersection(2.0f, s->GetID());
             IntersectionBuffer i(i2, i1);
 
             Assert::IsTrue(i.GetFirstHit() == i1);
@@ -176,31 +190,37 @@ namespace TheRayTracesChallengeTests
 
         TEST_METHOD(Hit2) {
             auto s = std::make_shared<Sphere>();
+            s->SetID(1);
+
             //Positive and negative t
-            Intersection i1 = Intersection(-1.0f, s);
-            Intersection i2 = Intersection(1.0f, s);
+            Intersection i1 = Intersection(-1.0f, s->GetID());
+            Intersection i2 = Intersection(1.0f, s->GetID());
             IntersectionBuffer i(i2, i1);
 
             Assert::IsTrue(i.GetFirstHit() == i2);
         }
 
         TEST_METHOD(Hit3) {
+
             auto s = std::make_shared<Sphere>();
+            s->SetID(12);
             //Negative t
-            Intersection i1 = Intersection(-2.0f, s);
-            Intersection i2 = Intersection(-1.0f, s);
+            Intersection i1 = Intersection(-2.0f, s->GetID());
+            Intersection i2 = Intersection(-1.0f, s->GetID());
             IntersectionBuffer i(i2, i1);
 
-            Assert::IsTrue(i.GetFirstHit().object == nullptr);
+            Assert::IsFalse(i.GetFirstHit().IsValid());
         }
 
         TEST_METHOD(Hit4) {
             auto s = std::make_shared<Sphere>();
+            s->SetID(123);
+
             //Hit must always be the lowest, non negative intersection
-            Intersection i1 = Intersection(5.0f, s);
-            Intersection i2 = Intersection(7.0f, s);
-            Intersection i3 = Intersection(-3.0f, s);
-            Intersection i4 = Intersection(2.0f, s);
+            Intersection i1 = Intersection(5.0f, s->GetID());
+            Intersection i2 = Intersection(7.0f, s->GetID());
+            Intersection i3 = Intersection(-3.0f, s->GetID());
+            Intersection i4 = Intersection(2.0f, s->GetID());
             IntersectionBuffer i;
 
             i.Add(i1);
@@ -224,7 +244,7 @@ namespace TheRayTracesChallengeTests
             Assert::IsTrue(r2.origin == Point::CreatePoint(4.0f, 6.0f, 8.0f));
             Assert::IsTrue(r2.direction == Vector::CreateVector(0.0f, 1.0f, 0.0f));
         }
-        
+
         TEST_METHOD(RayScaling) {
             Ray r(
                 Point::CreatePoint(1.0f, 2.0f, 3.0f),
@@ -260,11 +280,11 @@ namespace TheRayTracesChallengeTests
             );
 
             auto s = std::make_shared<Sphere>();
-            
+
             s->SetTransform(Transform::CreateScale(2.0f, 2.0f, 2.0f));
 
 
-            auto xs = r.FindIntersections(s);
+            IntersectionBuffer xs = r.FindIntersections(s);
             Assert::IsTrue(xs.GetCount() == 2);
             Assert::IsTrue(Constants::FloatEqual(xs[0].t, 3.0f));
             Assert::IsTrue(Constants::FloatEqual(xs[1].t, 7.0f));
@@ -281,7 +301,7 @@ namespace TheRayTracesChallengeTests
             s->SetTransform(Transform::CreateTranslation(5.0f, 0.0f, 0.0f));
 
 
-            auto xs = r.FindIntersections(s);
+            IntersectionBuffer xs = r.FindIntersections(s);
             Assert::IsTrue(xs.GetCount() == 0);
         }
     };

@@ -25,3 +25,8 @@ private:
     Point position;
 };
 
+inline bool operator==(LightSource l1, LightSource l2) {
+    return
+        l1.GetIntensity() == l2.GetIntensity()
+        && l1.GetPosition() == l2.GetPosition();
+}
