@@ -4,7 +4,7 @@
 
 int main(void) {
 
-    DrawSphere();
+    DrawSphereReflections();
 
     std::cout << std::endl;
     char c;

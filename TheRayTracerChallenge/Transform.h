@@ -149,6 +149,9 @@ inline Matrix4x4 operator*(Matrix4x4 matrix, Transform transform) {
     return matrix * transform.matrix;
 }
 
+inline Transform operator*(Transform transform1, Transform transform2) {
+    return Transform(transform1.matrix * transform2.matrix);
+}
 
 //Applying translations to an existing translation
 

@@ -120,5 +120,19 @@ namespace TheRayTracesChallengeTests
             Assert::IsTrue(Tuple::CrossProduct(v1, v2) == Tuple::CreateVector(-1.0f, 2.0f, -1.0f));
             Assert::IsTrue(Tuple::CrossProduct(v2, v1) == Tuple::CreateVector(1.0f, -2.0f, 1.0f));
         }
+
+        TEST_METHOD(Reflection) {
+            //45 degree reflections
+            Assert::IsTrue(
+                Vector::CreateVector(1.0f, -1.0f, 0.0f).Reflect(Vector::CreateVector(0.0f, 1.0f, 0.0f))
+                == Vector::CreateVector(1.0f, 1.0f, 0.0f)
+            );
+            Assert::IsTrue(
+                Vector::CreateVector(0.0f, -1.0f, 0.0f).Reflect(Vector::CreateVector(sqrtf(2.0f) / 2.0f, sqrtf(2.0f)/2.0f, 0.0f))
+                == Vector::CreateVector(1.0f, 0.0f, 0.0f)
+            );
+
+
+        }
     };
 }

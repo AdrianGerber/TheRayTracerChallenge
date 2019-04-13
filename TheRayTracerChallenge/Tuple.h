@@ -25,6 +25,8 @@ public:
     float Magnitude();
     //Normalize a vector (-> Magnitude = 1.0f)
     Tuple Normalize();
+    
+    Tuple Reflect(Tuple normal);
 
     //Does the tuple represent a point?
     bool IsPoint();
@@ -105,6 +107,10 @@ inline Tuple Tuple::Normalize()
         z / magnitude,
         w / magnitude
     );
+}
+
+inline Tuple Tuple::Reflect(Tuple normal) {
+    return (*this) - (normal * 2.0f * DotProduct(*this, normal));
 }
 
 inline bool Tuple::IsPoint()
