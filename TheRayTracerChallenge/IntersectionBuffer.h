@@ -9,7 +9,7 @@ public:
     IntersectionBuffer(Intersection i);
     IntersectionBuffer(Intersection i1, Intersection i2);
 
-    IntersectionBuffer() = default;
+	IntersectionBuffer() { IsSorted = true; }
     ~IntersectionBuffer() = default;
 
     void Add(Intersection intersection);

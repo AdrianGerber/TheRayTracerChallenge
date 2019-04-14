@@ -24,6 +24,7 @@ public:
 
 inline Intersection::Intersection() {
     objectID = invalidID;
+	t = 0.0f;
 }
 
 inline Intersection::Intersection(float t, size_t objectID) {
