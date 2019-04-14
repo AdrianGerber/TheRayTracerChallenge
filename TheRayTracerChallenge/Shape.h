@@ -8,7 +8,7 @@ class Shape
 {
 public:
 
-    Shape(){ SetMaterial(Material()); }
+	Shape() { material = Material(); id = Intersection::invalidID; }
     ~Shape() = default;
 
     void SetID(size_t newID) { id = newID; }
@@ -21,6 +21,8 @@ public:
     Material GetMaterial() { return material; }
 
     virtual IntersectionBuffer FindIntersections(Ray ray) = 0;
+
+	virtual Vector SurfaceNormal(Point p) = 0;
 
     bool operator==(Shape& s) {
         return

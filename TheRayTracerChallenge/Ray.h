@@ -8,16 +8,16 @@
 class Ray
 {
 public:
-    Point origin;
-    Vector direction;
+	Point origin;
+	Vector direction;
 
-    //Constructors and destructors
-    Ray();
-    Ray(Point origin, Vector direction);
-    ~Ray();
-    
-    //Mathematical functions
-    Point PositionAt(float t);
+	//Constructors and destructors
+	Ray();
+	Ray(Point origin, Vector direction);
+	~Ray();
+
+	//Mathematical functions
+	Point PositionAt (float t) const { return origin + (direction * t);}
 
     Ray Transform(Transform m);
 
@@ -41,10 +41,6 @@ inline Ray::~Ray()
 
 
 //Mathematical functions
-
-inline Point Ray::PositionAt(float t) {
-    return origin + (direction * t);
-}
 
 inline Ray Ray::Transform(::Transform m) {
     Ray r;

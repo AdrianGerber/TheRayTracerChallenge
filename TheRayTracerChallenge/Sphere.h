@@ -14,7 +14,7 @@ public:
     Sphere();
     ~Sphere();
 
-    Vector SurfaceNormal(Point p);
+    Vector SurfaceNormal(Point p) override;
 
     IntersectionBuffer FindIntersections(Ray ray) override;
     
