@@ -4,9 +4,10 @@
 #include <Constants.h>
 #include <Tuple.h>
 #include <Ray.h>
-#include <Intersection.h>
+#include <IntersectionBuffer.h>
 #include <Transform.h>
 #include <memory>
+#include <Shape.h>
 #include <Sphere.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;

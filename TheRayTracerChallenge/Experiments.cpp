@@ -53,7 +53,7 @@ void DrawSphere() {
           
             //Cast the ray
             Ray ray(origin, direction);
-            IntersectionBuffer intersections = ray.FindIntersections(s);
+            IntersectionBuffer intersections = s->FindIntersections(ray);
 
 
             //Color all pixels that represent the sphere
@@ -99,7 +99,7 @@ void DrawSphereReflections() {
 
             //Cast the ray
             Ray ray(origin, direction);
-            IntersectionBuffer intersections = ray.FindIntersections(s);
+            IntersectionBuffer intersections = s->FindIntersections(ray);
 
 
             //There was an intersection

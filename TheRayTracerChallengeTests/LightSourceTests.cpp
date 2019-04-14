@@ -4,10 +4,11 @@
 #include <Constants.h>
 #include <Tuple.h>
 #include <Ray.h>
-#include <Intersection.h>
+#include <IntersectionBuffer.h>
 #include <Transform.h>
 #include <memory>
 #include <cmath>
+#include <Shape.h>
 #include <Sphere.h>
 #include <LightSource.h>
 
