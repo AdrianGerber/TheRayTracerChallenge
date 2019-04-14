@@ -34,13 +34,13 @@ public:
     bool IsVector();
 
     //Operator overloads
-    bool operator== (Tuple t);
-    bool operator!= (Tuple t);
-    Tuple operator+ (Tuple t);
-    Tuple operator- (Tuple t);
-    Tuple operator- ();
-    Tuple operator* (float t);
-    Tuple operator/ (float t);
+    bool operator== (const Tuple t) const;
+    bool operator!= (const Tuple t) const;
+    Tuple operator+ (const Tuple t) const;
+    Tuple operator- (const Tuple t) const;
+    Tuple operator- () const;
+    Tuple operator* (const float t) const;
+    Tuple operator/ (const float t) const;
 };
 
 using Point = Tuple;
@@ -123,7 +123,7 @@ inline bool Tuple::IsVector()
     return Constants::FloatEqual(w, 0.0f);
 }
 
-inline bool Tuple::operator==(Tuple t)
+inline bool Tuple::operator==(const Tuple t) const
 {
     return
         Constants::FloatEqual(x, t.x)
@@ -132,32 +132,32 @@ inline bool Tuple::operator==(Tuple t)
         && Constants::FloatEqual(w, t.w);
 }
 
-inline bool Tuple::operator!=(Tuple t)
+inline bool Tuple::operator!=(const Tuple t) const
 {
     return !(*this == t);
 }
 
-inline Tuple Tuple::operator+(Tuple t)
+inline Tuple Tuple::operator+(const Tuple t) const
 {
     return Tuple(x + t.x, y + t.y, z + t.z, w + t.w);
 }
 
-inline Tuple Tuple::operator-(Tuple t)
+inline Tuple Tuple::operator-(const Tuple t) const
 {
     return Tuple(x - t.x, y - t.y, z - t.z, w - t.w);
 }
 
-inline Tuple Tuple::operator-()
+inline Tuple Tuple::operator-() const
 {
     return Tuple(-x, -y, -z, -w);
 }
 
-inline Tuple Tuple::operator*(float t)
+inline Tuple Tuple::operator*(const float t) const
 {
     return Tuple(x * t, y * t, z * t, w * t);
 }
 
-inline Tuple Tuple::operator/(float t)
+inline Tuple Tuple::operator/(const float t) const
 {
     return Tuple(x / t, y / t, z / t, w / t);
 }
