@@ -12,7 +12,13 @@ public:
     //All stored values
     std::array<std::array<float, nColumns>, nRows> elements;
 
-    MatrixTemplate() = default;
+	MatrixTemplate() {
+		for (size_t row = 0; row < rows; row++) {
+			for (size_t column = 0; column < columns; column++) {
+				elements[row][column] = 0.0f;
+			}
+		}
+	}
     ~MatrixTemplate() = default;
 
     //Creating a smaller matrix by removing a row and a column
