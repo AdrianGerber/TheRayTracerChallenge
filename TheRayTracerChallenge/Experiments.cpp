@@ -122,3 +122,107 @@ void DrawSphereReflections() {
 
     canvas.SaveToFile("sphereReflections");
 }
+
+//End of chapter 7
+void DrawChapter7Scene()
+{
+	World world;
+	
+	//Camera
+	Camera camera(100, 50, Constants::PI / 3.0f, 
+		Camera::CreateViewTransform(
+			Point::CreatePoint(0.0f, 1.5f, -5.0f),
+			Point::CreatePoint(0.0f, 1.0f, 0.0f),
+			Vector::CreateVector(0.0f, 1.0f, 0.0f)
+		)
+	);
+
+	//Light source
+	auto lightSource = std::make_shared<LightSource>();
+	lightSource->SetIntensity(Color(1.0f, 1.0f, 1.0f));
+	lightSource->SetPosition(Point::CreatePoint(-10.0f, 10.0f, -10.0f));
+	world.AddLightSource(lightSource);
+	
+
+
+
+	Transform transform;
+	Material material;
+
+	//Shapes
+
+	//floor
+	transform = Transform::CreateScale(10.0f, 0.01f, 10.0f);
+	material = Material();
+	material.color = Color(1.0f, 0.9f, 0.9f);
+	material.specular = 0.0f;
+
+	auto floor = std::make_shared<Sphere>();
+	floor->SetMaterial(material);
+	floor->SetTransform(transform);
+	world.AddShape(floor);
+
+	//left wall
+	transform = Transform::CreateTranslation(0.0f, 0.0f, 5.0f)
+		* Transform::CreateRotationY(-Constants::PI / 4.0f)
+		* Transform::CreateRotationX(Constants::PI / 2.0f)
+		* Transform::CreateScale(10.0f, 0.01f, 10.0f);
+
+	auto leftWall = std::make_shared<Sphere>();
+	leftWall->SetMaterial(floor->GetMaterial());
+	leftWall->SetTransform(transform);
+	world.AddShape(leftWall);
+
+	//right wall
+	transform = Transform::CreateTranslation(0.0f, 0.0f, 5.0f)
+		* Transform::CreateRotationY(Constants::PI / 4.0f)
+		* Transform::CreateRotationX(Constants::PI / 2.0f)
+		* Transform::CreateScale(10.0f, 0.01f, 10.0f);
+
+	auto rightWall = std::make_shared<Sphere>();
+	rightWall->SetMaterial(floor->GetMaterial());
+	rightWall->SetTransform(transform);
+	world.AddShape(rightWall);
+
+	//middle
+	transform = Transform::CreateTranslation(-0.5f, 1.0f, 0.5f);
+	material = Material();
+	material.color = Color(0.1f, 1.0f, 0.5f);
+	material.diffuse = 0.7f;
+	material.specular = 0.3f;
+
+	auto middle = std::make_shared<Sphere>();
+	middle->SetMaterial(material);
+	middle->SetTransform(transform);
+	world.AddShape(middle);
+
+	//right
+	transform = Transform::CreateTranslation(1.5f, 0.5f, -0.5f)
+		* Transform::CreateScale(0.5f, 0.5f, 0.5f);
+
+	material = Material();
+	material.color = Color(0.1f, 1.0f, 0.5f);
+	material.diffuse = 0.7f;
+	material.specular = 0.3f;
+
+	auto right = std::make_shared<Sphere>();
+	right->SetMaterial(material);
+	right->SetTransform(transform);
+	world.AddShape(right);
+
+	//left
+	transform = Transform::CreateTranslation(-1.5f, 0.33f, -0.75f)
+		* Transform::CreateScale(0.33f, 0.33f, 0.33f);
+
+	material = Material();
+	material.color = Color(1.0f, 0.8f, 0.1f);
+	material.diffuse = 0.7f;
+	material.specular = 0.3f;
+
+	auto left = std::make_shared<Sphere>();
+	left->SetMaterial(material);
+	left->SetTransform(transform);
+	world.AddShape(left);
+
+	camera.RenderFrame(world).SaveToFile("chapter7");
+}

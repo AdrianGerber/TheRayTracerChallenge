@@ -11,6 +11,10 @@
 #include "Intersection.h"
 #include "LightSource.h"
 #include "Material.h"
+#include "World.h"
+#include "Camera.h"
+#include "Shape.h"
+#include "LightSource.h"
 
 
 void DrawWatchface();
@@ -18,3 +22,5 @@ void DrawWatchface();
 void DrawSphere();
 
 void DrawSphereReflections();
+
+void DrawChapter7Scene();
