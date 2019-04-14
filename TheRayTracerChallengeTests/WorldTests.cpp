@@ -7,6 +7,8 @@
 #include <Intersection.h>
 #include <Transform.h>
 #include <memory>
+#include <Shape.h>
+#include <Sphere.h>
 #include <World.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
