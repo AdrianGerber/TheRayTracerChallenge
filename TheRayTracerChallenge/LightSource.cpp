@@ -33,7 +33,7 @@ Color LightSource::Lighting(Material m, Point p, Vector eye, Vector normal, bool
     Vector lightVector = (position - p).Normalize();
 
     //Cosine of the angle between the light and normal vectors
-    float lightDotNormal = Vector::DotProduct(normal, lightVector);
+	double lightDotNormal = Vector::DotProduct(normal, lightVector);
 
     //Negative value means the light source is on the other side of the surface
     if (lightDotNormal < 0.0f || IsInShadow) {
@@ -45,15 +45,15 @@ Color LightSource::Lighting(Material m, Point p, Vector eye, Vector normal, bool
         diffuse = effectiveColor * m.diffuse * lightDotNormal;
 
         //Cosine of angle between reflection and eye vectors
-        float reflectDotEye = Vector::DotProduct((-lightVector).Reflect(normal), eye);
+		double reflectDotEye = Vector::DotProduct((-lightVector).Reflect(normal), eye);
 
-        if (reflectDotEye <= 0.0f) {
+        if (reflectDotEye <= 0.0) {
             specular = Color(0.0f, 0.0f, 0.0f);
         }
         else {
             //Specular component
-            volatile float factor = powf(reflectDotEye, m.shininess);
-            specular = intensity * m.specular * factor;
+            double factor = powf(reflectDotEye, m.shininess);
+            specular = intensity * static_cast<float>(m.specular * factor);
         }
     }
 

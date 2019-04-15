@@ -77,15 +77,15 @@ namespace TheRayTracesChallengeTests
 
 			Assert::IsTrue(c.GetXSize() == 200);
 			Assert::IsTrue(c.GetYSize() == 120);
-			Assert::IsTrue(Constants::FloatEqual(c.GetFieldOfView(), Constants::PI / 2.0f));
+			Assert::IsTrue(Constants::DoubleEqual(c.GetFieldOfView(), Constants::PI / 2.0f));
 			Assert::IsTrue(c.GetTransform().matrix == Matrix::IndentityMatrix4x4());
 		}
 
 		TEST_METHOD(PixelSize) {
 			Camera c(200, 125, Constants::PI / 2.0f);
-			Assert::IsTrue(Constants::FloatEqual(c.GetPixelSize(), 0.01f));
+			Assert::IsTrue(Constants::DoubleEqual(c.GetPixelSize(), 0.01f));
 			c = Camera(125, 200, Constants::PI / 2.0f);
-			Assert::IsTrue(Constants::FloatEqual(c.GetPixelSize(), 0.01f));
+			Assert::IsTrue(Constants::DoubleEqual(c.GetPixelSize(), 0.01f));
 		}
 
 		TEST_METHOD(RayCreation) {

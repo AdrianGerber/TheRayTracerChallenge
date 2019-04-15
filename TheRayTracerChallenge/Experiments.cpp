@@ -129,7 +129,7 @@ void DrawChapter7Scene()
 	World world;
 	
 	//Camera
-	Camera camera(/*4096, 2160*/100, 100, Constants::PI / 3.0f, 
+	Camera camera(4096, 2160, Constants::PI / 3.0f, 
 		Camera::CreateViewTransform(
 			Point::CreatePoint(0.0f, 1.5f, -5.0f),
 			Point::CreatePoint(0.0f, 1.0f, 0.0f),

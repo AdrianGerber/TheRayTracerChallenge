@@ -35,9 +35,9 @@ inline Color::Color(float r, float g, float b)
 inline bool Color::operator==(Color c)
 {
     return
-        Constants::FloatEqual(r, c.r)
-        && Constants::FloatEqual(g, c.g)
-        && Constants::FloatEqual(b, c.b);
+        Constants::DoubleEqual(r, c.r)
+        && Constants::DoubleEqual(g, c.g)
+        && Constants::DoubleEqual(b, c.b);
 }
 
 inline bool Color::operator!=(Color c)

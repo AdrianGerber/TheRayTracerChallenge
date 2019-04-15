@@ -10,7 +10,7 @@
 
 class HitCalculations {
 public:
-	float t;
+	double t;
 	size_t shapeID;
 	Point point;
 	Point overPoint;

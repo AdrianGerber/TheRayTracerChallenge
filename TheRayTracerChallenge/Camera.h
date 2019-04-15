@@ -12,10 +12,10 @@
 class Camera {
 private:
 	size_t xSize, ySize;
-	float fieldOfView;
+	double fieldOfView;
 	Transform transform;
 
-	float halfHeight, halfWidth, pixelSize;
+	double halfHeight, halfWidth, pixelSize;
 
 public:
 
@@ -27,7 +27,7 @@ public:
 		CalculatePixelSize();
 	}
 
-	Camera(size_t initialXSize, size_t initialYSize, float initialFieldOfView, Transform initialTransform) {
+	Camera(size_t initialXSize, size_t initialYSize, double initialFieldOfView, Transform initialTransform) {
 		halfHeight = halfWidth = pixelSize = 0.0f;
 		xSize = initialXSize;
 		ySize = initialYSize;
@@ -36,7 +36,7 @@ public:
 		CalculatePixelSize();
 	}
 
-	Camera(size_t initialXSize, size_t initialYSize, float initialFieldOfView) {
+	Camera(size_t initialXSize, size_t initialYSize, double initialFieldOfView) {
 		halfHeight = halfWidth = pixelSize = 0.0f;
 		xSize = initialXSize;
 		ySize = initialYSize;
@@ -49,21 +49,21 @@ public:
 
 	size_t GetYSize() { return ySize; }
 
-	float GetFieldOfView() { return fieldOfView; }
+	double GetFieldOfView() { return fieldOfView; }
 
 	Transform GetTransform() { return transform; }
 	void SetTransform(Transform newTransform) { transform = newTransform; }
 
-	float GetPixelSize() { return pixelSize; }
+	double GetPixelSize() { return pixelSize; }
 
 	Ray CreateRayForPixel(size_t xPixel, size_t yPixel) {
 		//Offset from edge of canvas to the pixel's center
-		float xOffset = (xPixel + 0.5f) * pixelSize;
-		float yOffset = (yPixel + 0.5f) * pixelSize;
+		double xOffset = (static_cast<double>(xPixel) + 0.5) * pixelSize;
+		double yOffset = (static_cast<double>(yPixel) + 0.5) * pixelSize;
 
 		//Untransformed coordinates of the pixel
-		float worldX = halfWidth - xOffset;
-		float worldY = halfHeight - yOffset;
+		double worldX = halfWidth - xOffset;
+		double worldY = halfHeight - yOffset;
 
 		//Transform the the point (-> view transform)
 		//(Untransformed canvas is at z =-1) 
@@ -84,7 +84,7 @@ public:
 				image.WritePixel(pixelColor, x, y);
 			}
 
-			std::cout << std::to_string(static_cast<float>(x) / static_cast<float>(xSize) * 100.0f) + "%\n";
+			std::cout << std::to_string(static_cast<double>(x) / static_cast<double>(xSize) * 100.0f) + "%\n";
 		}
 
 		return image;
@@ -111,10 +111,10 @@ public:
 private:
 
 	void CalculatePixelSize() {
-		float halfView = tanf(fieldOfView / 2.0f);
-		float aspectRatio = static_cast<float>(xSize) / static_cast<float>(ySize);
+		double halfView = tan(fieldOfView / 2.0);
+		double aspectRatio = static_cast<double>(xSize) / static_cast<double>(ySize);
 
-		if (aspectRatio >= 1.0f) {
+		if (aspectRatio >= 1.0) {
 			halfWidth = halfView;
 			halfHeight = halfView / aspectRatio;
 		}
@@ -123,6 +123,6 @@ private:
 			halfHeight = halfView;
 		}
 
-		pixelSize = (halfWidth * 2.0f) / static_cast<float>(xSize);
+		pixelSize = (halfWidth * 2.0) / static_cast<double>(xSize);
 	}
 };

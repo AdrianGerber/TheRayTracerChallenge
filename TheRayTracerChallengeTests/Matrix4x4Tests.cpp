@@ -20,13 +20,13 @@ namespace TheRayTracesChallengeTests
                 9.0f, 10.0f, 11.0f, 12.0f,
                 13.5f, 14.5f, 15.5f, 16.5f);
 
-            Assert::IsTrue(Constants::FloatEqual(m1.elements[0][0], 1.0f));
-            Assert::IsTrue(Constants::FloatEqual(m1.elements[0][3], 4.0f));
-            Assert::IsTrue(Constants::FloatEqual(m1.elements[1][0], 5.5f));
-            Assert::IsTrue(Constants::FloatEqual(m1.elements[1][2], 7.5f));
-            Assert::IsTrue(Constants::FloatEqual(m1.elements[2][2], 11.0f));
-            Assert::IsTrue(Constants::FloatEqual(m1.elements[3][0], 13.5f));
-            Assert::IsTrue(Constants::FloatEqual(m1.elements[3][2], 15.5f));
+            Assert::IsTrue(Constants::DoubleEqual(m1.elements[0][0], 1.0f));
+            Assert::IsTrue(Constants::DoubleEqual(m1.elements[0][3], 4.0f));
+            Assert::IsTrue(Constants::DoubleEqual(m1.elements[1][0], 5.5f));
+            Assert::IsTrue(Constants::DoubleEqual(m1.elements[1][2], 7.5f));
+            Assert::IsTrue(Constants::DoubleEqual(m1.elements[2][2], 11.0f));
+            Assert::IsTrue(Constants::DoubleEqual(m1.elements[3][0], 13.5f));
+            Assert::IsTrue(Constants::DoubleEqual(m1.elements[3][2], 15.5f));
 
 
             Matrix4x4 m2 = Matrix::Create(1.0f, 2.0f, 3.0f, 4.0f,
@@ -128,11 +128,11 @@ namespace TheRayTracesChallengeTests
                 -6.0f, 7.0f, 7.0f, -9.0f
             );
 
-            Assert::IsTrue(Constants::FloatEqual(m.Cofactor(0, 0), 690.0f));
-            Assert::IsTrue(Constants::FloatEqual(m.Cofactor(0, 1), 447.0f));
-            Assert::IsTrue(Constants::FloatEqual(m.Cofactor(0, 2), 210.0f));
-            Assert::IsTrue(Constants::FloatEqual(m.Cofactor(0, 3), 51.0f));
-            Assert::IsTrue(Constants::FloatEqual(m.Determinant(), -4071.0f));
+            Assert::IsTrue(Constants::DoubleEqual(m.Cofactor(0, 0), 690.0f));
+            Assert::IsTrue(Constants::DoubleEqual(m.Cofactor(0, 1), 447.0f));
+            Assert::IsTrue(Constants::DoubleEqual(m.Cofactor(0, 2), 210.0f));
+            Assert::IsTrue(Constants::DoubleEqual(m.Cofactor(0, 3), 51.0f));
+            Assert::IsTrue(Constants::DoubleEqual(m.Determinant(), -4071.0f));
         }
 
         TEST_METHOD(InvertibilityTest) {
@@ -153,8 +153,8 @@ namespace TheRayTracesChallengeTests
             Assert::IsTrue(m1.IsInvertible());
             Assert::IsFalse(m2.IsInvertible());
 
-            Assert::IsTrue(Constants::FloatEqual(m1.Determinant(), -2120.0f));
-            Assert::IsTrue(Constants::FloatEqual(m2.Determinant(), 0.0f));
+            Assert::IsTrue(Constants::DoubleEqual(m1.Determinant(), -2120.0f));
+            Assert::IsTrue(Constants::DoubleEqual(m2.Determinant(), 0.0f));
 
         }
 
@@ -175,15 +175,15 @@ namespace TheRayTracesChallengeTests
             );
 
 
-            Assert::IsTrue(Constants::FloatEqual(m1.Determinant(), 532.0f));
-            Assert::IsTrue(Constants::FloatEqual(m1.Cofactor(2, 3), -160.0f));
-            Assert::IsTrue(Constants::FloatEqual(m2.elements[3][2], -160.0f/532.0f));
-            Assert::IsTrue(Constants::FloatEqual(m1.Cofactor(3, 2), 105.0f));
-            Assert::IsTrue(Constants::FloatEqual(m2.elements[2][3], 105.0f/532.0f));
+            Assert::IsTrue(Constants::DoubleEqual(m1.Determinant(), 532.0f));
+            Assert::IsTrue(Constants::DoubleEqual(m1.Cofactor(2, 3), -160.0f));
+            Assert::IsTrue(Constants::DoubleEqual(m2.elements[3][2], -160.0f/532.0f));
+            Assert::IsTrue(Constants::DoubleEqual(m1.Cofactor(3, 2), 105.0f));
+            Assert::IsTrue(Constants::DoubleEqual(m2.elements[2][3], 105.0f/532.0f));
 
             for (size_t row = 0; row < expected.rows; row++) {
                 for (size_t column = 0; column < expected.columns; column++) {
-                    if (!Constants::FloatEqual(m2.elements[row][column], expected.elements[row][column])) {
+                    if (!Constants::DoubleEqual(m2.elements[row][column], expected.elements[row][column])) {
                         std::string log = std::to_string(m2.elements[row][column]) + " != " + std::to_string(expected.elements[row][column]);
                         Logger::WriteMessage(log.c_str());
 

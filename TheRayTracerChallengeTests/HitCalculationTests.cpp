@@ -33,7 +33,7 @@ namespace TheRayTracesChallengeTests
 
 			HitCalculations comps(i, r, shapes);
 
-			Assert::IsTrue(Constants::FloatEqual(comps.t, i.GetFirstHit().t));
+			Assert::IsTrue(Constants::DoubleEqual(comps.t, i.GetFirstHit().t));
 			Assert::IsTrue(comps.shapeID == shape->GetID());
 			Assert::IsTrue(comps.point == Point::CreatePoint(0.0f, 0.0f, -1.0f));
 			Assert::IsTrue(comps.eyeVector == Vector::CreateVector(0.0f, 0.0f, -1.0f));

@@ -15,10 +15,10 @@ namespace TheRayTracesChallengeTests
         TEST_METHOD(ConstructionAndComparison)
         {
             Matrix2x2 m1 = Matrix::Create(-3.0f, 5.0f, 1.0f, -2.0f);
-            Assert::IsTrue(Constants::FloatEqual(m1.elements[0][0], -3.0f));
-            Assert::IsTrue(Constants::FloatEqual(m1.elements[0][1], 5.0f));
-            Assert::IsTrue(Constants::FloatEqual(m1.elements[1][0], 1.0f));
-            Assert::IsTrue(Constants::FloatEqual(m1.elements[1][1], -2.0f));
+            Assert::IsTrue(Constants::DoubleEqual(m1.elements[0][0], -3.0f));
+            Assert::IsTrue(Constants::DoubleEqual(m1.elements[0][1], 5.0f));
+            Assert::IsTrue(Constants::DoubleEqual(m1.elements[1][0], 1.0f));
+            Assert::IsTrue(Constants::DoubleEqual(m1.elements[1][1], -2.0f));
             Matrix2x2 m2 = Matrix::Create(-2.0f, 7.0f, 19.0f, -5.0f);
             Matrix2x2 m3(m1);
 
@@ -31,7 +31,7 @@ namespace TheRayTracesChallengeTests
         TEST_METHOD(Determinant2x2) {
             Matrix2x2 m = Matrix::Create(1.0f, 5.0f, -3.0f, 2.0f);
 
-            Assert::IsTrue(Constants::FloatEqual(m.Determinant(), 17.0f));
+            Assert::IsTrue(Constants::DoubleEqual(m.Determinant(), 17.0f));
         }
         
     };

@@ -58,10 +58,10 @@ namespace TheRayTracesChallengeTests
 			auto i = world.IntersectRay(ray);
 
 			Assert::IsTrue(i.GetCount() == 4);
-			Assert::IsTrue(Constants::FloatEqual(i[0].t, 4.0f));
-			Assert::IsTrue(Constants::FloatEqual(i[1].t, 4.5f));
-			Assert::IsTrue(Constants::FloatEqual(i[2].t, 5.5f));
-			Assert::IsTrue(Constants::FloatEqual(i[3].t, 6.0f));
+			Assert::IsTrue(Constants::DoubleEqual(i[0].t, 4.0f));
+			Assert::IsTrue(Constants::DoubleEqual(i[1].t, 4.5f));
+			Assert::IsTrue(Constants::DoubleEqual(i[2].t, 5.5f));
+			Assert::IsTrue(Constants::DoubleEqual(i[3].t, 6.0f));
 		}
 
 		TEST_METHOD(Shading) {

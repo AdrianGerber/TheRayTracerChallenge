@@ -15,9 +15,9 @@ namespace TheRayTracesChallengeTests
         TEST_METHOD(ConstructionAndComparison)
         {
             Matrix3x3 m1 = Matrix::Create(-3.0f, 5.0f, 0.0f, 1.0f, -2.0f, -7.0f, 0.0f, 1.0f, 1.0f);
-            Assert::IsTrue(Constants::FloatEqual(m1.elements[0][0], -3.0f));
-            Assert::IsTrue(Constants::FloatEqual(m1.elements[1][1], -2.0f));
-            Assert::IsTrue(Constants::FloatEqual(m1.elements[2][2], 1.0f));
+            Assert::IsTrue(Constants::DoubleEqual(m1.elements[0][0], -3.0f));
+            Assert::IsTrue(Constants::DoubleEqual(m1.elements[1][1], -2.0f));
+            Assert::IsTrue(Constants::DoubleEqual(m1.elements[2][2], 1.0f));
 
             Matrix3x3 m2 = Matrix::Create(-3.0f, 5.0f, 1.0f, 1.0f, -2.0f, -7.0f, 0.0f, 1.0f, 1.0f);
             Matrix3x3 m3(m1);
@@ -50,7 +50,7 @@ namespace TheRayTracesChallengeTests
                 6.0f, -1.0f, 5.0f
             );
 
-            Assert::IsTrue(Constants::FloatEqual(m.Minor(1, 0), 25.0f));
+            Assert::IsTrue(Constants::DoubleEqual(m.Minor(1, 0), 25.0f));
         }
 
         TEST_METHOD(Cofactor) {
@@ -60,11 +60,11 @@ namespace TheRayTracesChallengeTests
                 6.0f, -1.0f, 5.0f
             );
 
-            Assert::IsTrue(Constants::FloatEqual(m.Minor(0, 0), -12.0f));
-            Assert::IsTrue(Constants::FloatEqual(m.Cofactor(0, 0), -12.0f));
+            Assert::IsTrue(Constants::DoubleEqual(m.Minor(0, 0), -12.0f));
+            Assert::IsTrue(Constants::DoubleEqual(m.Cofactor(0, 0), -12.0f));
 
-            Assert::IsTrue(Constants::FloatEqual(m.Minor(1, 0), 25.0f));
-            Assert::IsTrue(Constants::FloatEqual(m.Cofactor(1, 0), -25.0f));
+            Assert::IsTrue(Constants::DoubleEqual(m.Minor(1, 0), 25.0f));
+            Assert::IsTrue(Constants::DoubleEqual(m.Cofactor(1, 0), -25.0f));
         }
 
         TEST_METHOD(Determinant) {
@@ -74,10 +74,10 @@ namespace TheRayTracesChallengeTests
                 2.0f, 6.0f, 4.0f
             );
 
-            Assert::IsTrue(Constants::FloatEqual(m.Cofactor(0, 0),56.0f));
-            Assert::IsTrue(Constants::FloatEqual(m.Cofactor(0, 1),12.0f));
-            Assert::IsTrue(Constants::FloatEqual(m.Cofactor(0, 2),-46.0f));
-            Assert::IsTrue(Constants::FloatEqual(m.Determinant(),-196.0f));
+            Assert::IsTrue(Constants::DoubleEqual(m.Cofactor(0, 0),56.0f));
+            Assert::IsTrue(Constants::DoubleEqual(m.Cofactor(0, 1),12.0f));
+            Assert::IsTrue(Constants::DoubleEqual(m.Cofactor(0, 2),-46.0f));
+            Assert::IsTrue(Constants::DoubleEqual(m.Determinant(),-196.0f));
         }
         
     };

@@ -23,10 +23,10 @@ namespace TheRayTracesChallengeTests
             Material m;
 
             Assert::IsTrue(m.color == Color(1.0f, 1.0f, 1.0f));
-            Assert::IsTrue(Constants::FloatEqual(m.ambient, 0.1f));
-            Assert::IsTrue(Constants::FloatEqual(m.diffuse, 0.9f));
-            Assert::IsTrue(Constants::FloatEqual(m.specular, 0.9f));
-            Assert::IsTrue(Constants::FloatEqual(m.shininess, 200.0f));
+            Assert::IsTrue(Constants::DoubleEqual(m.ambient, 0.1f));
+            Assert::IsTrue(Constants::DoubleEqual(m.diffuse, 0.9f));
+            Assert::IsTrue(Constants::DoubleEqual(m.specular, 0.9f));
+            Assert::IsTrue(Constants::DoubleEqual(m.shininess, 200.0f));
 
         }
     };

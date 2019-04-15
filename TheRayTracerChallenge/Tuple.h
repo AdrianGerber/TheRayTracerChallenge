@@ -7,22 +7,22 @@
 class Tuple
 {
 public:
-    float x, y, z, w;
+    double x, y, z, w;
 
     Tuple();
-    Tuple(float x, float y, float z, float w);
+    Tuple(double x, double y, double z, double w);
     ~Tuple() = default;
 
     //Creates a point (w = 1.0f)
-    static Tuple CreatePoint(float x, float y, float z);
+    static Tuple CreatePoint(double x, double y, double z);
     //Creates a vector (w = 0.0f)
-    static Tuple CreateVector(float x, float y, float z);
+    static Tuple CreateVector(double x, double y, double z);
     //Calculating the dot product
-    static float DotProduct(Tuple t1, Tuple t2);
+    static double DotProduct(Tuple t1, Tuple t2);
     //Calculating the cross product
     static Tuple CrossProduct(Tuple t1, Tuple t2);
     //Calculate a vector's magnitude
-    float Magnitude();
+    double Magnitude();
     //Normalize a vector (-> Magnitude = 1.0f)
     Tuple Normalize();
     
@@ -39,8 +39,8 @@ public:
     Tuple operator+ (const Tuple t) const;
     Tuple operator- (const Tuple t) const;
     Tuple operator- () const;
-    Tuple operator* (const float t) const;
-    Tuple operator/ (const float t) const;
+    Tuple operator* (const double t) const;
+    Tuple operator/ (const double t) const;
 };
 
 using Point = Tuple;
@@ -51,7 +51,7 @@ inline Tuple::Tuple()
    x = y = z = w = 0.0f;
 }
 
-inline Tuple::Tuple(float x, float y, float z, float w)
+inline Tuple::Tuple(double x, double y, double z, double w)
 {
     this->x = x;
     this->y = y;
@@ -59,17 +59,17 @@ inline Tuple::Tuple(float x, float y, float z, float w)
     this->w = w;
 }
 
-inline Tuple Tuple::CreatePoint(float x, float y, float z)
+inline Tuple Tuple::CreatePoint(double x, double y, double z)
 {
     return Tuple(x, y, z, 1.0f);
 }
 
-inline Tuple Tuple::CreateVector(float x, float y, float z)
+inline Tuple Tuple::CreateVector(double x, double y, double z)
 {
     return Tuple(x, y, z, 0.0f);
 }
 
-inline float Tuple::DotProduct(Tuple t1, Tuple t2)
+inline double Tuple::DotProduct(Tuple t1, Tuple t2)
 {
     return
         (t1.x * t2.x) +
@@ -87,9 +87,9 @@ inline Tuple Tuple::CrossProduct(Tuple t1, Tuple t2)
     );
 }
 
-inline float Tuple::Magnitude()
+inline double Tuple::Magnitude()
 {
-    return sqrtf(
+    return sqrt(
         (x*x) +
         (y*y) +
         (z*z) +
@@ -99,7 +99,7 @@ inline float Tuple::Magnitude()
 
 inline Tuple Tuple::Normalize()
 {
-    float magnitude = Magnitude();
+    double magnitude = Magnitude();
 
     return Tuple(
         x / magnitude,
@@ -115,21 +115,21 @@ inline Tuple Tuple::Reflect(Tuple normal) {
 
 inline bool Tuple::IsPoint()
 {
-    return Constants::FloatEqual(w, 1.0f);
+    return Constants::DoubleEqual(w, 1.0f);
 }
 
 inline bool Tuple::IsVector()
 {
-    return Constants::FloatEqual(w, 0.0f);
+    return Constants::DoubleEqual(w, 0.0f);
 }
 
 inline bool Tuple::operator==(const Tuple t) const
 {
     return
-        Constants::FloatEqual(x, t.x)
-        && Constants::FloatEqual(y, t.y)
-        && Constants::FloatEqual(z, t.z)
-        && Constants::FloatEqual(w, t.w);
+        Constants::DoubleEqual(x, t.x)
+        && Constants::DoubleEqual(y, t.y)
+        && Constants::DoubleEqual(z, t.z)
+        && Constants::DoubleEqual(w, t.w);
 }
 
 inline bool Tuple::operator!=(const Tuple t) const
@@ -152,12 +152,12 @@ inline Tuple Tuple::operator-() const
     return Tuple(-x, -y, -z, -w);
 }
 
-inline Tuple Tuple::operator*(const float t) const
+inline Tuple Tuple::operator*(const double t) const
 {
     return Tuple(x * t, y * t, z * t, w * t);
 }
 
-inline Tuple Tuple::operator/(const float t) const
+inline Tuple Tuple::operator/(const double t) const
 {
     return Tuple(x / t, y / t, z / t, w / t);
 }

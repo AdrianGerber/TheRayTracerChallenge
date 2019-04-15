@@ -16,29 +16,29 @@ public:
     //Get the inversion of this transform
     Transform Inversion();
 
-    //Transform& Translate(float x, float y, float z);
+    //Transform& Translate(double x, double y, double z);
 
     //Creating Translations
-    static Transform CreateTranslation(float x, float y, float z);
+    static Transform CreateTranslation(double x, double y, double z);
 
-    static Transform CreateScale(float x, float y, float z);
+    static Transform CreateScale(double x, double y, double z);
 
-    static Transform CreateRotationX(float angle);
-    static Transform CreateRotationY(float angle);
-    static Transform CreateRotationZ(float angle);
+    static Transform CreateRotationX(double angle);
+    static Transform CreateRotationY(double angle);
+    static Transform CreateRotationZ(double angle);
 
-    static Transform CreateShear(float xy, float xz, float yx, float yz, float zx, float zy);
+    static Transform CreateShear(double xy, double xz, double yx, double yz, double zx, double zy);
 
     //Applying translations to an existing translation
-    Transform& Translate(float x, float y, float z);
+    Transform& Translate(double x, double y, double z);
 
-    Transform& Scale(float x, float y, float z);
+    Transform& Scale(double x, double y, double z);
 
-    Transform& RotateX(float angle);
-    Transform& RotateY(float angle);
-    Transform& RotateZ(float angle);
+    Transform& RotateX(double angle);
+    Transform& RotateY(double angle);
+    Transform& RotateZ(double angle);
 
-    Transform& Shear(float xy, float xz, float yx, float yz, float zx, float zy);
+    Transform& Shear(double xy, double xz, double yx, double yz, double zx, double zy);
 };
 
 
@@ -63,7 +63,7 @@ inline Transform Transform::Inversion() {
 
 //Creating Translations
 
-inline Transform Transform::CreateTranslation(float x, float y, float z) {
+inline Transform Transform::CreateTranslation(double x, double y, double z) {
     Transform t(Matrix::IndentityMatrix4x4());
     
     t.matrix.elements[0][3] = x;
@@ -73,7 +73,7 @@ inline Transform Transform::CreateTranslation(float x, float y, float z) {
     return t;
 }
 
-inline Transform Transform::CreateScale(float x, float y, float z) {
+inline Transform Transform::CreateScale(double x, double y, double z) {
     Transform t(Matrix::IndentityMatrix4x4());
 
     t.matrix.elements[0][0] = x;
@@ -83,40 +83,40 @@ inline Transform Transform::CreateScale(float x, float y, float z) {
     return t;
 }
 
-inline Transform Transform::CreateRotationX(float angle) {
+inline Transform Transform::CreateRotationX(double angle) {
     Transform t(Matrix::IndentityMatrix4x4());
 
-    t.matrix.elements[1][1] = cosf(angle);
-    t.matrix.elements[1][2] = -sinf(angle);
-    t.matrix.elements[2][1] = sinf(angle);
-    t.matrix.elements[2][2] = cosf(angle);
+    t.matrix.elements[1][1] = cos(angle);
+    t.matrix.elements[1][2] = -sin(angle);
+    t.matrix.elements[2][1] = sin(angle);
+    t.matrix.elements[2][2] = cos(angle);
 
     return t;
 }
 
-inline Transform Transform::CreateRotationY(float angle) {
+inline Transform Transform::CreateRotationY(double angle) {
     Transform t(Matrix::IndentityMatrix4x4());
 
-    t.matrix.elements[0][0] = cosf(angle);
-    t.matrix.elements[0][2] = sinf(angle);
-    t.matrix.elements[2][0] = -sinf(angle);
-    t.matrix.elements[2][2] = cosf(angle);
+    t.matrix.elements[0][0] = cos(angle);
+    t.matrix.elements[0][2] = sin(angle);
+    t.matrix.elements[2][0] = -sin(angle);
+    t.matrix.elements[2][2] = cos(angle);
 
     return t;
 }
 
-inline Transform Transform::CreateRotationZ(float angle) {
+inline Transform Transform::CreateRotationZ(double angle) {
     Transform t(Matrix::IndentityMatrix4x4());
 
-    t.matrix.elements[0][0] = cosf(angle);
-    t.matrix.elements[0][1] = -sinf(angle);
-    t.matrix.elements[1][0] = sinf(angle);
-    t.matrix.elements[1][1] = cosf(angle);
+    t.matrix.elements[0][0] = cos(angle);
+    t.matrix.elements[0][1] = -sin(angle);
+    t.matrix.elements[1][0] = sin(angle);
+    t.matrix.elements[1][1] = cos(angle);
 
     return t;
 }
 
-inline Transform Transform::CreateShear(float xy, float xz, float yx, float yz, float zx, float zy) {
+inline Transform Transform::CreateShear(double xy, double xz, double yx, double yz, double zx, double zy) {
     Transform t(Matrix::IndentityMatrix4x4());
 
     t.matrix.elements[0][1] = xy;
@@ -162,37 +162,37 @@ inline Transform operator*(Transform transform1, Transform transform2) {
 
 //Applying translations to an existing translation
 
-inline Transform& Transform::Translate(float x, float y, float z) {
+inline Transform& Transform::Translate(double x, double y, double z) {
     matrix = Transform::CreateTranslation(x, y, z) * matrix;
 
     return *this;
 }
 
-inline Transform& Transform::Scale(float x, float y, float z) {
+inline Transform& Transform::Scale(double x, double y, double z) {
     matrix = Transform::CreateScale(x, y, z) * matrix;
 
     return *this;
 }
 
-inline Transform& Transform::RotateX(float angle) {
+inline Transform& Transform::RotateX(double angle) {
     matrix = Transform::CreateRotationX(angle) * matrix;
 
     return *this;
 }
 
-inline Transform& Transform::RotateY(float angle) {
+inline Transform& Transform::RotateY(double angle) {
     matrix = Transform::CreateRotationY(angle) * matrix;
 
     return *this;
 }
 
-inline Transform& Transform::RotateZ(float angle) {
+inline Transform& Transform::RotateZ(double angle) {
     matrix = Transform::CreateRotationZ(angle) * matrix;
 
     return *this;
 }
 
-inline Transform& Transform::Shear(float xy, float xz, float yx, float yz, float zx, float zy) {
+inline Transform& Transform::Shear(double xy, double xz, double yx, double yz, double zx, double zy) {
     matrix = Transform::CreateShear(xy, xz, yx, yz, zx, zy) * matrix;
 
     return *this;

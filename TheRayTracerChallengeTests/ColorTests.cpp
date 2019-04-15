@@ -16,9 +16,9 @@ namespace TheRayTracesChallengeTests
         {
             Color c(-0.5f, 0.4f, 1.7f);
 
-            Assert::IsTrue(Constants::FloatEqual(c.r, -0.5));
-            Assert::IsTrue(Constants::FloatEqual(c.g, 0.4f));
-            Assert::IsTrue(Constants::FloatEqual(c.b, 1.7f));
+            Assert::IsTrue(Constants::DoubleEqual(c.r, -0.5));
+            Assert::IsTrue(Constants::DoubleEqual(c.g, 0.4f));
+            Assert::IsTrue(Constants::DoubleEqual(c.b, 1.7f));
         }
 
         TEST_METHOD(ColorComparison) {

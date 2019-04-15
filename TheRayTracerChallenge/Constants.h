@@ -3,10 +3,10 @@
 #include <cmath>
 
 namespace Constants {
-    const float EPSILON = 0.000018f;
-    const float PI = 3.14159265358979323846f;
+	const double EPSILON = 0.00001;
+    const double PI = 3.14159265358979323846;
 
-    inline bool FloatEqual(float value1, float value2) {
-        return fabsf(value1 - value2) < Constants::EPSILON;
+    inline bool DoubleEqual(double value1, double value2) {
+        return fabs(value1 - value2) < Constants::EPSILON;
     }
 }

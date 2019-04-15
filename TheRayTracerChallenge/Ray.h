@@ -17,7 +17,7 @@ public:
 	~Ray();
 
 	//Mathematical functions
-	Point PositionAt (float t) const { return origin + (direction * t);}
+	Point PositionAt (double t) const { return origin + (direction * t);}
 
     Ray Transform(Transform m);
 

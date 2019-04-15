@@ -13,11 +13,11 @@ Sphere::~Sphere()
 
 Vector Sphere::SurfaceNormal(Point p) {
     Point objectSpacePoint = GetTransform().Inversion() * p;
-    Vector objectSpaceNormal = objectSpacePoint - Point::CreatePoint(0.0f, 0.0f, 0.0f);
+    Vector objectSpaceNormal = objectSpacePoint - Point::CreatePoint(0.0, 0.0, 0.0);
     Vector worldSpaceNormal = GetTransform().Inversion().matrix.Transpose() * objectSpaceNormal;
 
     //Force worldSpaceNormal to be a vector
-    worldSpaceNormal.w = 0.0f;
+    worldSpaceNormal.w = 0.0;
 
     return worldSpaceNormal.Normalize();
 }
@@ -29,14 +29,14 @@ IntersectionBuffer Sphere::FindIntersections(Ray ray)
 
 
     //Vector from the sphere's center to the ray's origin (Sphere centered at 0/0/0)
-    Vector sphereToRayOrigin = objectSpaceRay.origin - Point::CreatePoint(0.0f, 0.0f, 0.0f);
+    Vector sphereToRayOrigin = objectSpaceRay.origin - Point::CreatePoint(0.0, 0.0, 0.0);
 
     //Calculating the discriminant
-    float a = Vector::DotProduct(objectSpaceRay.direction, objectSpaceRay.direction);
-    float b = 2.0f * Vector::DotProduct(objectSpaceRay.direction, sphereToRayOrigin);
-    float c = Vector::DotProduct(sphereToRayOrigin, sphereToRayOrigin) - 1.0f;
+	double a = Vector::DotProduct(objectSpaceRay.direction, objectSpaceRay.direction);
+	double b = 2.0 * Vector::DotProduct(objectSpaceRay.direction, sphereToRayOrigin);
+	double c = Vector::DotProduct(sphereToRayOrigin, sphereToRayOrigin) - 1.0;
 
-    float discriminant = (b*b) - (4.0f * a * c);
+	double discriminant = (b*b) - (4.0 * a * c);
 
 
     //No intersections
@@ -45,8 +45,8 @@ IntersectionBuffer Sphere::FindIntersections(Ray ray)
     }
 
     Intersection i1, i2;
-    i1.t = (-b - sqrtf(discriminant)) / (2.0f * a);
-    i2.t = (-b + sqrtf(discriminant)) / (2.0f * a);
+    i1.t = (-b - sqrtf(discriminant)) / (2.0 * a);
+    i2.t = (-b + sqrtf(discriminant)) / (2.0 * a);
 
     i1.objectID = GetID();
     i2.objectID = GetID();

@@ -68,7 +68,7 @@ Color World::ShadeHit(const HitCalculations& hitInfo)
 bool World::PointIsInShadow(std::shared_ptr<LightSource> lightSource, Point point)
 {
 	Vector vectorToLightSource = lightSource->GetPosition() - point;
-	float distanceToLightSource = vectorToLightSource.Magnitude();
+	double distanceToLightSource = vectorToLightSource.Magnitude();
 
 	//Ray from the point to the light source
 	Ray ray(point, vectorToLightSource.Normalize());

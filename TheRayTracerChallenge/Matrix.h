@@ -7,15 +7,15 @@
 template <size_t nRows, size_t nColumns> class MatrixTemplate {
 public:
     //The matrix's dimensions
-    const float rows = nRows, columns = nColumns;
+    const double rows = nRows, columns = nColumns;
 
     //All stored values
-    std::array<std::array<float, nColumns>, nRows> elements;
+    std::array<std::array<double, nColumns>, nRows> elements;
 
 	MatrixTemplate() {
 		for (size_t row = 0; row < rows; row++) {
 			for (size_t column = 0; column < columns; column++) {
-				elements[row][column] = 0.0f;
+				elements[row][column] = 0.0;
 			}
 		}
 	}
@@ -55,7 +55,7 @@ public:
         for (size_t row = 0; row < rows; row++)
             for (size_t column = 0; column < columns; column++)
                 //Not equal, if any element is different
-                if (!Constants::FloatEqual(m.elements[row][column], elements[row][column]))
+                if (!Constants::DoubleEqual(m.elements[row][column], elements[row][column]))
                     return false;
         //All elements are equal
         return true;
@@ -84,14 +84,14 @@ public:
 
 
     //Minor
-    inline float Minor(size_t row, size_t column) {
+    inline double Minor(size_t row, size_t column) {
         auto submatrix = Submatrix(row, column);
         return submatrix.Determinant();
     }
 
     //Cofactor
-    inline float Cofactor(size_t row, size_t column) {
-        float minor = Minor(row, column);
+    inline double Cofactor(size_t row, size_t column) {
+        double minor = Minor(row, column);
 
         //The sign needs to be switched if row + column is an odd number
         return ((row + column) % 2 != 0) ?
@@ -100,8 +100,8 @@ public:
     }
 
     //Determinant of a matrix of any size
-    inline float Determinant() {
-        float determinant = 0.0f;
+    inline double Determinant() {
+        double determinant = 0.0f;
 
         for (size_t column = 0; column < columns; column++) {
             determinant += elements[0][column] * Cofactor(0, column);
@@ -111,13 +111,13 @@ public:
     }
 
     bool IsInvertible() {
-        return !Constants::FloatEqual(Determinant(), 0.0f);
+        return !Constants::DoubleEqual(Determinant(), 0.0f);
     }
 
     inline MatrixTemplate<nRows, nColumns> Inversion() {
-		float det = Determinant();
+		double det = Determinant();
 		
-		if (Constants::FloatEqual(det, 0.0f)) {
+		if (Constants::DoubleEqual(det, 0.0f)) {
             std::cerr << "Matrix not invertible\n";
             return MatrixTemplate<nRows, nColumns>();
         }
@@ -129,7 +129,7 @@ public:
 
         for (size_t row = 0; row < rows; row++) {
             for (size_t column = 0; column < columns; column++) {
-                float c = Cofactor(row, column);
+                double c = Cofactor(row, column);
 
                 //switching column and row accomplishes the transpose operation
                 inversion.elements[column][row] = c / det;
@@ -148,8 +148,8 @@ using Matrix2x2 = MatrixTemplate<2, 2>;
 namespace Matrix {
 
     //Initializing a 2x2 matrix
-    inline Matrix2x2 Create(float a, float b,
-        float c, float d) {
+    inline Matrix2x2 Create(double a, double b,
+        double c, double d) {
 
         Matrix2x2 matrix;
 
@@ -160,9 +160,9 @@ namespace Matrix {
     }
 
     //Initializing a 3x3 matrix
-    inline Matrix3x3 Create(float a, float b, float c,
-        float d, float e, float f,
-        float g, float h, float i) {
+    inline Matrix3x3 Create(double a, double b, double c,
+        double d, double e, double f,
+        double g, double h, double i) {
 
         Matrix3x3 matrix;
 
@@ -174,10 +174,10 @@ namespace Matrix {
     }
 
     //Initializing a 4x4 matrix
-    inline Matrix4x4 Create(float a, float b, float c, float d,
-        float e, float f, float g, float h,
-        float i, float j, float k, float l,
-        float m, float n, float o, float p) {
+    inline Matrix4x4 Create(double a, double b, double c, double d,
+        double e, double f, double g, double h,
+        double i, double j, double k, double l,
+        double m, double n, double o, double p) {
 
         Matrix4x4 matrix;
 
@@ -239,7 +239,7 @@ inline Matrix4x4 operator*(Matrix4x4 matrix1, Matrix4x4 matrix2) {
 
 //Template specialization for 2x2 matrices
 template <>
-inline float MatrixTemplate<2, 2>::Determinant() {
+inline double MatrixTemplate<2, 2>::Determinant() {
 	return elements[0][0] * elements[1][1] - elements[1][0] * elements[0][1];
 }
 
@@ -250,30 +250,30 @@ inline Matrix4x4 MatrixTemplate<4, 4>::Inversion() {
 	//Source: https://stackoverflow.com/questions/2624422/efficient-4x4-matrix-inverse-affine-transform (Adapted to c++)
 	
 	
-	float s0 = elements[0][0] * elements[1][1] - elements[1][0] * elements[0][1];
-	float s1 = elements[0][0] * elements[1][2] - elements[1][0] * elements[0][2];
-	float s2 = elements[0][0] * elements[1][3] - elements[1][0] * elements[0][3];
-	float s3 = elements[0][1] * elements[1][2] - elements[1][1] * elements[0][2];
-	float s4 = elements[0][1] * elements[1][3] - elements[1][1] * elements[0][3];
-	float s5 = elements[0][2] * elements[1][3] - elements[1][2] * elements[0][3];
+	double s0 = elements[0][0] * elements[1][1] - elements[1][0] * elements[0][1];
+	double s1 = elements[0][0] * elements[1][2] - elements[1][0] * elements[0][2];
+	double s2 = elements[0][0] * elements[1][3] - elements[1][0] * elements[0][3];
+	double s3 = elements[0][1] * elements[1][2] - elements[1][1] * elements[0][2];
+	double s4 = elements[0][1] * elements[1][3] - elements[1][1] * elements[0][3];
+	double s5 = elements[0][2] * elements[1][3] - elements[1][2] * elements[0][3];
 
-	float c5 = elements[2][2] * elements[3][3] - elements[3][2] * elements[2][3];
-	float c4 = elements[2][1] * elements[3][3] - elements[3][1] * elements[2][3];
-	float c3 = elements[2][1] * elements[3][2] - elements[3][1] * elements[2][2];
-	float c2 = elements[2][0] * elements[3][3] - elements[3][0] * elements[2][3];
-	float c1 = elements[2][0] * elements[3][2] - elements[3][0] * elements[2][2];
-	float c0 = elements[2][0] * elements[3][1] - elements[3][0] * elements[2][1];
+	double c5 = elements[2][2] * elements[3][3] - elements[3][2] * elements[2][3];
+	double c4 = elements[2][1] * elements[3][3] - elements[3][1] * elements[2][3];
+	double c3 = elements[2][1] * elements[3][2] - elements[3][1] * elements[2][2];
+	double c2 = elements[2][0] * elements[3][3] - elements[3][0] * elements[2][3];
+	double c1 = elements[2][0] * elements[3][2] - elements[3][0] * elements[2][2];
+	double c0 = elements[2][0] * elements[3][1] - elements[3][0] * elements[2][1];
 
 
-	float det = (s0 * c5 - s1 * c4 + s2 * c3 + s3 * c2 - s4 * c1 + s5 * c0);
+	double det = (s0 * c5 - s1 * c4 + s2 * c3 + s3 * c2 - s4 * c1 + s5 * c0);
 	
 	//Not invertible
-	if (Constants::FloatEqual(det, 0.0f)) {
+	if (Constants::DoubleEqual(det, 0.0f)) {
 		std::cerr << "Matrix not invertible\n";
 		return Matrix4x4();
 	}
 
-	float invdet = 1.0f / det;
+	double invdet = 1.0f / det;
 
 
 	return Matrix::Create(

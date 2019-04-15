@@ -64,8 +64,8 @@ namespace TheRayTracesChallengeTests
 
             //Ray hits 2 points
             Assert::IsTrue(xs.GetCount() == 2);
-            Assert::IsTrue(Constants::FloatEqual(xs[0].t, 4.0f));
-            Assert::IsTrue(Constants::FloatEqual(xs[1].t, 6.0f));
+            Assert::IsTrue(Constants::DoubleEqual(xs[0].t, 4.0f));
+            Assert::IsTrue(Constants::DoubleEqual(xs[1].t, 6.0f));
         }
 
         TEST_METHOD(SphereIntersection2) {
@@ -81,8 +81,8 @@ namespace TheRayTracesChallengeTests
 
             //Ray is tangent to the sphere
             Assert::IsTrue(xs.GetCount() == 2);
-            Assert::IsTrue(Constants::FloatEqual(xs[0].t, 5.0f));
-            Assert::IsTrue(Constants::FloatEqual(xs[1].t, 5.0f));
+            Assert::IsTrue(Constants::DoubleEqual(xs[0].t, 5.0f));
+            Assert::IsTrue(Constants::DoubleEqual(xs[1].t, 5.0f));
         }
 
         TEST_METHOD(SphereIntersection3) {
@@ -112,8 +112,8 @@ namespace TheRayTracesChallengeTests
 
             //One intersection 'behind' the origin (negative t)
             Assert::IsTrue(xs.GetCount() == 2);
-            Assert::IsTrue(Constants::FloatEqual(xs[0].t, -1.0f));
-            Assert::IsTrue(Constants::FloatEqual(xs[1].t, 1.0f));
+            Assert::IsTrue(Constants::DoubleEqual(xs[0].t, -1.0f));
+            Assert::IsTrue(Constants::DoubleEqual(xs[1].t, 1.0f));
         }
 
         TEST_METHOD(SphereIntersection5) {
@@ -128,8 +128,8 @@ namespace TheRayTracesChallengeTests
 
             //Both intersections 'behind' the origin (negative t)
             Assert::IsTrue(xs.GetCount() == 2);
-            Assert::IsTrue(Constants::FloatEqual(xs[0].t, -6.0f));
-            Assert::IsTrue(Constants::FloatEqual(xs[1].t, -4.0f));
+            Assert::IsTrue(Constants::DoubleEqual(xs[0].t, -6.0f));
+            Assert::IsTrue(Constants::DoubleEqual(xs[1].t, -4.0f));
         }
 
         TEST_METHOD(IntersectionDataStructure) {
@@ -140,7 +140,7 @@ namespace TheRayTracesChallengeTests
             i.objectID = s->GetID();
             i.t = 3.5f;
 
-            Assert::IsTrue(Constants::FloatEqual(i.t, 3.5f));
+            Assert::IsTrue(Constants::DoubleEqual(i.t, 3.5f));
             Assert::IsTrue(i.objectID == s->GetID());
         }
 
@@ -154,8 +154,8 @@ namespace TheRayTracesChallengeTests
 
             Assert::IsTrue(i.GetCount() == 2);
 
-            Assert::IsTrue(Constants::FloatEqual(i[0].t, 1.0f));
-            Assert::IsTrue(Constants::FloatEqual(i[1].t, 2.0f));
+            Assert::IsTrue(Constants::DoubleEqual(i[0].t, 1.0f));
+            Assert::IsTrue(Constants::DoubleEqual(i[1].t, 2.0f));
         }
 
         TEST_METHOD(CorrectObject) {
@@ -284,8 +284,8 @@ namespace TheRayTracesChallengeTests
 
             IntersectionBuffer xs = s->FindIntersections(r);
             Assert::IsTrue(xs.GetCount() == 2);
-            Assert::IsTrue(Constants::FloatEqual(xs[0].t, 3.0f));
-            Assert::IsTrue(Constants::FloatEqual(xs[1].t, 7.0f));
+            Assert::IsTrue(Constants::DoubleEqual(xs[0].t, 3.0f));
+            Assert::IsTrue(Constants::DoubleEqual(xs[1].t, 7.0f));
         }
 
         TEST_METHOD(TranslatedIntersection) {

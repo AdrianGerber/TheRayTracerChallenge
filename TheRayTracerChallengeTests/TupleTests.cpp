@@ -16,10 +16,10 @@ namespace TheRayTracesChallengeTests
         {
             Tuple t(4.3f, -4.2f, 3.1f, 1.0f);
 
-            Assert::IsTrue(Constants::FloatEqual(t.x, 4.3f));
-            Assert::IsTrue(Constants::FloatEqual(t.y, -4.2f));
-            Assert::IsTrue(Constants::FloatEqual(t.z, 3.1f));
-            Assert::IsTrue(Constants::FloatEqual(t.w, 1.0f));
+            Assert::IsTrue(Constants::DoubleEqual(t.x, 4.3f));
+            Assert::IsTrue(Constants::DoubleEqual(t.y, -4.2f));
+            Assert::IsTrue(Constants::DoubleEqual(t.z, 3.1f));
+            Assert::IsTrue(Constants::DoubleEqual(t.w, 1.0f));
             Assert::IsTrue(t.IsPoint());
             Assert::IsFalse(t.IsVector());
 
@@ -28,10 +28,10 @@ namespace TheRayTracesChallengeTests
         {
             Tuple t(4.3f, -4.2f, 3.1f, 0.0f);
 
-            Assert::IsTrue(Constants::FloatEqual(t.x, 4.3f));
-            Assert::IsTrue(Constants::FloatEqual(t.y, -4.2f));
-            Assert::IsTrue(Constants::FloatEqual(t.z, 3.1f));
-            Assert::IsTrue(Constants::FloatEqual(t.w, 0.0f));
+            Assert::IsTrue(Constants::DoubleEqual(t.x, 4.3f));
+            Assert::IsTrue(Constants::DoubleEqual(t.y, -4.2f));
+            Assert::IsTrue(Constants::DoubleEqual(t.z, 3.1f));
+            Assert::IsTrue(Constants::DoubleEqual(t.w, 0.0f));
             Assert::IsFalse(t.IsPoint());
             Assert::IsTrue(t.IsVector());
         }
@@ -98,11 +98,11 @@ namespace TheRayTracesChallengeTests
         }
 
         TEST_METHOD(Magnitude) {
-            Assert::IsTrue(Constants::FloatEqual(Tuple::CreateVector(1.0f, 0.0f, 0.0f).Magnitude(), 1.0f));
-            Assert::IsTrue(Constants::FloatEqual(Tuple::CreateVector(0.0f, 1.0f, 0.0f).Magnitude(), 1.0f));
-            Assert::IsTrue(Constants::FloatEqual(Tuple::CreateVector(0.0f, 0.0f, 1.0f).Magnitude(), 1.0f));
-            Assert::IsTrue(Constants::FloatEqual(Tuple::CreateVector(1.0f, 2.0f, 3.0f).Magnitude(), sqrtf(14.0f)));
-            Assert::IsTrue(Constants::FloatEqual(Tuple::CreateVector(-1.0f, -2.0f, -3.0f).Magnitude(), sqrtf(14.0f)));
+            Assert::IsTrue(Constants::DoubleEqual(Tuple::CreateVector(1.0f, 0.0f, 0.0f).Magnitude(), 1.0f));
+            Assert::IsTrue(Constants::DoubleEqual(Tuple::CreateVector(0.0f, 1.0f, 0.0f).Magnitude(), 1.0f));
+            Assert::IsTrue(Constants::DoubleEqual(Tuple::CreateVector(0.0f, 0.0f, 1.0f).Magnitude(), 1.0f));
+            Assert::IsTrue(Constants::DoubleEqual(Tuple::CreateVector(1.0f, 2.0f, 3.0f).Magnitude(), sqrtf(14.0f)));
+            Assert::IsTrue(Constants::DoubleEqual(Tuple::CreateVector(-1.0f, -2.0f, -3.0f).Magnitude(), sqrtf(14.0f)));
         }
 
         TEST_METHOD(Normalisation) {
@@ -111,7 +111,7 @@ namespace TheRayTracesChallengeTests
         }
 
         TEST_METHOD(DotProduct) {
-            Assert::IsTrue(Constants::FloatEqual(Tuple::DotProduct(Tuple::CreateVector(1.0f, 2.0f, 3.0f), Tuple::CreateVector(2.0f, 3.0f, 4.0f)), 20.0f));
+            Assert::IsTrue(Constants::DoubleEqual(Tuple::DotProduct(Tuple::CreateVector(1.0f, 2.0f, 3.0f), Tuple::CreateVector(2.0f, 3.0f, 4.0f)), 20.0f));
         }
 
         TEST_METHOD(CrossProduct) {
