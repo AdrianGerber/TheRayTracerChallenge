@@ -20,6 +20,8 @@ public:
     void LoadDefaultWorld();
     IntersectionBuffer IntersectRay(Ray ray);
 	Color ShadeHit(const HitCalculations& hitInfo);
+	bool PointIsInShadow(std::shared_ptr<LightSource> lightSource, Point point);
+
 
 	void AddShape(std::shared_ptr<Shape> shape) {
 		shapes.push_back(shape);

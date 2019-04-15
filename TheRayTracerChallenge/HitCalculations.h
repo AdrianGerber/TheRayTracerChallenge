@@ -6,12 +6,14 @@
 #include "Tuple"
 #include <vector>
 #include <memory>
+#include "Constants.h"
 
 class HitCalculations {
 public:
 	float t;
 	size_t shapeID;
 	Point point;
+	Point overPoint;
 	Vector eyeVector;
 	Vector normalVector;
 	bool insideShape;
@@ -25,6 +27,7 @@ public:
 		eyeVector = - ray.direction;
 		normalVector = shapes[shapeID]->SurfaceNormal(point);
 
+
 		//Flip the normal vector if it points away from the eye vector
 		if (Vector::DotProduct(normalVector, eyeVector) < 0.0f) {
 			insideShape = true;
@@ -33,5 +36,9 @@ public:
 		else {
 			insideShape = false;
 		}
+
+		//Slightly adjusted point, so it is on the correct side of the shapes
+		//surface, even after floating point rounding errors
+		overPoint = point + (normalVector * Constants::EPSILON);
 	}
 };

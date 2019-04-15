@@ -18,7 +18,7 @@ public:
     Point GetPosition() { return position; }
     void SetPosition(Point position) { this->position = position; }
 
-    Color Lighting(Material m, Point p, Vector eye, Vector normal);
+    Color Lighting(Material m, Point p, Vector eye, Vector normal, bool IsInShadow);
 
 private:
     Color intensity;

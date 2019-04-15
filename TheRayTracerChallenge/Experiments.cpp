@@ -110,7 +110,7 @@ void DrawSphereReflections() {
                 Vector normal = s->SurfaceNormal(hitPoint);
                 Vector eye = -ray.direction;
 
-                canvas.WritePixel(l.Lighting(s->GetMaterial(), hitPoint, eye, normal) , x, y);
+                canvas.WritePixel(l.Lighting(s->GetMaterial(), hitPoint, eye, normal, false) , x, y);
 
 
             }
@@ -123,13 +123,13 @@ void DrawSphereReflections() {
     canvas.SaveToFile("sphereReflections");
 }
 
-//End of chapter 7
+//End of chapter 7 / 8
 void DrawChapter7Scene()
 {
 	World world;
 	
 	//Camera
-	Camera camera(100, 50, Constants::PI / 3.0f, 
+	Camera camera(/*4096, 2160*/100, 100, Constants::PI / 3.0f, 
 		Camera::CreateViewTransform(
 			Point::CreatePoint(0.0f, 1.5f, -5.0f),
 			Point::CreatePoint(0.0f, 1.0f, 0.0f),
@@ -137,13 +137,16 @@ void DrawChapter7Scene()
 		)
 	);
 
-	//Light source
+	//Light sources
 	auto lightSource = std::make_shared<LightSource>();
 	lightSource->SetIntensity(Color(1.0f, 1.0f, 1.0f));
 	lightSource->SetPosition(Point::CreatePoint(-10.0f, 10.0f, -10.0f));
 	world.AddLightSource(lightSource);
 	
-
+	auto lightSource2 = std::make_shared<LightSource>();
+	lightSource2->SetIntensity(Color(0.0f, 0.0f, 1.0f));
+	lightSource2->SetPosition(Point::CreatePoint(14.0f, 10.0f, -10.0f));
+	world.AddLightSource(lightSource2);
 
 
 	Transform transform;
@@ -201,7 +204,7 @@ void DrawChapter7Scene()
 		* Transform::CreateScale(0.5f, 0.5f, 0.5f);
 
 	material = Material();
-	material.color = Color(0.1f, 1.0f, 0.5f);
+	material.color = Color(0.1f, 0.1f, 1.0f);
 	material.diffuse = 0.7f;
 	material.specular = 0.3f;
 

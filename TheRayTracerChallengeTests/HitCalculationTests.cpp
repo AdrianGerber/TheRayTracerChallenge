@@ -79,5 +79,26 @@ namespace TheRayTracesChallengeTests
 			Assert::IsTrue(comps.eyeVector == Vector::CreateVector(0.0f, 0.0f, -1.0f));
 			Assert::IsTrue(comps.normalVector == Vector::CreateVector(0.0f, 0.0f, -1.0f));
 		}
+
+		TEST_METHOD(OverPoint) {
+			Ray ray(
+				Point::CreatePoint(0.0f, 0.0f, -5.0f),
+				Vector::CreateVector(0.0f, 0.0f, 1.0f)
+			);
+
+			auto shape = std::make_shared<Sphere>();
+			shape->SetTransform(Transform::CreateTranslation(0.0, 0.0, 1.0));
+			shape->SetID(0);
+			std::vector<std::shared_ptr<Shape>> shapes;
+			shapes.push_back(shape);
+
+			IntersectionBuffer i(Intersection(5.0f, shape->GetID()));
+
+			HitCalculations comps(i, ray, shapes);
+
+			//OverPoint is correctly adjusted, so floating point errors are compensated
+			Assert::IsTrue(comps.overPoint.z < (-Constants::EPSILON / 2.0f));
+			Assert::IsTrue(comps.point.z > comps.overPoint.z);
+		}
 	};
 }

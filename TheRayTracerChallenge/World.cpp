@@ -58,10 +58,32 @@ Color World::ShadeHit(const HitCalculations& hitInfo)
 	Color resultingColor(0.0f, 0.0f, 0.0f);
 
 	for (auto& lightSource : lightSources) {
-		resultingColor = resultingColor + lightSource->Lighting(shapes[hitInfo.shapeID]->GetMaterial(), hitInfo.point, hitInfo.eyeVector, hitInfo.normalVector);
+		bool inShadow = PointIsInShadow(lightSource, hitInfo.overPoint);
+		resultingColor = resultingColor + lightSource->Lighting(shapes[hitInfo.shapeID]->GetMaterial(), hitInfo.overPoint, hitInfo.eyeVector, hitInfo.normalVector, inShadow);
 	}
 
 	return resultingColor;
+}
+
+bool World::PointIsInShadow(std::shared_ptr<LightSource> lightSource, Point point)
+{
+	Vector vectorToLightSource = lightSource->GetPosition() - point;
+	float distanceToLightSource = vectorToLightSource.Magnitude();
+
+	//Ray from the point to the light source
+	Ray ray(point, vectorToLightSource.Normalize());
+
+	IntersectionBuffer intersections = IntersectRay(ray);
+	Intersection hit = intersections.GetFirstHit();
+
+	//Is anything blocking the light from reaching the point (-> object between point and light source)?
+	if (hit.IsValid() && hit.t < distanceToLightSource) {
+		//Point is in shadow
+		return true;
+	}
+
+	//Point is illuminated by the light source
+	return false;
 }
 
 Color World::FindRayColor(Ray ray)

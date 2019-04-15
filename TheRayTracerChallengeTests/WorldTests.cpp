@@ -142,5 +142,91 @@ namespace TheRayTracesChallengeTests
 			);
 		}
 
+		TEST_METHOD(PointNotInShadow) {
+			World w;
+			w.LoadDefaultWorld();
+			Point p = Point::CreatePoint(0.0f, 10.0f, 0.0f);
+
+			//No shape between light source and point
+			Assert::IsFalse(
+				w.PointIsInShadow(
+					w.lightSources[0],
+					p
+				)
+			);
+		}
+
+		TEST_METHOD(PointInShadow) {
+			World w;
+			w.LoadDefaultWorld();
+			Point p = Point::CreatePoint(10.0f, -10.0f, 10.0f);
+		
+			//Point in shadow of a shape
+			Assert::IsTrue(
+				w.PointIsInShadow(
+					w.lightSources[0],
+					p
+				)
+			);
+		}
+
+		TEST_METHOD(PointBehindLightSource) {
+			World w;
+			w.LoadDefaultWorld();
+			Point p = Point::CreatePoint(-20.0f, 20.0f, -20.0f);
+
+			//Point not in shadow, but behind the light source
+			Assert::IsFalse(
+				w.PointIsInShadow(
+					w.lightSources[0],
+					p
+				)
+			);
+		}
+
+		TEST_METHOD(PointInFrontOfObject) {
+			World w;
+			w.LoadDefaultWorld();
+			Point p = Point::CreatePoint(-2.0f, 2.0f, -2.0f);
+
+			//Point not in shadow, but in front of an object
+			Assert::IsFalse(
+				w.PointIsInShadow(
+					w.lightSources[0],
+					p
+				)
+			);
+		}
+
+		TEST_METHOD(IntersectionInShadow) {
+			World w;
+			w.AddLightSource(std::make_shared<LightSource>());
+			w.lightSources[0]->SetIntensity(Color(1.0f, 1.0f, 1.0f));
+			w.lightSources[0]->SetPosition(Point::CreatePoint(0.0f, 0.0f, -10.0f));
+
+			w.AddShape(std::make_shared<Sphere>());
+			w.AddShape(std::make_shared<Sphere>());
+			w.shapes[1]->SetTransform(Transform::CreateTranslation(0.0f, 0.0f, 10.0f));
+			
+			Ray ray(
+				Point::CreatePoint(0.0f, 0.0f, 5.0f),
+				Vector::CreateVector(0.0f, 0.0f, 1.0f)
+			);
+
+			Intersection intersection(4.0f, w.shapes[1]->GetID());
+			IntersectionBuffer intersections(intersection);
+
+			HitCalculations comps(intersections, ray, w.shapes);
+
+			//Sphere in shadow is correctly shaded
+			Assert::IsTrue(
+				w.ShadeHit(comps)
+				==
+				Color(0.1f, 0.1f, 0.1f)
+			);
+		}
+
+
+
     };
 }

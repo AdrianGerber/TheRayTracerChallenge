@@ -19,7 +19,7 @@ LightSource::~LightSource()
 {
 }
 
-Color LightSource::Lighting(Material m, Point p, Vector eye, Vector normal)
+Color LightSource::Lighting(Material m, Point p, Vector eye, Vector normal, bool IsInShadow)
 {
     Color ambient, diffuse, specular;
 
@@ -36,7 +36,7 @@ Color LightSource::Lighting(Material m, Point p, Vector eye, Vector normal)
     float lightDotNormal = Vector::DotProduct(normal, lightVector);
 
     //Negative value means the light source is on the other side of the surface
-    if (lightDotNormal < 0.0f) {
+    if (lightDotNormal < 0.0f || IsInShadow) {
         diffuse = Color(0.0f, 0.0f, 0.0f);
         specular = Color(0.0f, 0.0f, 0.0f);
     }
