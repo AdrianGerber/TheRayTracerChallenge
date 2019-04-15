@@ -5,10 +5,10 @@
 class Color
 {
 public:
-    float r, g, b;
+    double r, g, b;
 
     Color();
-    Color(float r, float g, float b);
+    Color(double r, double g, double b);
     ~Color() = default;
     
     //Operator overloads
@@ -16,7 +16,7 @@ public:
     bool operator!= (Color c);
     Color operator+( Color c);
     Color operator- (Color c);
-    Color operator* (float scalar);
+    Color operator* (double scalar);
     Color operator* (Color c);
 };
 
@@ -25,7 +25,7 @@ inline Color::Color()
     r = g = b = 0.0f;
 }
 
-inline Color::Color(float r, float g, float b)
+inline Color::Color(double r, double g, double b)
 {
     this->r = r;
     this->g = g;
@@ -55,7 +55,7 @@ inline Color Color::operator-(Color c)
     return Color(r - c.r, g - c.g, b - c.b);
 }
 
-inline Color Color::operator*(float scalar)
+inline Color Color::operator*(double scalar)
 {
     return Color(
         r * scalar,

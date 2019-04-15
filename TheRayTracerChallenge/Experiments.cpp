@@ -38,17 +38,17 @@ void DrawSphere() {
     //Sphere to draw
     auto s = std::make_shared<Sphere>();
     s->SetTransform(
-        Transform::CreateScale(1.2f, 0.8f, 1.0f)
+        Transform::CreateScale(1.2, 0.8, 1.0)
     );
 
     //Go through every pixel of the screen
     for (size_t x = 0; x < xSize; x++) {
         for (size_t y = 0; y < ySize; y++) {
             //Calculate the ray's direction for the current pixel
-            float xComponent = static_cast<float>(x) / static_cast<float>(xSize) - 0.5f;
-            float yComponent = static_cast<float>(y) / static_cast<float>(ySize) - 0.5f;
+            double xComponent = static_cast<double>(x) / static_cast<double>(xSize) - 0.5;
+            double yComponent = static_cast<double>(y) / static_cast<double>(ySize) - 0.5;
 
-            Vector direction = Vector::CreateVector(xComponent * 1.0f, yComponent * 1.0f, 1.0f);
+            Vector direction = Vector::CreateVector(xComponent * 1.0, yComponent * 1.0, 1.0);
             direction.Normalize();
           
             //Cast the ray
@@ -73,7 +73,7 @@ void DrawSphereReflections() {
     const size_t xSize = 100, ySize = 100;
     Canvas canvas(xSize, ySize);
 
-    Point origin = Point::CreatePoint(0.0f, 0.0f, -4.0f);
+    Point origin = Point::CreatePoint(0.0, 0.0, -4.0);
 
     //Sphere to draw
     auto s = std::make_shared<Sphere>();
@@ -91,10 +91,10 @@ void DrawSphereReflections() {
     for (size_t x = 0; x < xSize; x++) {
         for (size_t y = 0; y < ySize; y++) {
             //Calculate the ray's direction for the current pixel
-            float xComponent = static_cast<float>(x) / static_cast<float>(xSize) - 0.5f;
-            float yComponent = static_cast<float>(y) / static_cast<float>(ySize) - 0.5f;
+            double xComponent = static_cast<double>(x) / static_cast<double>(xSize) - 0.5;
+            double yComponent = static_cast<double>(y) / static_cast<double>(ySize) - 0.5;
 
-            Vector direction = Vector::CreateVector(xComponent * 1.0f, yComponent * 1.0f, 1.0f);
+            Vector direction = Vector::CreateVector(xComponent * 1.0, yComponent * 1.0, 1.0);
             direction.Normalize();
 
             //Cast the ray
