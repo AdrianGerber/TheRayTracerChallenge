@@ -55,13 +55,13 @@ std::string Canvas::ConvertToPPM(unsigned int maxValue, size_t maxLineLength)
             Color currentPixel = ReadPixel(row, line);
 
             //Format the color intensities as required
-            for (float colorValue : {currentPixel.r, currentPixel.g, currentPixel.b}) {
+            for (double colorValue : {currentPixel.r, currentPixel.g, currentPixel.b}) {
                 //Limit the color's intensity
-                if (colorValue > 1.0f) colorValue = 1.0f;
-                if (colorValue < 0.0f) colorValue = 0.0f;
+                if (colorValue > 1.0) colorValue = 1.0;
+                if (colorValue < 0.0) colorValue = 0.0;
 
                 //The color's intensity as a string
-                intensityString = std::to_string(static_cast<unsigned int>(std::roundf(colorValue * maxValue)));
+                intensityString = std::to_string(static_cast<unsigned int>(std::round(colorValue * maxValue)));
 
                 //Limit the maximum size of a line (Long lines will cause problems with some image viewers...)
                 if (currentLineLength + intensityString.length() + 1 > maxLineLength) {

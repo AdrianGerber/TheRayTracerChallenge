@@ -52,7 +52,7 @@ Color LightSource::Lighting(Material m, Point p, Vector eye, Vector normal, bool
         }
         else {
             //Specular component
-            double factor = powf(reflectDotEye, m.shininess);
+            double factor = pow(reflectDotEye, m.shininess);
             specular = intensity * static_cast<float>(m.specular * factor);
         }
     }

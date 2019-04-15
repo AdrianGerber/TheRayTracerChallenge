@@ -14,10 +14,11 @@ public:
     Sphere();
     ~Sphere();
 
-    Vector SurfaceNormal(Point p) override;
+	IntersectionBuffer FindObjectSpaceIntersections(Ray ray) override;
 
-    IntersectionBuffer FindIntersections(Ray ray) override;
+	Vector FindObjectSpaceNormal(Point p) override;
     
 private:
+	
 };
 

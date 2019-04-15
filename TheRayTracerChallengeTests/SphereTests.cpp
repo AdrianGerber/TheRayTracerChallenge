@@ -9,6 +9,7 @@
 #include <memory>
 #include <Shape.h>
 #include <Sphere.h>
+#include <type_traits>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -17,6 +18,10 @@ namespace TheRayTracesChallengeTests
     TEST_CLASS(SphereTests)
     {
     public:
+
+		TEST_METHOD(IsShape) {
+			Assert::IsTrue(std::is_base_of<Shape, Sphere>());
+		}
         TEST_METHOD(SurfaceNormals) {
             Sphere s;
 
@@ -39,6 +44,7 @@ namespace TheRayTracesChallengeTests
             Sphere s;
             //Translated Sphere
             s.SetTransform(Transform::CreateTranslation(0.0f, 1.0f, 0.0f));
+
             Assert::IsTrue(
                 s.SurfaceNormal(Point::CreatePoint(0.0f, 1.70711f, -0.70711f))
                 == Vector::CreateVector(0.0f, 0.70711f, -0.70711f)
@@ -48,24 +54,92 @@ namespace TheRayTracesChallengeTests
             s.SetTransform(
                 Transform::CreateScale(1.0f, 0.5f, 1.0f) * Transform::CreateRotationZ(Constants::PI / 5.0f)
             );
+
             Assert::IsTrue(
                 s.SurfaceNormal(Point::CreatePoint(0.0f, sqrtf(2.0f) / 2.0f, -sqrtf(2.0f) / 2.0f))
                 == Vector::CreateVector(0.0f, 0.97014f, -0.24254f)
             );
         }
 
-        TEST_METHOD(SphereMaterial) {
-            Sphere s;
-            //Default material
-            Material m;
-            Assert::IsTrue(s.GetMaterial() == m);
+		TEST_METHOD(SphereIntersection1) {
+			Ray ray(
+				Point::CreatePoint(0.0f, 0.0f, -5.0f),
+				Vector::CreateVector(0.0f, 0.0f, 1.0f)
+			);
+
+			auto s = std::make_shared<Sphere>();
+			s->SetID(29);
+
+			IntersectionBuffer xs = (*s).FindIntersections(ray);
+
+			//Ray hits 2 points
+			Assert::IsTrue(xs.GetCount() == 2);
+			Assert::IsTrue(Constants::DoubleEqual(xs[0].t, 4.0f));
+			Assert::IsTrue(Constants::DoubleEqual(xs[1].t, 6.0f));
+		}
+
+		TEST_METHOD(SphereIntersection2) {
+			Ray ray(
+				Point::CreatePoint(0.0f, 1.0f, -5.0f),
+				Vector::CreateVector(0.0f, 0.0f, 1.0f)
+			);
+
+			auto s = std::make_shared<Sphere>();
+
+			IntersectionBuffer xs = s->FindIntersections(ray);
 
 
-            //Other material
-            m.ambient = 1.0f;
-            s.SetMaterial(m);
+			//Ray is tangent to the sphere
+			Assert::IsTrue(xs.GetCount() == 2);
+			Assert::IsTrue(Constants::DoubleEqual(xs[0].t, 5.0f));
+			Assert::IsTrue(Constants::DoubleEqual(xs[1].t, 5.0f));
+		}
 
-            Assert::IsTrue(s.GetMaterial() == m);
-        }
+		TEST_METHOD(SphereIntersection3) {
+			Ray ray(
+				Point::CreatePoint(0.0f, 2.0f, -5.0f),
+				Vector::CreateVector(0.0f, 0.0f, 1.0f)
+			);
+
+			auto s = std::make_shared<Sphere>();
+
+			IntersectionBuffer xs = s->FindIntersections(ray);
+
+
+			//Ray doesn't intersect sphere
+			Assert::IsTrue(xs.GetCount() == 0);
+		}
+
+		TEST_METHOD(SphereIntersection4) {
+			Ray ray(
+				Point::CreatePoint(0.0f, 0.0f, 0.0f),
+				Vector::CreateVector(0.0f, 0.0f, 1.0f)
+			);
+
+			auto s = std::make_shared<Sphere>();
+
+			IntersectionBuffer xs = s->FindIntersections(ray);
+
+			//One intersection 'behind' the origin (negative t)
+			Assert::IsTrue(xs.GetCount() == 2);
+			Assert::IsTrue(Constants::DoubleEqual(xs[0].t, -1.0f));
+			Assert::IsTrue(Constants::DoubleEqual(xs[1].t, 1.0f));
+		}
+
+		TEST_METHOD(SphereIntersection5) {
+			Ray ray(
+				Point::CreatePoint(0.0f, 0.0f, 5.0f),
+				Vector::CreateVector(0.0f, 0.0f, 1.0f)
+			);
+
+			auto s = std::make_shared<Sphere>();
+
+			IntersectionBuffer xs = s->FindIntersections(ray);
+
+			//Both intersections 'behind' the origin (negative t)
+			Assert::IsTrue(xs.GetCount() == 2);
+			Assert::IsTrue(Constants::DoubleEqual(xs[0].t, -6.0f));
+			Assert::IsTrue(Constants::DoubleEqual(xs[1].t, -4.0f));
+		}
     };
 }
