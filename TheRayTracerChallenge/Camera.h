@@ -5,6 +5,7 @@
 #include "Transform.h"
 #include "Constants.h"
 #include <cmath>
+#include <iostream>
 #include "Canvas.h"
 #include "World.h"
 
@@ -82,6 +83,8 @@ public:
 				Color pixelColor = world.FindRayColor(currentRay);
 				image.WritePixel(pixelColor, x, y);
 			}
+
+			std::cout << std::to_string(static_cast<float>(x) / static_cast<float>(xSize) * 100.0f) + "%\n";
 		}
 
 		return image;
