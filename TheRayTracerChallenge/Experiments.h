@@ -15,6 +15,7 @@
 #include "Camera.h"
 #include "Shape.h"
 #include "LightSource.h"
+#include "Plane.h"
 
 
 void DrawWatchface();

@@ -123,13 +123,13 @@ void DrawSphereReflections() {
     canvas.SaveToFile("sphereReflections");
 }
 
-//End of chapter 7 / 8
+//End of chapter 7 / 8 / 9
 void DrawChapter7Scene()
 {
 	World world;
 	
 	//Camera
-	Camera camera(4096, 2160, Constants::PI / 3.0f, 
+	Camera camera(/*4096, 2160*/1920, 1080, Constants::PI / 3.0f, 
 		Camera::CreateViewTransform(
 			Point::CreatePoint(0.0f, 1.5f, -5.0f),
 			Point::CreatePoint(0.0f, 1.0f, 0.0f),
@@ -155,37 +155,27 @@ void DrawChapter7Scene()
 	//Shapes
 
 	//floor
-	transform = Transform::CreateScale(10.0f, 0.01f, 10.0f);
+	transform = Transform();
 	material = Material();
 	material.color = Color(1.0f, 0.9f, 0.9f);
 	material.specular = 0.0f;
 
-	auto floor = std::make_shared<Sphere>();
+	auto floor = std::make_shared<Plane>();
 	floor->SetMaterial(material);
 	floor->SetTransform(transform);
 	world.AddShape(floor);
 
-	//left wall
-	transform = Transform::CreateTranslation(0.0f, 0.0f, 5.0f)
-		* Transform::CreateRotationY(-Constants::PI / 4.0f)
-		* Transform::CreateRotationX(Constants::PI / 2.0f)
-		* Transform::CreateScale(10.0f, 0.01f, 10.0f);
+	//backdrop
+	transform = Transform();
+	transform.RotateX(Constants::PI / 2.0).CreateTranslation(0.0, 0.0, 1000.0);
+	material = Material();
+	material.color = Color(0.9f, 0.9f, 0.0f);
+	material.specular = 1.0f;
 
-	auto leftWall = std::make_shared<Sphere>();
-	leftWall->SetMaterial(floor->GetMaterial());
-	leftWall->SetTransform(transform);
-	world.AddShape(leftWall);
-
-	//right wall
-	transform = Transform::CreateTranslation(0.0f, 0.0f, 5.0f)
-		* Transform::CreateRotationY(Constants::PI / 4.0f)
-		* Transform::CreateRotationX(Constants::PI / 2.0f)
-		* Transform::CreateScale(10.0f, 0.01f, 10.0f);
-
-	auto rightWall = std::make_shared<Sphere>();
-	rightWall->SetMaterial(floor->GetMaterial());
-	rightWall->SetTransform(transform);
-	world.AddShape(rightWall);
+	auto backdrop = std::make_shared<Plane>();
+	backdrop->SetMaterial(material);
+	backdrop->SetTransform(transform);
+	world.AddShape(backdrop);
 
 	//middle
 	transform = Transform::CreateTranslation(-0.5f, 1.0f, 0.5f);
@@ -227,5 +217,5 @@ void DrawChapter7Scene()
 	left->SetTransform(transform);
 	world.AddShape(left);
 
-	camera.RenderFrame(world).SaveToFile("chapter7");
+	camera.RenderFrame(world).SaveToFile("chapter9");
 }
