@@ -5,6 +5,7 @@
 #include "Ray.h"
 #include "Matrix.h"
 
+
 class Shape
 {
 public:

@@ -22,7 +22,9 @@ void World::LoadDefaultWorld()
 
     //Create default spheres
     Material m;
-    m.color = Color(0.8f, 1.0f, 0.6f);
+	auto color = std::make_shared<ColorPattern>();
+	color->SetColor(Color(0.8f, 1.0f, 0.6f));
+	m.pattern = color;
     m.diffuse = 0.7f;
     m.specular = 0.2f;
     
@@ -56,10 +58,10 @@ IntersectionBuffer World::IntersectRay(Ray ray)
 Color World::ShadeHit(const HitCalculations& hitInfo)
 {
 	Color resultingColor(0.0f, 0.0f, 0.0f);
-
+	
 	for (auto& lightSource : lightSources) {
 		bool inShadow = PointIsInShadow(lightSource, hitInfo.overPoint);
-		resultingColor = resultingColor + lightSource->Lighting(shapes[hitInfo.shapeID]->GetMaterial(), hitInfo.overPoint, hitInfo.eyeVector, hitInfo.normalVector, inShadow);
+		resultingColor = resultingColor + lightSource->Lighting(shapes[hitInfo.shapeID], hitInfo.overPoint, hitInfo.eyeVector, hitInfo.normalVector, inShadow);
 	}
 
 	return resultingColor;

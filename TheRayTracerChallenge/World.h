@@ -6,6 +6,8 @@
 #include <vector>
 #include "Ray.h"
 #include "HitCalculations.h"
+#include "Pattern.h"
+#include "ColorPattern.h"
 
 class World
 {

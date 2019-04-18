@@ -19,12 +19,14 @@ LightSource::~LightSource()
 {
 }
 
-Color LightSource::Lighting(Material m, Point p, Vector eye, Vector normal, bool IsInShadow)
+Color LightSource::Lighting(std::shared_ptr<Shape> shape, Point p, Vector eye, Vector normal, bool IsInShadow)
 {
     Color ambient, diffuse, specular;
 
+	Material m = shape->GetMaterial();
+
     //Combine the colors of the light and the material
-    Color effectiveColor = m.color * intensity;
+    Color effectiveColor = m.pattern->ColorAtPoint(p, shape->GetTransform()) * intensity;
 
     //Ambient component
     ambient = effectiveColor * m.ambient;

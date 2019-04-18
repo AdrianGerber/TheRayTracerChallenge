@@ -16,7 +16,13 @@
 #include "Shape.h"
 #include "LightSource.h"
 #include "Plane.h"
-
+#include "Pattern.h"
+#include "ColorPattern.h"
+#include "StripePattern.h"
+#include "GradientPattern.h"
+#include "CheckerPattern.h"
+#include "RingPattern.h"
+#include "BlendedPattern.h"
 
 void DrawWatchface();
 

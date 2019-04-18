@@ -29,7 +29,9 @@ namespace TheRayTracesChallengeTests
             LightSource l;
             Vector eye;
             Vector normal;
-            Material m;
+			
+			std::shared_ptr<Shape> shape(std::make_shared<Sphere>());
+
             Point position = Point::CreatePoint(0.0f, 0.0f, 0.0f);
 
             //Eye between wall light source and point
@@ -38,7 +40,7 @@ namespace TheRayTracesChallengeTests
             normal = Vector::CreateVector(0.0f, 0.0f, -1.0f);
 
             Assert::IsTrue(
-                l.Lighting(m, position, eye, normal, false)
+                l.Lighting(shape, position, eye, normal, false)
                 == Color(1.9f, 1.9f, 1.9f)
             );
 
@@ -47,7 +49,7 @@ namespace TheRayTracesChallengeTests
             eye = Vector::CreateVector(0.0f, sqrtf(2.0f) / 2.0f, -sqrtf(2.0f)/2.0f);
             normal = Vector::CreateVector(0.0f, 0.0f, -1.0f);
             Assert::IsTrue(
-                l.Lighting(m, position, eye, normal, false)
+                l.Lighting(shape, position, eye, normal, false)
                 == Color(1.0f, 1.0f, 1.0f)
             );
 
@@ -56,7 +58,7 @@ namespace TheRayTracesChallengeTests
             eye = Vector::CreateVector(0.0f, 0.0f, -1.0f);
             normal = Vector::CreateVector(0.0f, 0.0f, -1.0f);
             Assert::IsTrue(
-                l.Lighting(m, position, eye, normal, false)
+                l.Lighting(shape, position, eye, normal, false)
                 == Color(0.7364f, 0.7364f, 0.7364f)
             );
 
@@ -66,7 +68,7 @@ namespace TheRayTracesChallengeTests
             normal = Vector::CreateVector(0.0f, 0.0f, -1.0f);
 
             Assert::IsTrue(
-                l.Lighting(m, position, eye, normal, false)
+                l.Lighting(shape, position, eye, normal, false)
                 == Color(1.6364f, 1.6364f, 1.6364f)
             );
 
@@ -76,7 +78,7 @@ namespace TheRayTracesChallengeTests
             eye = Vector::CreateVector(0.0f, 0.0f, -1.0f);
             normal = Vector::CreateVector(0.0f, 0.0f, -1.0f);
             Assert::IsTrue(
-                l.Lighting(m, position, eye, normal, false)
+                l.Lighting(shape, position, eye, normal, false)
                 == Color(0.1f, 0.1f, 0.1f)
             );
         }
@@ -90,7 +92,7 @@ namespace TheRayTracesChallengeTests
 
 			Assert::IsTrue(
 				l.Lighting(
-					Material(),
+					std::make_shared<Sphere>(),
 					Point::CreatePoint(0.0f, 0.0f, 0.0f),
 					Vector::CreateVector(0.0f, 0.0f, -1.0f),
 					Vector::CreateVector(0.0f, 0.0f, -1.0f),

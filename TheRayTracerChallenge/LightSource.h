@@ -4,6 +4,8 @@
 #include "Tuple.h"
 #include "Material.h"
 #include <cmath>
+#include "Pattern.h"
+#include "Shape.h"
 
 class LightSource
 {
@@ -18,7 +20,7 @@ public:
     Point GetPosition() { return position; }
     void SetPosition(Point position) { this->position = position; }
 
-    Color Lighting(Material m, Point p, Vector eye, Vector normal, bool IsInShadow);
+    Color Lighting(std::shared_ptr<Shape> shape, Point p, Vector eye, Vector normal, bool IsInShadow);
 
 private:
     Color intensity;

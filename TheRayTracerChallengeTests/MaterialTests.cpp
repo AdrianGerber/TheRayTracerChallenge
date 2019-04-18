@@ -22,7 +22,7 @@ namespace TheRayTracesChallengeTests
         TEST_METHOD(DefaultMaterial) {
             Material m;
 
-            Assert::IsTrue(m.color == Color(1.0f, 1.0f, 1.0f));
+            Assert::IsTrue(m.pattern->ColorAtPoint(Point::CreatePoint(0.0, 0.0, 0.0), Transform()) == Color(1.0f, 1.0f, 1.0f));
             Assert::IsTrue(Constants::DoubleEqual(m.ambient, 0.1f));
             Assert::IsTrue(Constants::DoubleEqual(m.diffuse, 0.9f));
             Assert::IsTrue(Constants::DoubleEqual(m.specular, 0.9f));

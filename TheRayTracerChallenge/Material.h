@@ -1,11 +1,14 @@
 #pragma once
 #include "Color.h"
 #include "Constants.h"
+#include "Pattern.h"
+#include "ColorPattern.h"
+#include <memory>
 
 class Material
 {
 public:
-    Color color;
+    std::shared_ptr<Pattern> pattern;
 	double ambient;
 	double diffuse;
 	double specular;
@@ -16,7 +19,7 @@ public:
 
     bool operator==(Material m2) {
         return
-            color == m2.color
+            pattern == m2.pattern
             && Constants::DoubleEqual(ambient, m2.ambient)
             && Constants::DoubleEqual(diffuse, m2.diffuse)
             && Constants::DoubleEqual(specular, m2.specular)

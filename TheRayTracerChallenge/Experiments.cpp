@@ -81,7 +81,9 @@ void DrawSphereReflections() {
     //    Transform::CreateScale(1.2f, 0.8f, 1.0f)
     //);
     Material m;
-    m.color = Color(1.0f, 0.2f, 1.0f);
+	auto color = std::make_shared<ColorPattern>();
+	color->SetColor(Color(1.0f, 0.2f, 1.0f));
+	m.pattern = color;
     s->SetMaterial(m);
 
     LightSource l(Point::CreatePoint(-10.0f, 10.0f, -10.0f), Color(1.0f, 1.0f, 0.0f));
@@ -110,7 +112,7 @@ void DrawSphereReflections() {
                 Vector normal = s->SurfaceNormal(hitPoint);
                 Vector eye = -ray.direction;
 
-                canvas.WritePixel(l.Lighting(s->GetMaterial(), hitPoint, eye, normal, false) , x, y);
+                canvas.WritePixel(l.Lighting(s, hitPoint, eye, normal, false) , x, y);
 
 
             }
@@ -123,13 +125,15 @@ void DrawSphereReflections() {
     canvas.SaveToFile("sphereReflections");
 }
 
-//End of chapter 7 / 8 / 9
+
+
+//End of chapter 7 / 8 / 9/ 10
 void DrawChapter7Scene()
 {
 	World world;
 	
 	//Camera
-	Camera camera(/*4096, 2160*/1920, 1080, Constants::PI / 3.0f, 
+	Camera camera(1920, 1080, Constants::PI / 3.0f, 
 		Camera::CreateViewTransform(
 			Point::CreatePoint(0.0f, 1.5f, -5.0f),
 			Point::CreatePoint(0.0f, 1.0f, 0.0f),
@@ -157,8 +161,9 @@ void DrawChapter7Scene()
 	//floor
 	transform = Transform();
 	material = Material();
-	material.color = Color(1.0f, 0.9f, 0.9f);
-	material.specular = 0.0f;
+	material.pattern = std::make_shared<CheckerPattern>(Color(1.0f, 0.8f, 0.1f), Color(0.0, 0.1, 0.7));
+	material.pattern->SetTransform(Transform::CreateScale(0.2, 0.2, 0.2));
+	material.specular = 0.0;
 
 	auto floor = std::make_shared<Plane>();
 	floor->SetMaterial(material);
@@ -167,10 +172,19 @@ void DrawChapter7Scene()
 
 	//backdrop
 	transform = Transform();
-	transform.RotateX(Constants::PI / 2.0).CreateTranslation(0.0, 0.0, 1000.0);
+	transform.RotateX(Constants::PI / 2.0).RotateZ(Constants::PI / 5.0).Translate(0.0, 0.0, 10.0);
 	material = Material();
-	material.color = Color(0.9f, 0.9f, 0.0f);
-	material.specular = 1.0f;
+	
+	{
+		auto p1 = std::make_shared<StripePattern>(
+			std::make_shared<GradientPattern>(Color(0.0, 0.0, 0.1), Color(0.0, 0.0, 1.0)),
+			std::make_shared<GradientPattern>(Color(0.1, 0.0, 0.0), Color(1.0, 0.0, 0.0)));
+		auto p2 = std::make_shared<RingPattern>(Color(0.5, 0.5, 0.5), Color(0.0, 0.0, 0.0));
+		material.pattern = std::make_shared<BlendedPattern>(p1, p2);
+	}
+	
+	material.pattern->SetTransform(Transform::CreateTranslation(1.5, 1.0, 1.0));
+	material.specular = 0.1;
 
 	auto backdrop = std::make_shared<Plane>();
 	backdrop->SetMaterial(material);
@@ -178,9 +192,12 @@ void DrawChapter7Scene()
 	world.AddShape(backdrop);
 
 	//middle
-	transform = Transform::CreateTranslation(-0.5f, 1.0f, 0.5f);
+	//transform = Transform::CreateTranslation(-0.5f, 1.0f, 0.5f);
+	transform = Transform::CreateRotationY(Constants::PI / 4.0).Translate(0.1f, 1.0f, 0.5f);
+	//transform = Transform::CreateTranslation(-0.5f, 1.0f, 0.5f);
 	material = Material();
-	material.color = Color(0.1f, 1.0f, 0.5f);
+	material.pattern = std::make_shared<StripePattern>(Color(0.1, 0.9, 0.9), Color(0.3, 0.5, 0.0));
+	material.pattern->SetTransform(Transform::CreateScale(0.2, 0.2, 0.2));
 	material.diffuse = 0.7f;
 	material.specular = 0.3f;
 
@@ -194,7 +211,10 @@ void DrawChapter7Scene()
 		* Transform::CreateScale(0.5f, 0.5f, 0.5f);
 
 	material = Material();
-	material.color = Color(0.1f, 0.1f, 1.0f);
+	material.pattern = std::make_shared<GradientPattern>(Color(0.1f, 0.1f, 1.0f), Color(0.1f, 0.1f, 0.0f));
+	material.pattern->SetTransform(
+		Transform::CreateScale(2.0, 2.0, 2.0).RotateY(-Constants::PI / 2.0).Translate(1.0, 1.0, 1.0)
+	);
 	material.diffuse = 0.7f;
 	material.specular = 0.3f;
 
@@ -208,7 +228,7 @@ void DrawChapter7Scene()
 		* Transform::CreateScale(0.33f, 0.33f, 0.33f);
 
 	material = Material();
-	material.color = Color(1.0f, 0.8f, 0.1f);
+	material.pattern = std::make_shared<StripePattern>(Color(1.0f, 0.9f, 0.9f), Color(0.0f, 0.2f, 0.9f));
 	material.diffuse = 0.7f;
 	material.specular = 0.3f;
 
@@ -217,5 +237,5 @@ void DrawChapter7Scene()
 	left->SetTransform(transform);
 	world.AddShape(left);
 
-	camera.RenderFrame(world).SaveToFile("chapter9");
+	camera.RenderFrame(world).SaveToFile("chapter10");
 }

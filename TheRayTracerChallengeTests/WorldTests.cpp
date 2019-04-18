@@ -31,7 +31,7 @@ namespace TheRayTracesChallengeTests
 			LightSource l(Point::CreatePoint(-10.0f, 10.0f, -10.0f), Color(1.0f, 1.0f, 1.0f));
 
 			Material m;
-			m.color = Color(0.8f, 1.0f, 0.6f);
+			m.pattern = world.shapes[0]->GetMaterial().pattern;
 			m.diffuse = 0.7f;
 			m.specular = 0.2f;
 
@@ -39,8 +39,11 @@ namespace TheRayTracesChallengeTests
 			s1.SetMaterial(m);
 			s1.SetID(0);
 
+			Material m2;
+			m2.pattern = world.shapes[1]->GetMaterial().pattern;
 			Sphere s2;
 			s2.SetTransform(Transform::CreateScale(0.5f, 0.5f, 0.5f));
+			s2.SetMaterial(m2);
 			s2.SetID(1);
 
 			Assert::IsTrue(world.shapes.size() == 2);
@@ -138,7 +141,7 @@ namespace TheRayTracesChallengeTests
 			Ray ray(Point::CreatePoint(0.0f, 0.0f, 0.75f), Vector::CreateVector(0.0f, 0.0f, -1.0f));
 
 			Assert::IsTrue(
-				world.FindRayColor(ray) == inner->GetMaterial().color
+				world.FindRayColor(ray) == inner->GetMaterial().pattern->ColorAtPoint(Point::CreatePoint(0.0, 0.0, 0.0), Transform())
 			);
 		}
 

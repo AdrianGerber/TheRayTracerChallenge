@@ -53,7 +53,13 @@ namespace TheRayTracesChallengeTests
 
 		TEST_METHOD(DefaultMaterial) {
 			TestShape s;
-			Assert::IsTrue(s.GetMaterial() == Material());
+			Material m;
+
+			m.pattern = s.GetMaterial().pattern;
+
+			Assert::IsTrue(m.pattern->ColorAtPoint(Point::CreatePoint(0.0, 0.0, 0.0), Transform()) == Color(1.0f, 1.0f, 1.0f));
+
+			Assert::IsTrue(s.GetMaterial() == m);
 		}
 
 		TEST_METHOD(SetMaterial) {
