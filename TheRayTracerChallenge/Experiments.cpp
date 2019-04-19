@@ -127,7 +127,7 @@ void DrawSphereReflections() {
 
 
 
-//End of chapter 7 / 8 / 9/ 10 / 11
+//End of chapter 7 / 8 / 9 / 10 / 11
 void DrawChapter7Scene()
 {
 	World world;
@@ -161,10 +161,11 @@ void DrawChapter7Scene()
 	//floor
 	transform = Transform();
 	material = Material();
-	material.pattern = std::make_shared<CheckerPattern>(Color(1.0f, 0.8f, 0.1f), Color(0.0, 0.1, 0.7));
-	material.pattern->SetTransform(Transform::CreateScale(0.2, 0.2, 0.2));
+	material.pattern = std::make_shared<CheckerPattern>(Color(0.05, 0.05, 0.05), Color(0.4, 0.4, 0.4));
+	material.pattern->SetTransform(Transform::CreateScale(0.4, 0.4, 0.4));
 	material.specular = 0.0;
-	material.reflective = 0.3;
+	material.reflective = 0.8;
+	material.transparency = 0.01;
 
 	auto floor = std::make_shared<Plane>();
 	floor->SetMaterial(material);
@@ -178,14 +179,16 @@ void DrawChapter7Scene()
 	
 	{
 		auto p1 = std::make_shared<StripePattern>(
-			std::make_shared<GradientPattern>(Color(0.0, 0.0, 0.1), Color(0.0, 0.0, 1.0)),
-			std::make_shared<GradientPattern>(Color(0.1, 0.0, 0.0), Color(1.0, 0.0, 0.0)));
-		auto p2 = std::make_shared<RingPattern>(Color(0.5, 0.5, 0.5), Color(0.0, 0.0, 0.0));
+			std::make_shared<GradientPattern>(Color(0.0, 0.0, 0.1), Color(0.0, 0.0, 0.2)),
+			std::make_shared<GradientPattern>(Color(0.1, 0.0, 0.0), Color(0.2, 0.0, 0.0)));
+		auto p2 = std::make_shared<RingPattern>(Color(0.2, 0.2, 0.2), Color(0.0, 0.0, 0.0));
 		material.pattern = std::make_shared<BlendedPattern>(p1, p2);
 	}
 	
 	material.pattern->SetTransform(Transform::CreateTranslation(1.5, 1.0, 1.0));
-	material.specular = 0.1;
+	material.specular = 0.4;
+	material.shininess = 200;
+	material.reflective = 0.4;
 
 	auto backdrop = std::make_shared<Plane>();
 	backdrop->SetMaterial(material);
@@ -212,13 +215,13 @@ void DrawChapter7Scene()
 		* Transform::CreateScale(0.5f, 0.5f, 0.5f);
 
 	material = Material();
-	material.pattern = std::make_shared<GradientPattern>(Color(0.1f, 0.1f, 0.3f), Color(0.1f, 0.1f, 0.0f));
+	material.pattern = std::make_shared<ColorPattern>(Color(0.7, 0.7, 0.7));
 	material.pattern->SetTransform(
 		Transform::CreateScale(2.0, 2.0, 2.0).RotateY(-Constants::PI / 2.0).Translate(1.0, 1.0, 1.0)
 	);
 	material.diffuse = 0.7;
-	material.specular = 0.3;
-	material.reflective = 0.4;
+	material.specular = 0.7;
+	material.reflective = 0.2;
 
 	auto right = std::make_shared<Sphere>();
 	right->SetMaterial(material);
@@ -230,14 +233,17 @@ void DrawChapter7Scene()
 		* Transform::CreateScale(0.33f, 0.33f, 0.33f);
 
 	material = Material();
-	material.pattern = std::make_shared<StripePattern>(Color(1.0f, 0.9f, 0.9f), Color(0.0f, 0.2f, 0.9f));
+	material.pattern = std::make_shared<ColorPattern>(Color(0.2f, 0.2f, 0.2f));
 	material.diffuse = 0.7f;
 	material.specular = 0.3f;
+	material.transparency = 0.8;
+	material.refractiveIndex = 2;
+	material.reflective = 0.2;
 
 	auto left = std::make_shared<Sphere>();
 	left->SetMaterial(material);
 	left->SetTransform(transform);
 	world.AddShape(left);
 
-	camera.RenderFrame(world).SaveToFile("chapter10");
+	camera.RenderFrame(world).SaveToFile("chapter11");
 }

@@ -11,6 +11,7 @@
 #include <Sphere.h>
 #include <Plane.h>
 #include <World.h>
+#include <Pattern.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -76,7 +77,7 @@ namespace TheRayTracesChallengeTests
 			auto shape = world.shapes[0];
 
 			IntersectionBuffer intersections(Intersection(4.0f, shape->GetID()));
-			HitCalculations hit(intersections, ray, world.shapes);
+			HitCalculations hit(intersections.GetFirstHit(), intersections, ray, world.shapes);
 
 			Assert::IsTrue(world.ShadeHit(hit) == Color(0.38066f, 0.47583f, 0.2855f));
 		}
@@ -94,7 +95,7 @@ namespace TheRayTracesChallengeTests
 			auto shape = world.shapes[1];
 
 			IntersectionBuffer intersections(Intersection(0.5f, shape->GetID()));
-			HitCalculations hit(intersections, ray, world.shapes);
+			HitCalculations hit(intersections.GetFirstHit(), intersections, ray, world.shapes);
 
 			Assert::IsTrue(world.ShadeHit(hit) == Color(0.90498f, 0.90498f, 0.90498f));
 		}
@@ -220,7 +221,7 @@ namespace TheRayTracesChallengeTests
 			Intersection intersection(4.0f, w.shapes[1]->GetID());
 			IntersectionBuffer intersections(intersection);
 
-			HitCalculations comps(intersections, ray, w.shapes);
+			HitCalculations comps(intersections.GetFirstHit(), intersections, ray, w.shapes);
 
 			//Sphere in shadow is correctly shaded
 			Assert::IsTrue(
@@ -244,7 +245,7 @@ namespace TheRayTracesChallengeTests
 
 			IntersectionBuffer intersections(Intersection(1.0, shape->GetID()));
 
-			HitCalculations hit(intersections, ray, w.shapes);
+			HitCalculations hit(intersections.GetFirstHit(), intersections, ray, w.shapes);
 
 			Assert::IsTrue(
 				w.FindReflectedColor(hit)
@@ -270,7 +271,7 @@ namespace TheRayTracesChallengeTests
 			);
 			
 			IntersectionBuffer intersections(Intersection(sqrt(2.0), plane->GetID()));
-			HitCalculations hit(intersections, ray, w.shapes);
+			HitCalculations hit(intersections.GetFirstHit(), intersections, ray, w.shapes);
 
 			Color c = w.FindReflectedColor(hit);
 
@@ -298,13 +299,13 @@ namespace TheRayTracesChallengeTests
 			);
 			
 			IntersectionBuffer intersections(Intersection(sqrt(2.0), plane->GetID()));
-			HitCalculations hit(intersections, ray, w.shapes);
+			HitCalculations hit(intersections.GetFirstHit(), intersections, ray, w.shapes);
 			
 			Color shadedColor = w.ShadeHit(hit);
 			Assert::IsTrue(shadedColor == Color(0.87676, 0.92435, 0.82917));
 		}
 
-		TEST_METHOD(AvoidInfiniteRecursion){
+		TEST_METHOD(AvoidInfiniteReflectionRecursion){
 			//Two fully reflective planes -> light keeps being reflected
 			World w;
 
@@ -352,11 +353,154 @@ namespace TheRayTracesChallengeTests
 			);
 
 			IntersectionBuffer intersections(Intersection(sqrt(2.0), plane->GetID()));
-			HitCalculations hit(intersections, ray, w.shapes);
+			HitCalculations hit(intersections.GetFirstHit(), intersections, ray, w.shapes);
 
 			Color reflectedColor = w.FindReflectedColor(hit, 0);
 			//Recursion should stop and return black
 			Assert::IsTrue(reflectedColor == Color(0.0, 0.0, 0.0));
+		}
+
+		TEST_METHOD(NoRefraction) {
+			World w;
+			w.LoadDefaultWorld();
+
+			auto shape = w.shapes[0];
+
+			Ray ray(
+				Point::CreatePoint(0.0, 0.0, -5.0),
+				Vector::CreateVector(0.0, 0.0, 1.0)
+			);
+
+			IntersectionBuffer xs(Intersection(4.0, shape->GetID()), Intersection(6.0, shape->GetID()));
+
+			HitCalculations hit(xs[0], xs, ray, w.shapes);
+
+			Color c = w.FindRefractedColor(hit);
+
+			//Shape is not transparent -> color should be black
+			Assert::IsTrue(c == Color(0.0, 0.0, 0.0));
+		}
+
+		TEST_METHOD(AvoidInfiniteRefractionRecursion) {
+			World w;
+			w.LoadDefaultWorld();
+
+			auto shape = w.shapes[0];
+			shape->SetMaterial(Material::CreateGlass());
+
+			Ray ray(
+				Point::CreatePoint(0.0, 0.0, -5.0),
+				Vector::CreateVector(0.0, 0.0, 1.0)
+			);
+
+			IntersectionBuffer xs(Intersection(4.0, shape->GetID()), Intersection(6.0, shape->GetID()));
+
+			HitCalculations hit(xs[0], xs, ray, w.shapes);
+
+			Color c = w.FindRefractedColor(hit, 0);
+
+			//Shape is not transparent -> color should be black
+			Assert::IsTrue(c == Color(0.0, 0.0, 0.0));
+		}
+
+		TEST_METHOD(TotalInternalReflection) {
+			World w;
+			w.LoadDefaultWorld();
+
+			auto shape = w.shapes[0];
+			shape->SetMaterial(Material::CreateGlass());
+
+			Ray ray(
+				Point::CreatePoint(0.0, 0.0, sqrt(2.0)/2.0),
+				Vector::CreateVector(0.0, 1.0, 0.0)
+			);
+
+			IntersectionBuffer xs(Intersection(-sqrt(2.0)/2.0, shape->GetID()), Intersection(sqrt(2.0) / 2.0, shape->GetID()));
+
+			HitCalculations hit(xs[1], xs, ray, w.shapes);
+
+			Color c = w.FindRefractedColor(hit, 5);
+
+			//Total internal relfection -> ray stays inside the sphere -> black
+			Assert::IsTrue(c == Color(0.0, 0.0, 0.0));
+		}
+
+		TEST_METHOD(RefractedColor) {
+			//Pattern  that returns the point it received as a color
+			class TestPattern : public Pattern {
+			public:
+				Color ReadPattern(Point point) override {
+					return Color(point.x, point.y, point.z);
+				}
+			};
+
+			World w;
+			w.LoadDefaultWorld();
+			auto A = w.shapes[0];
+			Material mA;
+			mA.ambient = 1.0;
+			mA.pattern = std::make_shared<TestPattern>();
+			A->SetMaterial(mA);
+
+			auto B = w.shapes[1];
+			B->SetMaterial(Material::CreateGlass());
+
+			Ray ray(
+				Point::CreatePoint(0.0, 0.0, 0.1),
+				Vector::CreateVector(0.0, 1.0, 0.0)
+			);
+
+			IntersectionBuffer xs;
+			xs.Add(Intersection(-0.9899, A->GetID()));
+			xs.Add(Intersection(-0.4899, B->GetID()));
+			xs.Add(Intersection(0.4899, B->GetID()));
+			xs.Add(Intersection(0.9899, A->GetID()));
+
+			HitCalculations hit(xs[2], xs, ray, w.shapes);
+
+			Color c = w.FindRefractedColor(hit);
+
+			Assert::IsTrue(
+				c == Color(0.0, 0.99887, 0.04721)
+			);
+		}
+
+		TEST_METHOD(ShadedRefraction) {
+			World w;
+			w.LoadDefaultWorld();
+
+			auto floor = std::make_shared<Plane>();
+			floor->SetTransform(Transform::CreateTranslation(0.0, -1.0, 0.0));
+			Material floorMaterial;
+			floorMaterial.reflective = 0.5;
+			floorMaterial.transparency = 0.5;
+			floorMaterial.refractiveIndex = 1.5;
+			floor->SetMaterial(floorMaterial);
+			w.AddShape(floor);
+
+			auto ball = std::make_shared<Sphere>();
+			Material ballMaterial;
+			ballMaterial.pattern = std::make_shared<ColorPattern>(Color(1.0, 0.0, 0.0));
+			ballMaterial.ambient = 0.5;
+			ball->SetMaterial(ballMaterial);
+			ball->SetTransform(Transform::CreateTranslation(0.0, -3.5, -0.5));
+			w.AddShape(ball);
+
+			Ray ray(
+				Point::CreatePoint(0.0, 0.0, -3.0),
+				Vector::CreateVector(0.0, -sqrt(2.0)/2.0, sqrt(2.0) / 2.0)
+			);
+
+			IntersectionBuffer xs(Intersection(sqrt(2), floor->GetID()));
+			HitCalculations hit(xs[0], xs, ray, w.shapes);
+
+			Color c = w.ShadeHit(hit, 5);
+			Assert::IsTrue(
+				c
+				==
+				Color(0.93391, 0.69643, 0.69243)
+			);
+
 		}
     };
 }

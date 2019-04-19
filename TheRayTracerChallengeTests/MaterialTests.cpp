@@ -22,13 +22,22 @@ namespace TheRayTracesChallengeTests
         TEST_METHOD(DefaultMaterial) {
             Material m;
 
-            Assert::IsTrue(m.pattern->ColorAtPoint(Point::CreatePoint(0.0, 0.0, 0.0), Transform()) == Color(1.0f, 1.0f, 1.0f));
-            Assert::IsTrue(Constants::DoubleEqual(m.ambient, 0.1f));
-            Assert::IsTrue(Constants::DoubleEqual(m.diffuse, 0.9f));
-            Assert::IsTrue(Constants::DoubleEqual(m.specular, 0.9f));
-            Assert::IsTrue(Constants::DoubleEqual(m.shininess, 200.0f));
-            Assert::IsTrue(Constants::DoubleEqual(m.reflective, 0.0f));
-
+            Assert::IsTrue(m.pattern->ColorAtPoint(Point::CreatePoint(0.0, 0.0, 0.0), Transform()) == Color(1.0, 1.0, 1.0));
+            Assert::IsTrue(Constants::DoubleEqual(m.ambient, 0.1));
+            Assert::IsTrue(Constants::DoubleEqual(m.diffuse, 0.9));
+            Assert::IsTrue(Constants::DoubleEqual(m.specular, 0.9));
+            Assert::IsTrue(Constants::DoubleEqual(m.shininess, 200.0));
+            Assert::IsTrue(Constants::DoubleEqual(m.reflective, 0.0));
+            Assert::IsTrue(Constants::DoubleEqual(m.transparency, 0.0));
+            Assert::IsTrue(Constants::DoubleEqual(m.refractiveIndex, 1.0));
         }
+
+		TEST_METHOD(GlassMaterialTests) {
+			Material m = Material::CreateGlass();
+
+			Assert::IsTrue(Constants::DoubleEqual(m.transparency, 1.0));
+			Assert::IsTrue(Constants::DoubleEqual(m.refractiveIndex, 1.5));
+			
+		}
     };
 }

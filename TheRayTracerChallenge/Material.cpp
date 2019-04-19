@@ -14,6 +14,8 @@ Material::Material()
     specular = 0.9;
     shininess = 200.0;
 	reflective = 0.0;
+	transparency = 0.0;
+	refractiveIndex = 1.0;
 }
 
 

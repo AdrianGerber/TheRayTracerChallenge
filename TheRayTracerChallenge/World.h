@@ -23,6 +23,7 @@ public:
     IntersectionBuffer IntersectRay(Ray ray);
 	Color ShadeHit(const HitCalculations& hitInfo, size_t remainingReflections = 5);
 	Color FindReflectedColor(const HitCalculations& hitInfo, size_t remainingReflections = 5);
+	Color FindRefractedColor(const HitCalculations& hitInfo, size_t remainingRefractions = 5);
 	bool PointIsInShadow(std::shared_ptr<LightSource> lightSource, Point point);
 
 

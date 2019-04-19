@@ -6,6 +6,7 @@
 #include "Tuple"
 #include <vector>
 #include <memory>
+#include <algorithm>
 #include "Constants.h"
 
 class HitCalculations {
@@ -14,16 +15,20 @@ public:
 	size_t shapeID;
 	Point point;
 	Point overPoint;
+	Point underPoint;
 	Vector eyeVector;
 	Vector normalVector;
 	Vector reflectionVector;
+
+	double refractiveIndex1;
+	double refractiveIndex2;
+
 	bool insideShape;
 
-	HitCalculations(IntersectionBuffer& intersections, const Ray& ray, std::vector<std::shared_ptr<Shape>>& shapes) {
-		auto& hit = intersections.GetFirstHit();
+	HitCalculations(const Intersection& intersection, IntersectionBuffer& intersections, const Ray& ray, std::vector<std::shared_ptr<Shape>>& shapes) {
 
-		t = hit.t;
-		shapeID = hit.objectID;
+		t = intersection.t;
+		shapeID = intersection.objectID;
 		point = ray.PositionAt(t);
 		eyeVector = - ray.direction;
 		normalVector = shapes[shapeID]->SurfaceNormal(point);
@@ -39,8 +44,87 @@ public:
 
 		reflectionVector = ray.direction.Reflect(normalVector);
 
-		//Slightly adjusted point, so it is on the correct side of the shapes
-		//surface, even after floating point rounding errors
+		//Slightly adjusted points slightly above and below the actual hit:
+		//These are used for shading and reflection, so the reflected ray doesn't
+		//collide with the original shape due to floating point inaccuracies
 		overPoint = point + (normalVector * Constants::EPSILON);
+		underPoint = point - (normalVector * Constants::EPSILON);
+
+
+		//List of objects that the ray is currently inside of
+		std::vector<size_t> containers;
+
+		intersections.Sort();
+
+		//Default values
+		refractiveIndex1 = 1.0;
+		refractiveIndex2 = 1.0;
+
+		//Go through every intersection
+		size_t numberOfIntersections = intersections.GetCount();
+		for (size_t index = 0; index < numberOfIntersections; index++) {
+			Intersection currentIntersection = intersections[index];
+
+			//Specified intersection was reached
+			if (intersection == currentIntersection) {
+				//Find the refractive index of the first material
+				if (containers.empty()) {
+					refractiveIndex1 = 1.0;
+				}
+				else {
+					refractiveIndex1 = shapes[containers.back()]->GetMaterial().refractiveIndex;
+				}
+			}
+
+
+			//Keep track of the objects that the ray is currently inside of
+			auto objectPosition = std::find(containers.begin(), containers.end(), currentIntersection.objectID);
+			//The current object is already inside the list
+			if (objectPosition != containers.end()) {
+				//The ray leaves the shape at this intersection -> remove from containers
+				containers.erase(objectPosition);
+			}
+			//Object is not in the list
+			else {
+				//The ray enters the object at this intersection -> Add to container
+				containers.push_back(currentIntersection.objectID);
+			}
+
+			//Specified intersection was reached
+			if (intersection == currentIntersection) {
+				//Find the refractive index of the second material
+				if (containers.empty()) {
+					refractiveIndex2 = 1.0;
+				}
+				else {
+					refractiveIndex2 = shapes[containers.back()]->GetMaterial().refractiveIndex;
+				}
+
+				break;
+			}
+		}
+	}
+
+	double SchlickApproximation() const {
+		double cos = Vector::DotProduct(eyeVector, normalVector);
+
+		//Total internal reflection can only occur if N1 > N2
+		if (refractiveIndex1 > refractiveIndex2) {
+			double refractiveRatio = refractiveIndex1 / refractiveIndex2;
+			double sin2_t = refractiveRatio * refractiveRatio * (1.0 - (cos * cos));
+
+			//Total internal reflection
+			if (sin2_t > 1.0) {
+				return 1.0;
+			}
+
+			//When n1 > n2, use cos(theta_t) instead of cos for the other calculations
+			cos = sqrt(1.0 - sin2_t);
+		}
+
+		double r0 = pow((refractiveIndex1 - refractiveIndex2)
+			/ (refractiveIndex1 + refractiveIndex2), 2.0);
+
+		return r0 + ((1 - r0) * pow(1 - cos, 5.0));
 	}
 };

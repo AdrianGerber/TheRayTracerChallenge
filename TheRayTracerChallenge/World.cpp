@@ -57,17 +57,30 @@ IntersectionBuffer World::IntersectRay(Ray ray)
 
 Color World::ShadeHit(const HitCalculations& hitInfo, size_t remainingReflections)
 {
-	Color resultingColor(0.0, 0.0, 0.0);
+	Color lightingColor(0.0, 0.0, 0.0);
 	
 	for (auto& lightSource : lightSources) {
 		bool inShadow = PointIsInShadow(lightSource, hitInfo.overPoint);
-		resultingColor = resultingColor + lightSource->Lighting(shapes[hitInfo.shapeID], hitInfo.overPoint, hitInfo.eyeVector, hitInfo.normalVector, inShadow);
+		lightingColor = lightingColor + lightSource->Lighting(shapes[hitInfo.shapeID], hitInfo.overPoint, hitInfo.eyeVector, hitInfo.normalVector, inShadow);
 	}
 
 
 	Color reflectedColor = FindReflectedColor(hitInfo, remainingReflections);
+	Color refractedColor = FindRefractedColor(hitInfo, remainingReflections);
 
-	return resultingColor + reflectedColor;
+	Material shapeMaterial = shapes[hitInfo.shapeID]->GetMaterial();
+
+	//Material is both reflective and transparent -> use Schlick Approximation
+	if (shapeMaterial.reflective > 0.0 && shapeMaterial.transparency > 0.0) {
+		double reflectance = hitInfo.SchlickApproximation();
+
+		return lightingColor
+			+ (reflectedColor * reflectance)
+			+ (refractedColor * (1.0 - reflectance));
+	}
+
+
+	return lightingColor + reflectedColor + refractedColor;
 }
 
 Color World::FindReflectedColor(const HitCalculations& hitInfo, size_t remainingReflections)
@@ -89,6 +102,47 @@ Color World::FindReflectedColor(const HitCalculations& hitInfo, size_t remaining
 	Color hitColor = FindRayColor(reflectedRay, remainingReflections - 1);
 
 	return hitColor * material.reflective;
+}
+
+Color World::FindRefractedColor(const HitCalculations& hitInfo, size_t remainingRefractions)
+{
+	//Maximum number of refractions reached
+	if (remainingRefractions == 0) {
+		return Color(0.0, 0.0, 0.0);
+	}
+
+	Material m = shapes[hitInfo.shapeID]->GetMaterial();
+
+	//Material not transparent -> black
+	if (Constants::DoubleEqual(m.transparency, 0.0)) {
+		return Color(0.0, 0.0, 0.0);
+	}
+
+	//Ratio between refraction indices
+	double refractionRatio = hitInfo.refractiveIndex1 / hitInfo.refractiveIndex2;
+
+	//Cos(theta_i) is the same as the dot product of these vectors (Derived from Snell's Law)
+	double cos_i = Vector::DotProduct(hitInfo.eyeVector, hitInfo.normalVector);
+	
+	//Find sin(theta_t)^2
+	double sin2_t = (refractionRatio * refractionRatio) * (1.0 - (cos_i * cos_i));
+
+	//Total internal reflection?
+	if (sin2_t > 1.0) {
+		return Color(0.0, 0.0, 0.0);
+	}
+
+	double cos_t = sqrt(1.0 - sin2_t);
+
+	//Compute the direction of the refracted ray
+	Vector refractedDirection = hitInfo.normalVector * (refractionRatio * cos_i - cos_t)
+		- (hitInfo.eyeVector * refractionRatio);
+
+	Ray refractedRay(hitInfo.underPoint, refractedDirection);
+
+	Color color = FindRayColor(refractedRay, remainingRefractions - 1) * m.transparency;
+
+	return color;
 }
 
 bool World::PointIsInShadow(std::shared_ptr<LightSource> lightSource, Point point)
@@ -118,5 +172,5 @@ Color World::FindRayColor(Ray ray, size_t remainingReflections)
 
 	if (intersections.GetCount() == 0 || !intersections.GetFirstHit().IsValid()) return Color(0.0, 0.0, 0.0);
 
-	return ShadeHit(HitCalculations(intersections, ray, shapes), remainingReflections);
+	return ShadeHit(HitCalculations(intersections.GetFirstHit(), intersections, ray, shapes), remainingReflections);
 }

@@ -15,7 +15,7 @@ public:
     void Add(Intersection intersection);
     void Add(IntersectionBuffer intersections);
 
-    const Intersection& operator[](size_t i);
+    Intersection operator[](size_t i) const;
     size_t GetCount();
 
     void Sort();
@@ -50,7 +50,7 @@ inline void IntersectionBuffer::Add(IntersectionBuffer intersections) {
     IsSorted = false;
 }
 
-inline const Intersection& IntersectionBuffer::operator[] (size_t i) {
+inline Intersection IntersectionBuffer::operator[] (size_t i) const {
     return intersections[i];
 }
 
