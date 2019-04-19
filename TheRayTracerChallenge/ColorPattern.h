@@ -2,6 +2,7 @@
 
 #include "Pattern.h"
 
+//Pattern that always return the same color
 class ColorPattern : public Pattern
 {
 public:

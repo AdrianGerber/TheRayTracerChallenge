@@ -9,6 +9,7 @@
 #include "Canvas.h"
 #include "World.h"
 
+//Camera used to render a frame
 class Camera {
 private:
 	size_t xSize, ySize;
@@ -56,6 +57,7 @@ public:
 
 	double GetPixelSize() { return pixelSize; }
 
+
 	Ray CreateRayForPixel(size_t xPixel, size_t yPixel) {
 		//Offset from edge of canvas to the pixel's center
 		double xOffset = (static_cast<double>(xPixel) + 0.5) * pixelSize;
@@ -74,6 +76,7 @@ public:
 		return Ray(origin, direction);
 	}
 
+	//Render a frame using the current settings
 	Canvas RenderFrame(World& world) {
 		Canvas image(xSize, ySize);
 
@@ -90,6 +93,7 @@ public:
 		return image;
 	}
 
+	//Position the camera and define the viewing direction / orientation
 	static Transform CreateViewTransform(Point from, Point to, Vector up) {
 		Vector forward = (to - from).Normalize();
 		Vector left = Vector::CrossProduct(forward, up.Normalize());
@@ -110,6 +114,7 @@ public:
 
 private:
 
+	//Calculate the size of a pixel on the image plane in 'world' units
 	void CalculatePixelSize() {
 		double halfView = tan(fieldOfView / 2.0);
 		double aspectRatio = static_cast<double>(xSize) / static_cast<double>(ySize);

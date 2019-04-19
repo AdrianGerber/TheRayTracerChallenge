@@ -6,6 +6,8 @@
 #include <cmath>
 #include <memory>
 
+
+//Pattern that combines two other patterns by addition
 class BlendedPattern : public Pattern
 {
 public:

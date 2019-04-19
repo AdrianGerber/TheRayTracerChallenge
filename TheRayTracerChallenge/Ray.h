@@ -5,6 +5,8 @@
 #include <memory>
 #include "Transform.h"
 
+
+//A 'Ray' that is used to trace the path that light would take (In reverse direction)
 class Ray
 {
 public:
@@ -16,11 +18,11 @@ public:
 	Ray(Point origin, Vector direction);
 	~Ray();
 
-	//Mathematical functions
+	//Determine the ray's position after a certain distance is traveld
 	Point PositionAt (double t) const { return origin + (direction * t);}
 
+	//Create a new ray by applying transformations to this one
     Ray Transform(Transform m);
-
 };
 
 

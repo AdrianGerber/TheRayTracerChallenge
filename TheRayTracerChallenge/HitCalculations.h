@@ -9,6 +9,7 @@
 #include <algorithm>
 #include "Constants.h"
 
+//Calculates attributes that further describe the intersection of a ray with a shape
 class HitCalculations {
 public:
 	double t;
@@ -42,6 +43,7 @@ public:
 			insideShape = false;
 		}
 
+
 		reflectionVector = ray.direction.Reflect(normalVector);
 
 		//Slightly adjusted points slightly above and below the actual hit:
@@ -54,8 +56,11 @@ public:
 		//List of objects that the ray is currently inside of
 		std::vector<size_t> containers;
 
+
 		intersections.Sort();
 
+
+		//Refractive indices of the materials at the 'intersection'
 		//Default values
 		refractiveIndex1 = 1.0;
 		refractiveIndex2 = 1.0;
@@ -105,6 +110,7 @@ public:
 		}
 	}
 
+	//Approximation used to blend the intensities of reflected and refracted colors (Simulates the 'Fresnel Effect')
 	double SchlickApproximation() const {
 		double cos = Vector::DotProduct(eyeVector, normalVector);
 
@@ -122,6 +128,7 @@ public:
 			cos = sqrt(1.0 - sin2_t);
 		}
 
+		//Math...
 		double r0 = pow((refractiveIndex1 - refractiveIndex2)
 			/ (refractiveIndex1 + refractiveIndex2), 2.0);
 

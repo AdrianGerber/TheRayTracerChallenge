@@ -7,6 +7,7 @@
 #include "Pattern.h"
 #include "Shape.h"
 
+//Point light
 class LightSource
 {
 public:
@@ -20,6 +21,7 @@ public:
     Point GetPosition() { return position; }
     void SetPosition(Point position) { this->position = position; }
 
+	//Calculate the color of a point when illuminated by this light source
     Color Lighting(std::shared_ptr<Shape> shape, Point p, Vector eye, Vector normal, bool IsInShadow);
 
 private:

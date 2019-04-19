@@ -3,7 +3,7 @@
 #include "Constants.h"
 
 
-
+//Class used to describe points and vectors
 class Tuple
 {
 public:
@@ -43,8 +43,10 @@ public:
     Tuple operator/ (const double t) const;
 };
 
+//Aliases of the Tuple class
 using Point = Tuple;
 using Vector = Tuple;
+
 
 inline Tuple::Tuple()
 {

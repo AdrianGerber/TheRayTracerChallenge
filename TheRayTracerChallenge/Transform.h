@@ -2,6 +2,7 @@
 #include "Matrix.h"
 #include <cmath>
 
+//Definition of transforms and implementation of basic operations on them
 class Transform {
 public:
     Matrix4x4 matrix;
@@ -16,28 +17,20 @@ public:
     //Get the inversion of this transform
     Transform Inversion();
 
-    //Transform& Translate(double x, double y, double z);
-
-    //Creating Translations
+    //Creating Transforms
     static Transform CreateTranslation(double x, double y, double z);
-
     static Transform CreateScale(double x, double y, double z);
-
     static Transform CreateRotationX(double angle);
     static Transform CreateRotationY(double angle);
     static Transform CreateRotationZ(double angle);
-
     static Transform CreateShear(double xy, double xz, double yx, double yz, double zx, double zy);
 
-    //Applying translations to an existing translation
+    //Applying translations to an existing transform
     Transform& Translate(double x, double y, double z);
-
     Transform& Scale(double x, double y, double z);
-
     Transform& RotateX(double angle);
     Transform& RotateY(double angle);
     Transform& RotateZ(double angle);
-
     Transform& Shear(double xy, double xz, double yx, double yz, double zx, double zy);
 };
 
@@ -60,8 +53,7 @@ inline Transform Transform::Inversion() {
     return Transform(matrix.Inversion());
 }
 
-
-//Creating Translations
+//Creation of transforms
 
 inline Transform Transform::CreateTranslation(double x, double y, double z) {
     Transform t(Matrix::IndentityMatrix4x4());
@@ -160,7 +152,7 @@ inline Transform operator*(Transform transform1, Transform transform2) {
     return Transform(transform1.matrix * transform2.matrix);
 }
 
-//Applying translations to an existing translation
+//Applying transformations to an existing transform
 
 inline Transform& Transform::Translate(double x, double y, double z) {
     matrix = Transform::CreateTranslation(x, y, z) * matrix;

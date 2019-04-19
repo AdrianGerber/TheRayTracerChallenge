@@ -3,23 +3,27 @@
 #include "Intersection.h"
 #include <algorithm>
 
+//Stores an arbitrary number of intersections
 class IntersectionBuffer {
 public:
-
+	//Constructors with initial elements
     IntersectionBuffer(Intersection i);
     IntersectionBuffer(Intersection i1, Intersection i2);
 
 	IntersectionBuffer() { IsSorted = true; }
     ~IntersectionBuffer() = default;
 
+	//Add one or more intersections
     void Add(Intersection intersection);
     void Add(IntersectionBuffer intersections);
 
+	//Access individual intersections
     Intersection operator[](size_t i) const;
     size_t GetCount();
 
     void Sort();
 
+	//Find the first 'hit' (Intersection with smallest, positive 't value')
     const Intersection GetFirstHit();
 
 private:
@@ -37,6 +41,8 @@ inline IntersectionBuffer::IntersectionBuffer(Intersection i1, Intersection i2) 
 
 inline void IntersectionBuffer::Add(Intersection intersection) {
     intersections.push_back(intersection);
+
+	//List of intersections is no longer sorted
     IsSorted = false;
 }
 
@@ -47,6 +53,7 @@ inline void IntersectionBuffer::Add(IntersectionBuffer intersections) {
         Add(intersections[i]);
     }
 
+	//List of intersections is no longer sorted
     IsSorted = false;
 }
 
@@ -59,6 +66,7 @@ inline size_t IntersectionBuffer::GetCount() {
 }
 
 inline void IntersectionBuffer::Sort() {
+	//Sort the list if it is not already sorted
     if(!IsSorted) std::sort(intersections.begin(), intersections.end());
     IsSorted = true;
 }

@@ -3,6 +3,7 @@
 #include "Pattern.h"
 #include <cmath>
 
+//Pattern that linearly interpolates between two colors
 class GradientPattern : public Pattern
 {
 public:

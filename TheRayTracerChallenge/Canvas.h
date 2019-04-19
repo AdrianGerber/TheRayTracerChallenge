@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 
+//Canvas used to store an image
 class Canvas
 {
 public:
@@ -12,8 +13,6 @@ public:
     Canvas() = delete;
     Canvas(size_t xSize, size_t ySize);
     ~Canvas() = default;
-    
-    
 
     void WritePixel(Color color, size_t xPosition, size_t yPosition);
     Color ReadPixel(size_t xPosition, size_t yPosition);
@@ -23,6 +22,7 @@ public:
 
     std::string ConvertToPPM(unsigned int maxValue = 255, size_t maxLineLength = 70);
 
+	//Save the image as a .ppm file
     bool SaveToFile(std::string fileName, size_t maxValue = 255, size_t maxLineLength = 70);
 
 private:

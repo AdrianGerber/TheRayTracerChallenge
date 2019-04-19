@@ -5,11 +5,10 @@
 #include "Ray.h"
 #include "Matrix.h"
 
-
+//Abstract class common to all shapes
 class Shape
 {
 public:
-
 	Shape() { material = Material(); id = Intersection::invalidID; transform.matrix = Matrix::IndentityMatrix4x4(); }
     ~Shape() = default;
 
@@ -22,47 +21,58 @@ public:
     void SetMaterial(Material newMaterial) { material = newMaterial; }
     Material GetMaterial() { return material; }
 
-	IntersectionBuffer FindIntersections(Ray ray) {
-		//Transform the ray into object space
-		Ray objectSpaceRay = ray.Transform(GetTransform().Inversion());
+	//Find intersections of this shape and a ray
+	IntersectionBuffer FindIntersections(Ray ray);
 
-		//Find intersections
-		return FindObjectSpaceIntersections(objectSpaceRay);
-	}
+	//Calculate the surface normal at a point on the shape (Point assumed to be on shape's surface)
+	Vector SurfaceNormal(Point p);
 
-	Vector SurfaceNormal(Point p) {
-		//Point in object space
-		Point objectSpacePoint = GetTransform().Inversion() * p;
-		
-		//Calculate normal
-		Vector objectSpaceNormal = FindObjectSpaceNormal(objectSpacePoint);
+	//Calculate all intersections with a ray in object space (Individually implemented by each shape)
+	virtual IntersectionBuffer FindObjectSpaceIntersections(Ray ray) = 0;
 
-		//Convert back to world space
-		Vector worldSpaceNormal = GetTransform().Inversion().matrix.Transpose() * objectSpaceNormal;
+	//Calculate the normal vector of a point in object space (Implemented by each concrete shape)
+	virtual Vector FindObjectSpaceNormal(Point p) = 0;
 
-		//Force worldSpaceNormal to be a vector
-		worldSpaceNormal.w = 0.0;
 
-		return worldSpaceNormal.Normalize();
-	}
-
-    bool operator==(Shape& s) {
-        return
-            GetTransform() == s.GetTransform()
-            && GetMaterial() == s.GetMaterial()
-            && GetID() == s.GetID();
-    }
+	//Comparison of shapes
+	bool operator==(Shape& s);
 
     bool operator!=(Shape& s) { return !(*this == s); }
 
-	virtual IntersectionBuffer FindObjectSpaceIntersections(Ray ray) = 0;
-
-	virtual Vector FindObjectSpaceNormal(Point p) = 0;
-
 private:
-
     size_t id;
     Transform transform;
     Material material;
 };
 
+
+inline IntersectionBuffer Shape::FindIntersections(Ray ray) {
+	//Transform the ray into object space
+	Ray objectSpaceRay = ray.Transform(GetTransform().Inversion());
+
+	//Find intersections
+	return FindObjectSpaceIntersections(objectSpaceRay);
+}
+
+inline Vector Shape::SurfaceNormal(Point p) {
+	//Point in object space
+	Point objectSpacePoint = GetTransform().Inversion() * p;
+
+	//Calculate normal
+	Vector objectSpaceNormal = FindObjectSpaceNormal(objectSpacePoint);
+
+	//Convert back to world space
+	Vector worldSpaceNormal = GetTransform().Inversion().matrix.Transpose() * objectSpaceNormal;
+
+	//Force worldSpaceNormal to be a vector
+	worldSpaceNormal.w = 0.0;
+
+	return worldSpaceNormal.Normalize();
+}
+
+inline bool Shape::operator==(Shape& s) {
+	return
+		GetTransform() == s.GetTransform()
+		&& GetMaterial() == s.GetMaterial()
+		&& GetID() == s.GetID();
+}

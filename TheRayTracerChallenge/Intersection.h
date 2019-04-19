@@ -4,6 +4,7 @@
 #include <memory>
 #include "Constants.h"
 
+//Type used to store the intersection of a ray and a shape
 class Intersection {
     
 public:
@@ -11,9 +12,8 @@ public:
 
     //Value of parameter 't' at the intersection
 	double t;
+	//ID of the object that was hit
     size_t objectID;
-
-    
 
     Intersection();
     Intersection(double t, size_t objectID);
