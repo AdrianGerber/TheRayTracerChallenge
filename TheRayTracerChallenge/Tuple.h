@@ -23,10 +23,10 @@ public:
     static Tuple CrossProduct(Tuple t1, Tuple t2);
     //Calculate a vector's magnitude
     double Magnitude();
-    //Normalize a vector (-> Magnitude = 1.0f)
+    //Normalize a vector (-> Magnitude = 1.0)
     Tuple Normalize();
     
-    Tuple Reflect(Tuple normal);
+    Tuple Reflect(Tuple normal) const;
 
     //Does the tuple represent a point?
     bool IsPoint();
@@ -48,7 +48,7 @@ using Vector = Tuple;
 
 inline Tuple::Tuple()
 {
-   x = y = z = w = 0.0f;
+   x = y = z = w = 0.0;
 }
 
 inline Tuple::Tuple(double x, double y, double z, double w)
@@ -61,12 +61,12 @@ inline Tuple::Tuple(double x, double y, double z, double w)
 
 inline Tuple Tuple::CreatePoint(double x, double y, double z)
 {
-    return Tuple(x, y, z, 1.0f);
+    return Tuple(x, y, z, 1.0);
 }
 
 inline Tuple Tuple::CreateVector(double x, double y, double z)
 {
-    return Tuple(x, y, z, 0.0f);
+    return Tuple(x, y, z, 0.0);
 }
 
 inline double Tuple::DotProduct(Tuple t1, Tuple t2)
@@ -109,18 +109,18 @@ inline Tuple Tuple::Normalize()
     );
 }
 
-inline Tuple Tuple::Reflect(Tuple normal) {
-    return (*this) - (normal * 2.0f * DotProduct(*this, normal));
+inline Tuple Tuple::Reflect(Tuple normal) const {
+    return (*this) - (normal * 2.0 * DotProduct(*this, normal));
 }
 
 inline bool Tuple::IsPoint()
 {
-    return Constants::DoubleEqual(w, 1.0f);
+    return Constants::DoubleEqual(w, 1.0);
 }
 
 inline bool Tuple::IsVector()
 {
-    return Constants::DoubleEqual(w, 0.0f);
+    return Constants::DoubleEqual(w, 0.0);
 }
 
 inline bool Tuple::operator==(const Tuple t) const

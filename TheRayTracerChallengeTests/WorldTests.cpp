@@ -9,6 +9,7 @@
 #include <memory>
 #include <Shape.h>
 #include <Sphere.h>
+#include <Plane.h>
 #include <World.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -229,7 +230,133 @@ namespace TheRayTracesChallengeTests
 			);
 		}
 
+		TEST_METHOD(HitUnreflectiveShape) {
+			World w;
+			w.LoadDefaultWorld();
+			Ray ray(Point::CreatePoint(0.0, 0.0, 0.0),
+				Vector::CreateVector(0.0, 0.0, 1.0));
 
 
+			auto shape = w.shapes[1];
+			auto material = shape->GetMaterial();
+			material.ambient = 1.0;
+			shape->SetMaterial(material);
+
+			IntersectionBuffer intersections(Intersection(1.0, shape->GetID()));
+
+			HitCalculations hit(intersections, ray, w.shapes);
+
+			Assert::IsTrue(
+				w.FindReflectedColor(hit)
+				==
+				Color(0.0, 0.0, 0.0)
+			);
+		}
+
+		TEST_METHOD(ReflectedColor) {
+			World w;
+			w.LoadDefaultWorld();
+
+			std::shared_ptr<Plane> plane = std::make_shared<Plane>();
+			Material material;
+			material.reflective = 0.5;
+			plane->SetMaterial(material);
+			plane->SetTransform(Transform::CreateTranslation(0.0, -1.0, 0.0));
+			w.AddShape(plane);
+
+			Ray ray(
+				Point::CreatePoint(0.0, 0.0, -3.0),
+				Vector::CreateVector(0.0, -sqrt(2.0) / 2.0, sqrt(2.0) / 2.0)
+			);
+			
+			IntersectionBuffer intersections(Intersection(sqrt(2.0), plane->GetID()));
+			HitCalculations hit(intersections, ray, w.shapes);
+
+			Color c = w.FindReflectedColor(hit);
+
+			Assert::IsTrue(
+				c
+				==
+				Color(0.19033, 0.23791, 0.142749)
+			);
+		}
+
+		TEST_METHOD(ReflectiveShadeHit) {
+			World w;
+			w.LoadDefaultWorld();
+
+			auto plane = std::make_shared<Plane>();
+			Material m;
+			m.reflective = 0.5;
+			plane->SetMaterial(m);
+			plane->SetTransform(Transform::CreateTranslation(0.0, -1.0, 0.0));
+			w.AddShape(plane);
+
+			Ray ray(
+				Point::CreatePoint(0.0, 0.0, -3.0),
+				Vector::CreateVector(0.0, -sqrt(2.0) / 2.0, sqrt(2.0) / 2.0)
+			);
+			
+			IntersectionBuffer intersections(Intersection(sqrt(2.0), plane->GetID()));
+			HitCalculations hit(intersections, ray, w.shapes);
+			
+			Color shadedColor = w.ShadeHit(hit);
+			Assert::IsTrue(shadedColor == Color(0.87676, 0.92435, 0.82917));
+		}
+
+		TEST_METHOD(AvoidInfiniteRecursion){
+			//Two fully reflective planes -> light keeps being reflected
+			World w;
+
+			auto plane1 = std::make_shared<Plane>();
+			auto plane2 = std::make_shared<Plane>();
+
+			Material m;
+			m.reflective = 1.0;
+
+			plane1->SetMaterial(m);
+			plane2->SetMaterial(m);
+
+			plane1->SetTransform(Transform::CreateTranslation(0.0, -1.0, 0.0));
+			plane2->SetTransform(Transform::CreateTranslation(0.0, 1.0, 0.0));
+
+			w.AddShape(plane1);
+			w.AddShape(plane2);
+
+			Ray ray(
+				Point::CreatePoint(0.0, 0.0, 0.0),
+				Vector::CreateVector(0.0, 1.0, 0.0)
+			);
+
+			//This function call must terminate
+			Color c = w.FindRayColor(ray);
+
+			//If execution reaches this point, the test should pass
+			Assert::IsTrue(true);
+		}
+
+		TEST_METHOD(LimitRecursion) {
+			World w;
+			w.LoadDefaultWorld();
+
+			auto plane = std::make_shared<Plane>();
+			Material m;
+			m.reflective = 0.5;
+			plane->SetMaterial(m);
+			plane->SetTransform(Transform::CreateTranslation(0.0, -1.0, 0.0));
+			w.AddShape(plane);
+
+			Ray ray(
+				Point::CreatePoint(0.0, 0.0, -3.0),
+				Vector::CreateVector(0.0, -sqrt(2.0) / 2.0, sqrt(2.0) / 2.0)
+			);
+
+			IntersectionBuffer intersections(Intersection(sqrt(2.0), plane->GetID()));
+			HitCalculations hit(intersections, ray, w.shapes);
+
+			Color reflectedColor = w.FindReflectedColor(hit, 0);
+			//Recursion should stop and return black
+			Assert::IsTrue(reflectedColor == Color(0.0, 0.0, 0.0));
+		}
     };
 }

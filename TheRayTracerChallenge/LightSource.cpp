@@ -10,8 +10,8 @@ LightSource::LightSource(Point position, Color intensity)
 
 LightSource::LightSource()
 {
-    SetIntensity(Color(1.0f, 1.0f, 1.0f));
-    SetPosition(Point::CreatePoint(0.0f, 0.0f, 0.0f));
+    SetIntensity(Color(1.0, 1.0, 1.0));
+    SetPosition(Point::CreatePoint(0.0, 0.0, 0.0));
 }
 
 
@@ -38,9 +38,9 @@ Color LightSource::Lighting(std::shared_ptr<Shape> shape, Point p, Vector eye, V
 	double lightDotNormal = Vector::DotProduct(normal, lightVector);
 
     //Negative value means the light source is on the other side of the surface
-    if (lightDotNormal < 0.0f || IsInShadow) {
-        diffuse = Color(0.0f, 0.0f, 0.0f);
-        specular = Color(0.0f, 0.0f, 0.0f);
+    if (lightDotNormal < 0.0 || IsInShadow) {
+        diffuse = Color(0.0, 0.0, 0.0);
+        specular = Color(0.0, 0.0, 0.0);
     }
     else {
         //Contribution of the diffuse component
@@ -50,12 +50,12 @@ Color LightSource::Lighting(std::shared_ptr<Shape> shape, Point p, Vector eye, V
 		double reflectDotEye = Vector::DotProduct((-lightVector).Reflect(normal), eye);
 
         if (reflectDotEye <= 0.0) {
-            specular = Color(0.0f, 0.0f, 0.0f);
+            specular = Color(0.0, 0.0, 0.0);
         }
         else {
             //Specular component
             double factor = pow(reflectDotEye, m.shininess);
-            specular = intensity * static_cast<float>(m.specular * factor);
+            specular = intensity * static_cast<double>(m.specular * factor);
         }
     }
 

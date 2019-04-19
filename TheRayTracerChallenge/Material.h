@@ -13,6 +13,7 @@ public:
 	double diffuse;
 	double specular;
 	double shininess;
+	double reflective;
 
     Material();
     ~Material();
@@ -23,6 +24,7 @@ public:
             && Constants::DoubleEqual(ambient, m2.ambient)
             && Constants::DoubleEqual(diffuse, m2.diffuse)
             && Constants::DoubleEqual(specular, m2.specular)
+            && Constants::DoubleEqual(reflective, m2.reflective)
             && Constants::DoubleEqual(shininess, m2.shininess);
     }
 

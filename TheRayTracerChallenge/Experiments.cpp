@@ -127,7 +127,7 @@ void DrawSphereReflections() {
 
 
 
-//End of chapter 7 / 8 / 9/ 10
+//End of chapter 7 / 8 / 9/ 10 / 11
 void DrawChapter7Scene()
 {
 	World world;
@@ -164,6 +164,7 @@ void DrawChapter7Scene()
 	material.pattern = std::make_shared<CheckerPattern>(Color(1.0f, 0.8f, 0.1f), Color(0.0, 0.1, 0.7));
 	material.pattern->SetTransform(Transform::CreateScale(0.2, 0.2, 0.2));
 	material.specular = 0.0;
+	material.reflective = 0.3;
 
 	auto floor = std::make_shared<Plane>();
 	floor->SetMaterial(material);
@@ -211,12 +212,13 @@ void DrawChapter7Scene()
 		* Transform::CreateScale(0.5f, 0.5f, 0.5f);
 
 	material = Material();
-	material.pattern = std::make_shared<GradientPattern>(Color(0.1f, 0.1f, 1.0f), Color(0.1f, 0.1f, 0.0f));
+	material.pattern = std::make_shared<GradientPattern>(Color(0.1f, 0.1f, 0.3f), Color(0.1f, 0.1f, 0.0f));
 	material.pattern->SetTransform(
 		Transform::CreateScale(2.0, 2.0, 2.0).RotateY(-Constants::PI / 2.0).Translate(1.0, 1.0, 1.0)
 	);
-	material.diffuse = 0.7f;
-	material.specular = 0.3f;
+	material.diffuse = 0.7;
+	material.specular = 0.3;
+	material.reflective = 0.4;
 
 	auto right = std::make_shared<Sphere>();
 	right->SetMaterial(material);

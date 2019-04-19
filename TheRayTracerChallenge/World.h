@@ -21,7 +21,8 @@ public:
 
     void LoadDefaultWorld();
     IntersectionBuffer IntersectRay(Ray ray);
-	Color ShadeHit(const HitCalculations& hitInfo);
+	Color ShadeHit(const HitCalculations& hitInfo, size_t remainingReflections = 5);
+	Color FindReflectedColor(const HitCalculations& hitInfo, size_t remainingReflections = 5);
 	bool PointIsInShadow(std::shared_ptr<LightSource> lightSource, Point point);
 
 
@@ -34,6 +35,6 @@ public:
 		lightSources.push_back(lightSource);
 	}
 
-	Color FindRayColor(Ray ray);
+	Color FindRayColor(Ray ray, size_t remainingReflections = 5);
 };
 

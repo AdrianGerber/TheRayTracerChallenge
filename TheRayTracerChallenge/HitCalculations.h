@@ -16,6 +16,7 @@ public:
 	Point overPoint;
 	Vector eyeVector;
 	Vector normalVector;
+	Vector reflectionVector;
 	bool insideShape;
 
 	HitCalculations(IntersectionBuffer& intersections, const Ray& ray, std::vector<std::shared_ptr<Shape>>& shapes) {
@@ -27,15 +28,16 @@ public:
 		eyeVector = - ray.direction;
 		normalVector = shapes[shapeID]->SurfaceNormal(point);
 
-
 		//Flip the normal vector if it points away from the eye vector
-		if (Vector::DotProduct(normalVector, eyeVector) < 0.0f) {
+		if (Vector::DotProduct(normalVector, eyeVector) < 0.0) {
 			insideShape = true;
 			normalVector = -normalVector;
 		}
 		else {
 			insideShape = false;
 		}
+
+		reflectionVector = ray.direction.Reflect(normalVector);
 
 		//Slightly adjusted point, so it is on the correct side of the shapes
 		//surface, even after floating point rounding errors

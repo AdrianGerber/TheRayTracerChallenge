@@ -27,6 +27,7 @@ namespace TheRayTracesChallengeTests
             Assert::IsTrue(Constants::DoubleEqual(m.diffuse, 0.9f));
             Assert::IsTrue(Constants::DoubleEqual(m.specular, 0.9f));
             Assert::IsTrue(Constants::DoubleEqual(m.shininess, 200.0f));
+            Assert::IsTrue(Constants::DoubleEqual(m.reflective, 0.0f));
 
         }
     };

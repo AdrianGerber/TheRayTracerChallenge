@@ -10,6 +10,7 @@
 #include <cmath>
 #include <Shape.h>
 #include <Sphere.h>
+#include <Plane.h>
 #include <LightSource.h>
 #include <HitCalculations.h>
 
@@ -99,6 +100,25 @@ namespace TheRayTracesChallengeTests
 			//OverPoint is correctly adjusted, so floating point errors are compensated
 			Assert::IsTrue(comps.overPoint.z < (-Constants::EPSILON / 2.0f));
 			Assert::IsTrue(comps.point.z > comps.overPoint.z);
+		}
+
+		TEST_METHOD(ReflectionVector) {
+			Ray ray(
+				Point::CreatePoint(0.0, 1.0, -1.0),
+				Vector::CreateVector(0.0, -sqrt(2.0) / 2.0, sqrt(2.0) / 2.0)
+			);
+
+			std::vector<std::shared_ptr<Shape>> shapes;
+			shapes.push_back(std::make_shared<Plane>());
+
+			IntersectionBuffer xs(Intersection(sqrt(2.0), 0));
+			HitCalculations hit(xs, ray, shapes);
+
+			Assert::IsTrue(
+				hit.reflectionVector
+				==
+				Vector::CreateVector(0.0, sqrt(2.0) / 2.0, sqrt(2.0) / 2.0)
+			);
 		}
 	};
 }
