@@ -15,6 +15,8 @@ public:
     std::vector<std::shared_ptr<Shape>> shapes;
     std::vector<std::shared_ptr<LightSource>> lightSources;
 
+	unsigned long long numberOfRaysCast;
+
     World();
     ~World();
 

@@ -23,6 +23,7 @@
 #include "CheckerPattern.h"
 #include "RingPattern.h"
 #include "BlendedPattern.h"
+#include "Cube.h"
 
 void DrawWatchface();
 

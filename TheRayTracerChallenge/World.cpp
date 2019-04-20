@@ -3,6 +3,7 @@
 
 World::World()
 {
+	numberOfRaysCast = 0;
 }
 
 
@@ -44,7 +45,7 @@ void World::LoadDefaultWorld()
 IntersectionBuffer World::IntersectRay(Ray ray)
 {
     IntersectionBuffer allIntersections;
-
+	numberOfRaysCast++;
 
     for (auto currentShape : shapes) {
         allIntersections.Add(currentShape->FindIntersections(ray));

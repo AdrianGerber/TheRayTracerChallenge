@@ -6,6 +6,7 @@ int main(void) {
 
 	DrawChapter7Scene();
 
+
     std::cout << std::endl;
     char c;
     std::cin >> c;
