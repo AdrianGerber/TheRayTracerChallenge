@@ -24,6 +24,8 @@
 #include "RingPattern.h"
 #include "BlendedPattern.h"
 #include "Cube.h"
+#include "Cylinder.h"
+#include "Cone.h"
 
 void DrawWatchface();
 

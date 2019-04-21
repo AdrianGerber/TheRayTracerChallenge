@@ -9,6 +9,7 @@ public:
 	//Constructors with initial elements
     IntersectionBuffer(Intersection i);
     IntersectionBuffer(Intersection i1, Intersection i2);
+	IntersectionBuffer(Intersection i1, Intersection i2, Intersection i3, Intersection i4);
 
 	IntersectionBuffer() { IsSorted = true; }
     ~IntersectionBuffer() = default;
@@ -37,6 +38,10 @@ inline IntersectionBuffer::IntersectionBuffer(Intersection i) : intersections{ i
 }
 inline IntersectionBuffer::IntersectionBuffer(Intersection i1, Intersection i2) : intersections{ i1, i2 } {
     IsSorted = false;
+}
+
+inline IntersectionBuffer::IntersectionBuffer(Intersection i1, Intersection i2, Intersection i3, Intersection i4) : intersections{ i1, i2, i3, i4 } {
+	IsSorted = false;
 }
 
 inline void IntersectionBuffer::Add(Intersection intersection) {

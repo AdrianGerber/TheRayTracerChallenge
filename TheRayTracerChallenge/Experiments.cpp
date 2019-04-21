@@ -64,7 +64,6 @@ void DrawSphere() {
         }
     }
 
-    
     canvas.SaveToFile("sphere");
 }
 
@@ -127,7 +126,7 @@ void DrawSphereReflections() {
 
 
 
-//End of chapter 7 / 8 / 9 / 10 / 11 / 12
+//End of chapter 7 / 8 / 9 / 10 / 11 / 12 / 13
 void DrawChapter7Scene()
 {
 	World world;
@@ -147,10 +146,10 @@ void DrawChapter7Scene()
 	lightSource->SetPosition(Point::CreatePoint(-10.0f, 10.0f, -10.0f));
 	world.AddLightSource(lightSource);
 	
-	auto lightSource2 = std::make_shared<LightSource>();
-	lightSource2->SetIntensity(Color(0.0f, 0.0f, 1.0f));
-	lightSource2->SetPosition(Point::CreatePoint(14.0f, 10.0f, -10.0f));
-	world.AddLightSource(lightSource2);
+	//auto lightSource2 = std::make_shared<LightSource>();
+	//lightSource2->SetIntensity(Color(0.0f, 0.0f, 1.0f));
+	//lightSource2->SetPosition(Point::CreatePoint(14.0f, 10.0f, -10.0f));
+	//world.AddLightSource(lightSource2);
 
 
 	Transform transform;
@@ -197,15 +196,17 @@ void DrawChapter7Scene()
 
 	//middle
 	//transform = Transform::CreateTranslation(-0.5f, 1.0f, 0.5f);
-	transform = Transform::CreateRotationY(Constants::PI / 4.0).Translate(0.1f, 1.0f, 0.5f);
+	transform = Transform::CreateRotationZ(Constants::PI / 2.0).RotateY(Constants::PI / 4.0).Translate(0.1f, 1.0f, 0.5f);
 	//transform = Transform::CreateTranslation(-0.5f, 1.0f, 0.5f);
 	material = Material();
-	material.pattern = std::make_shared<StripePattern>(Color(0.1, 0.9, 0.9), Color(0.3, 0.5, 0.0));
-	material.pattern->SetTransform(Transform::CreateScale(0.2, 0.2, 0.2));
+	material.pattern = std::make_shared<StripePattern>(Color(0.2, 0.2, 0.2), Color(0.6, 0.6, 0.6));
+	material.pattern->SetTransform(Transform::CreateScale(0.1, 0.1, 0.1).RotateZ(Constants::PI / 2.0));
 	material.diffuse = 0.7f;
-	material.specular = 0.3f;
+	material.specular = 0.6f;
+	material.shininess = 300;
+	material.reflective = 0.2;
 
-	auto middle = std::make_shared<Sphere>();
+	auto middle = std::make_shared<Cylinder>(-1.0, 1.0, true);
 	middle->SetMaterial(material);
 	middle->SetTransform(transform);
 	world.AddShape(middle);
@@ -228,22 +229,24 @@ void DrawChapter7Scene()
 	world.AddShape(right);
 
 	//left
-	transform = Transform::CreateTranslation(-1.5f, 0.33f, -0.75f)
-		* Transform::CreateScale(0.33f, 0.33f, 0.33f);
+	transform = Transform::CreateRotationX(Constants::PI * 1.15).RotateZ(Constants::PI / 4.0).Translate(-1.5, 0.0, 0.0);
 	material = Material();
-	material.pattern = std::make_shared<ColorPattern>(Color(0.2f, 0.2f, 0.2f));
-	material.diffuse = 0.7f;
-	material.specular = 0.3f;
-	material.transparency = 0.8;
+	material.pattern = std::make_shared<ColorPattern>(Color(0.7f, 0.7f, 0.7f));
+	material.diffuse = 0.2;
+	material.specular = 0.9;
+	material.ambient = 0.2;
+	material.shininess = 300;
+	material.transparency = 0.0;
 	material.refractiveIndex = 2;
-	material.reflective = 0.2;
+	material.reflective = 0.3;
 
-	auto left = std::make_shared<Sphere>();
+	auto left = std::make_shared<Cone>(-1.0, 0.0, true);
+	
 	left->SetMaterial(material);
 	left->SetTransform(transform);
 	world.AddShape(left);
 
-	camera.RenderFrame(world).SaveToFile("chapter12");
+	camera.RenderFrame(world).SaveToFile("chapter13");
 
 	std::cout << "\n";
 	std::cout << "Rays: " << std::to_string(world.numberOfRaysCast) << "\n";
