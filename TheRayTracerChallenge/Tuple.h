@@ -103,12 +103,17 @@ inline Tuple Tuple::Normalize()
 {
     double magnitude = Magnitude();
 
-    return Tuple(
-        x / magnitude,
-        y / magnitude,
-        z / magnitude,
-        w / magnitude
-    );
+	//Works with any number that is not exactly = 0.0
+	if (magnitude != 0.0) {
+		return Tuple(
+			x / magnitude,
+			y / magnitude,
+			z / magnitude,
+			w / magnitude
+		);
+	}
+    
+	return Tuple(0.0, 0.0, 0.0, 0.0);
 }
 
 inline Tuple Tuple::Reflect(Tuple normal) const {
