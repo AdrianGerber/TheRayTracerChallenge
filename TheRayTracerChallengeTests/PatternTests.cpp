@@ -50,7 +50,7 @@ namespace TheRayTracesChallengeTests
 			TestPattern testPattern;
 
 			//Default transform is the identity matrix
-			Assert::IsTrue(testPattern.GetTransform().matrix 
+			Assert::IsTrue(testPattern.GetTransform().GetMatrix()
 				== Matrix::IndentityMatrix4x4());
 
 			Transform t;

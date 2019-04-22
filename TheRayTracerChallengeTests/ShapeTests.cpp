@@ -39,7 +39,7 @@ namespace TheRayTracesChallengeTests
 	public:
 		TEST_METHOD(DefaultTransform) {
 			TestShape s;
-			Assert::IsTrue(s.GetTransform() == Matrix::IndentityMatrix4x4());
+			Assert::IsTrue(s.GetTransformCopy() == Matrix::IndentityMatrix4x4());
 		}
 
 		TEST_METHOD(SetTransformation) {
@@ -48,7 +48,7 @@ namespace TheRayTracesChallengeTests
 
 			s.SetTransform(t);
 
-			Assert::IsTrue(s.GetTransform() == t);
+			Assert::IsTrue(s.GetTransformCopy() == t);
 		}
 
 		TEST_METHOD(DefaultMaterial) {

@@ -181,7 +181,7 @@ namespace TheRayTracesChallengeTests
         TEST_METHOD(DefaultTransform) {
             Sphere s;
 
-            Assert::IsTrue(s.GetTransform().matrix == Matrix::IndentityMatrix4x4());
+            Assert::IsTrue(s.GetTransformCopy().GetMatrix() == Matrix::IndentityMatrix4x4());
         }
 
         TEST_METHOD(TransformSphere) {
@@ -189,7 +189,7 @@ namespace TheRayTracesChallengeTests
             Transform t = Transform::CreateTranslation(2.0f, 3.0f, 4.0f);
             s.SetTransform(t);
 
-            Assert::IsTrue(s.GetTransform().matrix == t.matrix);
+            Assert::IsTrue(s.GetTransformCopy().GetMatrix() == t.GetMatrix());
         }
 
         TEST_METHOD(ScaledIntersection) {

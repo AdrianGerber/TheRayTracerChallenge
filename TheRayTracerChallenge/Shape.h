@@ -9,14 +9,18 @@
 class Shape
 {
 public:
-	Shape() { material = Material(); id = Intersection::invalidID; transform.matrix = Matrix::IndentityMatrix4x4(); }
+	Shape() { material = Material(); id = Intersection::invalidID; }
     ~Shape() = default;
 
     void SetID(size_t newID) { id = newID; }
     size_t GetID() { return id; }
 
     void SetTransform(Transform newTransform) { transform = newTransform; }
-    Transform GetTransform() { return transform; }
+	Transform GetTransformCopy() { return transform; }
+	//Get the shape's transform by reference (Caching of calculations can improve performance
+    Transform& GetTransformRef() { return transform; }
+
+
 
     void SetMaterial(Material newMaterial) { material = newMaterial; }
     Material GetMaterial() { return material; }
@@ -48,7 +52,7 @@ private:
 
 inline IntersectionBuffer Shape::FindIntersections(Ray ray) {
 	//Transform the ray into object space
-	Ray objectSpaceRay = ray.Transform(GetTransform().Inversion());
+	Ray objectSpaceRay = ray.Transform(GetTransformRef().Inversion());
 
 	//Find intersections
 	return FindObjectSpaceIntersections(objectSpaceRay);
@@ -56,13 +60,13 @@ inline IntersectionBuffer Shape::FindIntersections(Ray ray) {
 
 inline Vector Shape::SurfaceNormal(Point p) {
 	//Point in object space
-	Point objectSpacePoint = GetTransform().Inversion() * p;
+	Point objectSpacePoint = GetTransformRef().Inversion() * p;
 
 	//Calculate normal
 	Vector objectSpaceNormal = FindObjectSpaceNormal(objectSpacePoint);
 
 	//Convert back to world space
-	Vector worldSpaceNormal = GetTransform().Inversion().matrix.Transpose() * objectSpaceNormal;
+	Vector worldSpaceNormal = GetTransformRef().Inversion().GetMatrix().Transpose() * objectSpaceNormal;
 
 	//Force worldSpaceNormal to be a vector
 	worldSpaceNormal.w = 0.0;
@@ -72,7 +76,7 @@ inline Vector Shape::SurfaceNormal(Point p) {
 
 inline bool Shape::operator==(Shape& s) {
 	return
-		GetTransform() == s.GetTransform()
+		GetTransformRef() == s.GetTransformRef()
 		&& GetMaterial() == s.GetMaterial()
 		&& GetID() == s.GetID();
 }

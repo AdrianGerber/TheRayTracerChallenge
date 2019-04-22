@@ -29,7 +29,7 @@ namespace TheRayTracesChallengeTests
 					Point::CreatePoint(0.0f, 0.0f, 0.0f),
 					Point::CreatePoint(0.0f, 0.0f, -1.0f),
 					Vector::CreateVector(0.0f, 1.0f, 0.0f)
-				).matrix
+				).GetMatrix()
 				==
 				Matrix::IndentityMatrix4x4()
 			);
@@ -61,7 +61,7 @@ namespace TheRayTracesChallengeTests
 					Point::CreatePoint(1.0f, 3.0f, 2.0f),
 					Point::CreatePoint(4.0f, -2.0f, 8.0f),
 					Vector::CreateVector(1.0f, 1.0f, 0.0f)
-				).matrix
+				).GetMatrix()
 				==
 				Matrix::Create(
 					-0.50709f, 0.50709f, 0.67612f, -2.36643f,
@@ -78,7 +78,7 @@ namespace TheRayTracesChallengeTests
 			Assert::IsTrue(c.GetXSize() == 200);
 			Assert::IsTrue(c.GetYSize() == 120);
 			Assert::IsTrue(Constants::DoubleEqual(c.GetFieldOfView(), Constants::PI / 2.0f));
-			Assert::IsTrue(c.GetTransform().matrix == Matrix::IndentityMatrix4x4());
+			Assert::IsTrue(c.GetTransform().GetMatrix() == Matrix::IndentityMatrix4x4());
 		}
 
 		TEST_METHOD(PixelSize) {

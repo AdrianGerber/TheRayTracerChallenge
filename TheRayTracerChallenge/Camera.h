@@ -24,7 +24,6 @@ public:
 		halfHeight = halfWidth = pixelSize = 0.0f;
 		xSize = ySize = 100;
 		fieldOfView = Constants::PI / 2.0f;
-		transform.matrix = Matrix::IndentityMatrix4x4();
 		CalculatePixelSize();
 	}
 
