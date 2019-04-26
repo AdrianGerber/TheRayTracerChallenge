@@ -13,34 +13,31 @@ World::~World()
 
 void World::LoadDefaultWorld()
 {
-    lightSources.clear();
-    shapes.clear();
+	lightSources.clear();
+	shapes.clear();
 
-    //Create default light source    
-    LightSource l(Point::CreatePoint(-10.0, 10.0, -10.0), Color(1.0, 1.0, 1.0));
-    lightSources.push_back(std::make_shared<LightSource>());
-    *lightSources.back() = l;
+	//Create default light source    
+	LightSource l(Point::CreatePoint(-10.0, 10.0, -10.0), Color(1.0, 1.0, 1.0));
+	lightSources.push_back(std::make_shared<LightSource>());
+	*lightSources.back() = l;
 
-    //Create default spheres
-    Material m;
+	//Create default spheres
+	Material m;
 	auto color = std::make_shared<ColorPattern>();
 	color->SetColor(Color(0.8, 1.0, 0.6));
 	m.pattern = color;
-    m.diffuse = 0.7;
-    m.specular = 0.2;
-    
-    Sphere s1;
-    s1.SetMaterial(m);
-    shapes.push_back(std::make_shared<Sphere>());
-    *shapes.back() = s1;
-	shapes.back()->SetID(shapes.size() - 1);
+	m.diffuse = 0.7;
+	m.specular = 0.2;
 
-    Sphere s2;
-    s2.SetTransform(Transform::CreateScale(0.5, 0.5, 0.5));
-    shapes.push_back(std::make_shared<Sphere>());
-    *shapes.back() = s2;
-	shapes.back()->SetID(shapes.size() - 1);
+	auto s1 = Shape::MakeShared<Sphere>();
+	s1->SetMaterial(m);
+	shapes.push_back(s1);
+
+	auto s2 = Shape::MakeShared<Sphere>();
+	s2->SetTransform(Transform::CreateScale(0.5, 0.5, 0.5));
+	shapes.push_back(s2);
 }
+
 
 IntersectionBuffer World::IntersectRay(Ray ray)
 {
@@ -62,14 +59,14 @@ Color World::ShadeHit(const HitCalculations& hitInfo, size_t remainingReflection
 	
 	for (auto& lightSource : lightSources) {
 		bool inShadow = PointIsInShadow(lightSource, hitInfo.overPoint);
-		lightingColor = lightingColor + lightSource->Lighting(shapes[hitInfo.shapeID], hitInfo.overPoint, hitInfo.eyeVector, hitInfo.normalVector, inShadow);
+		lightingColor = lightingColor + lightSource->Lighting(hitInfo.shape, hitInfo.overPoint, hitInfo.eyeVector, hitInfo.normalVector, inShadow);
 	}
 
 
 	Color reflectedColor = FindReflectedColor(hitInfo, remainingReflections);
 	Color refractedColor = FindRefractedColor(hitInfo, remainingReflections);
 
-	Material shapeMaterial = shapes[hitInfo.shapeID]->GetMaterial();
+	Material shapeMaterial = hitInfo.shape->GetMaterial();
 
 	//Material is both reflective and transparent -> use Schlick Approximation
 	if (shapeMaterial.reflective > 0.0 && shapeMaterial.transparency > 0.0) {
@@ -86,7 +83,7 @@ Color World::ShadeHit(const HitCalculations& hitInfo, size_t remainingReflection
 
 Color World::FindReflectedColor(const HitCalculations& hitInfo, size_t remainingReflections)
 {
-	Material material = shapes[hitInfo.shapeID]->GetMaterial();
+	Material material = hitInfo.shape->GetMaterial();
 
 	//Material is not reflective
 	if (Constants::DoubleEqual(material.reflective, 0.0)) {
@@ -112,7 +109,7 @@ Color World::FindRefractedColor(const HitCalculations& hitInfo, size_t remaining
 		return Color(0.0, 0.0, 0.0);
 	}
 
-	Material m = shapes[hitInfo.shapeID]->GetMaterial();
+	Material m = hitInfo.shape->GetMaterial();
 
 	//Material not transparent -> black
 	if (Constants::DoubleEqual(m.transparency, 0.0)) {

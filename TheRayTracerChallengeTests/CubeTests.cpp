@@ -46,9 +46,8 @@ namespace TheRayTracesChallengeTests
 		}
 
 		TEST_METHOD(CubeIntersections) {
-			Cube cube;
+			auto cube = Shape::MakeShared<Cube>();
 			size_t id = 3;
-			cube.SetID(id);
 
 			std::vector<Ray> rays = {
 				//Rays that hit the cube
@@ -71,13 +70,13 @@ namespace TheRayTracesChallengeTests
 
 			std::vector<IntersectionBuffer> expected = {
 				//Expected results for rays hitting the cube
-				IntersectionBuffer(Intersection(4.0, id), Intersection(6.0, id)),
-				IntersectionBuffer(Intersection(4.0, id), Intersection(6.0, id)),
-				IntersectionBuffer(Intersection(4.0, id), Intersection(6.0, id)),
-				IntersectionBuffer(Intersection(4.0, id), Intersection(6.0, id)),
-				IntersectionBuffer(Intersection(4.0, id), Intersection(6.0, id)),
-				IntersectionBuffer(Intersection(4.0, id), Intersection(6.0, id)),
-				IntersectionBuffer(Intersection(-1.0, id), Intersection(1.0, id)),
+				IntersectionBuffer(Intersection(4.0, cube), Intersection(6.0, cube)),
+				IntersectionBuffer(Intersection(4.0, cube), Intersection(6.0, cube)),
+				IntersectionBuffer(Intersection(4.0, cube), Intersection(6.0, cube)),
+				IntersectionBuffer(Intersection(4.0, cube), Intersection(6.0, cube)),
+				IntersectionBuffer(Intersection(4.0, cube), Intersection(6.0, cube)),
+				IntersectionBuffer(Intersection(4.0, cube), Intersection(6.0, cube)),
+				IntersectionBuffer(Intersection(-1.0, cube), Intersection(1.0, cube)),
 
 				//Results for rays that miss the cube
 				IntersectionBuffer(),
@@ -91,7 +90,7 @@ namespace TheRayTracesChallengeTests
 			for (size_t testNr = 0; testNr < expected.size(); testNr++) {
 				Ray testRay = rays[testNr];
 				IntersectionBuffer expectedIntersections = expected[testNr];
-				IntersectionBuffer intersections = cube.FindIntersections(testRay);
+				IntersectionBuffer intersections = cube->FindIntersections(testRay);
 
 
 				//Make sure the correct number of hits was found
@@ -100,10 +99,10 @@ namespace TheRayTracesChallengeTests
 				//If there were any intersections, make sure that they were calculated correctly
 				if (intersections.GetCount() != 0) {
 					Assert::IsTrue(intersections[0].t == expectedIntersections[0].t);
-					Assert::IsTrue(intersections[0].objectID == expectedIntersections[0].objectID);
+					Assert::IsTrue(intersections[0].shape == expectedIntersections[0].shape);
 
 					Assert::IsTrue(intersections[1].t == expectedIntersections[1].t);
-					Assert::IsTrue(intersections[1].objectID == expectedIntersections[1].objectID);
+					Assert::IsTrue(intersections[1].shape == expectedIntersections[1].shape);
 				}
 			}
 		}

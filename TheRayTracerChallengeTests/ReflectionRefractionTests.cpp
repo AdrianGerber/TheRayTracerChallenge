@@ -24,26 +24,23 @@ namespace TheRayTracesChallengeTests
 	public:
 		TEST_METHOD(FindingRefractiveIndex) {
 			//Shapes
-			auto A = std::make_shared<Sphere>();
+			auto A = Shape::MakeShared<Sphere>();
 			auto materialA = Material::CreateGlass();
 			materialA.refractiveIndex = 1.5;
 			A->SetMaterial(materialA);
 			A->SetTransform(Transform::CreateScale(2.0, 2.0, 2.0));
-			A->SetID(0);
 
-			auto B = std::make_shared<Sphere>();
+			auto B = Shape::MakeShared<Sphere>();
 			auto materialB = Material::CreateGlass();
 			materialB.refractiveIndex = 2.0;
 			B->SetMaterial(materialB);
 			B->SetTransform(Transform::CreateTranslation(0.0, 0.0, -0.25));
-			B->SetID(1);
 
-			auto C = std::make_shared<Sphere>();
+			auto C = Shape::MakeShared<Sphere>();
 			auto materialC = Material::CreateGlass();
 			materialC.refractiveIndex = 2.5;
 			C->SetMaterial(materialC);
 			C->SetTransform(Transform::CreateTranslation(0.0, 0.0, 0.25));
-			C->SetID(2);
 
 			std::vector<std::shared_ptr<Shape>> shapes;
 			shapes.push_back(A);
@@ -59,12 +56,12 @@ namespace TheRayTracesChallengeTests
 
 			//Simulated intersections
 			std::vector<Intersection> testIntersections;
-			testIntersections.push_back(Intersection(2.0, A->GetID()));
-			testIntersections.push_back(Intersection(2.75, B->GetID()));
-			testIntersections.push_back(Intersection(3.25, C->GetID()));
-			testIntersections.push_back(Intersection(4.75, B->GetID()));
-			testIntersections.push_back(Intersection(5.25, C->GetID()));
-			testIntersections.push_back(Intersection(6.0, A->GetID()));
+			testIntersections.push_back(Intersection(2.0, A));
+			testIntersections.push_back(Intersection(2.75, B));
+			testIntersections.push_back(Intersection(3.25, C));
+			testIntersections.push_back(Intersection(4.75, B));
+			testIntersections.push_back(Intersection(5.25, C));
+			testIntersections.push_back(Intersection(6.0, A));
 
 			//Buffer with all intersections
 			IntersectionBuffer intersections;
@@ -90,8 +87,8 @@ namespace TheRayTracesChallengeTests
 		}
 
 		TEST_METHOD(SchlickApproximation_TotalInternalReflection) {
-			auto shape = std::make_shared<Sphere>();
-			shape->SetID(0);
+			auto shape = Shape::MakeShared<Sphere>();
+
 			shape->SetMaterial(Material::CreateGlass());
 			std::vector<std::shared_ptr<Shape>> shapes;
 			shapes.push_back(shape);
@@ -101,15 +98,14 @@ namespace TheRayTracesChallengeTests
 				Vector::CreateVector(0.0, 1.0, 0.0)
 			);
 
-			IntersectionBuffer xs(Intersection(-sqrt(2.0) / 2.0, shape->GetID()), Intersection(sqrt(2.0) / 2.0, shape->GetID()));
+			IntersectionBuffer xs(Intersection(-sqrt(2.0) / 2.0, shape), Intersection(sqrt(2.0) / 2.0, shape));
 
 			HitCalculations hit(xs[1], xs, ray, shapes);
 			Assert::IsTrue(Constants::DoubleEqual(hit.SchlickApproximation(), 1.0));
 		}
 
 		TEST_METHOD(SchlickApproximation_PerpendicularView) {
-			auto shape = std::make_shared<Sphere>();
-			shape->SetID(0);
+			auto shape = Shape::MakeShared<Sphere>();
 			shape->SetMaterial(Material::CreateGlass());
 			std::vector<std::shared_ptr<Shape>> shapes;
 			shapes.push_back(shape);
@@ -119,15 +115,14 @@ namespace TheRayTracesChallengeTests
 				Vector::CreateVector(0.0, 1.0, 0.0)
 			);
 
-			IntersectionBuffer xs(Intersection(-1.0, shape->GetID()), Intersection(1.0, shape->GetID()));
+			IntersectionBuffer xs(Intersection(-1.0, shape), Intersection(1.0, shape));
 
 			HitCalculations hit(xs[1], xs, ray, shapes);
 			Assert::IsTrue(Constants::DoubleEqual(hit.SchlickApproximation(), 0.04));
 		}
 
 		TEST_METHOD(SchlickApproximation_N1LESSTHANN2) {
-			auto shape = std::make_shared<Sphere>();
-			shape->SetID(0);
+			auto shape = Shape::MakeShared<Sphere>();
 			shape->SetMaterial(Material::CreateGlass());
 			std::vector<std::shared_ptr<Shape>> shapes;
 			shapes.push_back(shape);
@@ -137,7 +132,7 @@ namespace TheRayTracesChallengeTests
 				Vector::CreateVector(0.0, 0.0, 1.0)
 			);
 
-			IntersectionBuffer xs(Intersection(1.8589, shape->GetID()));
+			IntersectionBuffer xs(Intersection(1.8589, shape));
 
 			HitCalculations hit(xs[0], xs, ray, shapes);
 			Assert::IsTrue(Constants::DoubleEqual(hit.SchlickApproximation(), 0.48873));
@@ -146,7 +141,7 @@ namespace TheRayTracesChallengeTests
 			World w;
 			w.LoadDefaultWorld();
 
-			std::shared_ptr<Plane> plane = std::make_shared<Plane>();
+			std::shared_ptr<Plane> plane = Shape::MakeShared<Plane>();
 			Material material;
 			material.reflective = 0.5;
 			plane->SetMaterial(material);
@@ -158,7 +153,7 @@ namespace TheRayTracesChallengeTests
 				Vector::CreateVector(0.0, -sqrt(2.0) / 2.0, sqrt(2.0) / 2.0)
 			);
 
-			IntersectionBuffer intersections(Intersection(sqrt(2.0), plane->GetID()));
+			IntersectionBuffer intersections(Intersection(sqrt(2.0), plane));
 			HitCalculations hit(intersections.GetFirstHit(), intersections, ray, w.shapes);
 
 			Color c = w.FindReflectedColor(hit);
@@ -174,7 +169,7 @@ namespace TheRayTracesChallengeTests
 			World w;
 			w.LoadDefaultWorld();
 
-			auto plane = std::make_shared<Plane>();
+			auto plane = Shape::MakeShared<Plane>();
 			Material m;
 			m.reflective = 0.5;
 			plane->SetMaterial(m);
@@ -186,7 +181,7 @@ namespace TheRayTracesChallengeTests
 				Vector::CreateVector(0.0, -sqrt(2.0) / 2.0, sqrt(2.0) / 2.0)
 			);
 
-			IntersectionBuffer intersections(Intersection(sqrt(2.0), plane->GetID()));
+			IntersectionBuffer intersections(Intersection(sqrt(2.0), plane));
 			HitCalculations hit(intersections.GetFirstHit(), intersections, ray, w.shapes);
 
 			Color shadedColor = w.ShadeHit(hit);
@@ -197,8 +192,8 @@ namespace TheRayTracesChallengeTests
 			//Two fully reflective planes -> light keeps being reflected
 			World w;
 
-			auto plane1 = std::make_shared<Plane>();
-			auto plane2 = std::make_shared<Plane>();
+			auto plane1 = Shape::MakeShared<Plane>();
+			auto plane2 = Shape::MakeShared<Plane>();
 
 			Material m;
 			m.reflective = 1.0;
@@ -228,7 +223,7 @@ namespace TheRayTracesChallengeTests
 			World w;
 			w.LoadDefaultWorld();
 
-			auto plane = std::make_shared<Plane>();
+			auto plane = Shape::MakeShared<Plane>();
 			Material m;
 			m.reflective = 0.5;
 			plane->SetMaterial(m);
@@ -240,7 +235,7 @@ namespace TheRayTracesChallengeTests
 				Vector::CreateVector(0.0, -sqrt(2.0) / 2.0, sqrt(2.0) / 2.0)
 			);
 
-			IntersectionBuffer intersections(Intersection(sqrt(2.0), plane->GetID()));
+			IntersectionBuffer intersections(Intersection(sqrt(2.0), plane));
 			HitCalculations hit(intersections.GetFirstHit(), intersections, ray, w.shapes);
 
 			Color reflectedColor = w.FindReflectedColor(hit, 0);
@@ -259,7 +254,7 @@ namespace TheRayTracesChallengeTests
 				Vector::CreateVector(0.0, 0.0, 1.0)
 			);
 
-			IntersectionBuffer xs(Intersection(4.0, shape->GetID()), Intersection(6.0, shape->GetID()));
+			IntersectionBuffer xs(Intersection(4.0, shape), Intersection(6.0, shape));
 
 			HitCalculations hit(xs[0], xs, ray, w.shapes);
 
@@ -281,7 +276,7 @@ namespace TheRayTracesChallengeTests
 				Vector::CreateVector(0.0, 0.0, 1.0)
 			);
 
-			IntersectionBuffer xs(Intersection(4.0, shape->GetID()), Intersection(6.0, shape->GetID()));
+			IntersectionBuffer xs(Intersection(4.0, shape), Intersection(6.0, shape));
 
 			HitCalculations hit(xs[0], xs, ray, w.shapes);
 
@@ -303,7 +298,7 @@ namespace TheRayTracesChallengeTests
 				Vector::CreateVector(0.0, 1.0, 0.0)
 			);
 
-			IntersectionBuffer xs(Intersection(-sqrt(2.0) / 2.0, shape->GetID()), Intersection(sqrt(2.0) / 2.0, shape->GetID()));
+			IntersectionBuffer xs(Intersection(-sqrt(2.0) / 2.0, shape), Intersection(sqrt(2.0) / 2.0, shape));
 
 			HitCalculations hit(xs[1], xs, ray, w.shapes);
 
@@ -339,10 +334,10 @@ namespace TheRayTracesChallengeTests
 			);
 
 			IntersectionBuffer xs;
-			xs.Add(Intersection(-0.9899, A->GetID()));
-			xs.Add(Intersection(-0.4899, B->GetID()));
-			xs.Add(Intersection(0.4899, B->GetID()));
-			xs.Add(Intersection(0.9899, A->GetID()));
+			xs.Add(Intersection(-0.9899, A));
+			xs.Add(Intersection(-0.4899, B));
+			xs.Add(Intersection(0.4899, B));
+			xs.Add(Intersection(0.9899, A));
 
 			HitCalculations hit(xs[2], xs, ray, w.shapes);
 
@@ -357,7 +352,7 @@ namespace TheRayTracesChallengeTests
 			World w;
 			w.LoadDefaultWorld();
 
-			auto floor = std::make_shared<Plane>();
+			auto floor = Shape::MakeShared<Plane>();
 			floor->SetTransform(Transform::CreateTranslation(0.0, -1.0, 0.0));
 			Material floorMaterial;
 			floorMaterial.reflective = 0.5;
@@ -366,7 +361,7 @@ namespace TheRayTracesChallengeTests
 			floor->SetMaterial(floorMaterial);
 			w.AddShape(floor);
 
-			auto ball = std::make_shared<Sphere>();
+			auto ball = Shape::MakeShared<Sphere>();
 			Material ballMaterial;
 			ballMaterial.pattern = std::make_shared<ColorPattern>(Color(1.0, 0.0, 0.0));
 			ballMaterial.ambient = 0.5;
@@ -379,7 +374,7 @@ namespace TheRayTracesChallengeTests
 				Vector::CreateVector(0.0, -sqrt(2.0) / 2.0, sqrt(2.0) / 2.0)
 			);
 
-			IntersectionBuffer xs(Intersection(sqrt(2), floor->GetID()));
+			IntersectionBuffer xs(Intersection(sqrt(2), floor));
 			HitCalculations hit(xs[0], xs, ray, w.shapes);
 
 			Color c = w.ShadeHit(hit, 5);

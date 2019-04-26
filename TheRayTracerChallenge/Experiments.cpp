@@ -36,7 +36,7 @@ void DrawSphere() {
     Point origin = Point::CreatePoint(0.0f, 0.0f, -4.0f);
     
     //Sphere to draw
-    auto s = std::make_shared<Sphere>();
+    auto s = Shape::MakeShared<Sphere>();
     s->SetTransform(
         Transform::CreateScale(1.2, 0.8, 1.0)
     );
@@ -75,7 +75,7 @@ void DrawSphereReflections() {
     Point origin = Point::CreatePoint(0.0, 0.0, -4.0);
 
     //Sphere to draw
-    auto s = std::make_shared<Sphere>();
+    auto s = Shape::MakeShared<Sphere>();
     //s->SetTransform(
     //    Transform::CreateScale(1.2f, 0.8f, 1.0f)
     //);
@@ -132,7 +132,7 @@ void DrawChapter7Scene()
 	World world;
 	
 	//Camera
-	Camera camera(1920, 1080, Constants::PI / 3.0f, 
+	Camera camera(200, 100, Constants::PI / 3.0f, 
 		Camera::CreateViewTransform(
 			Point::CreatePoint(0.0f, 1.5f, -5.0f),
 			Point::CreatePoint(0.0f, 1.0f, 0.0f),
@@ -166,7 +166,7 @@ void DrawChapter7Scene()
 	material.reflective = 0.8;
 	material.transparency = 0.01;
 
-	auto floor = std::make_shared<Plane>();
+	auto floor = Shape::MakeShared<Plane>();
 	floor->SetMaterial(material);
 	floor->SetTransform(transform);
 	world.AddShape(floor);
@@ -189,7 +189,7 @@ void DrawChapter7Scene()
 	material.shininess = 200;
 	material.reflective = 0.4;
 
-	auto backdrop = std::make_shared<Plane>();
+	auto backdrop = Shape::MakeShared<Plane>();
 	backdrop->SetMaterial(material);
 	backdrop->SetTransform(transform);
 	world.AddShape(backdrop);
@@ -206,7 +206,7 @@ void DrawChapter7Scene()
 	material.shininess = 300;
 	material.reflective = 0.2;
 
-	auto middle = std::make_shared<Cylinder>(-1.0, 1.0, true);
+	auto middle = Shape::MakeShared<Cylinder>(-1.0, 1.0, true);
 	middle->SetMaterial(material);
 	middle->SetTransform(transform);
 	world.AddShape(middle);
@@ -223,7 +223,7 @@ void DrawChapter7Scene()
 	material.specular = 0.7;
 	material.reflective = 0.1;
 
-	auto right = std::make_shared<Cube>();
+	auto right = Shape::MakeShared<Cube>();
 	right->SetMaterial(material);
 	right->SetTransform(transform);
 	world.AddShape(right);
@@ -240,7 +240,7 @@ void DrawChapter7Scene()
 	material.refractiveIndex = 2;
 	material.reflective = 0.3;
 
-	auto left = std::make_shared<Cone>(-1.0, 0.0, true);
+	auto left = Shape::MakeShared<Cone>(-1.0, 0.0, true);
 	
 	left->SetMaterial(material);
 	left->SetTransform(transform);

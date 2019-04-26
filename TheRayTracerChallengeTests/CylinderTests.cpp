@@ -33,25 +33,25 @@ namespace TheRayTracesChallengeTests
 		}
 		TEST_METHOD(SurfaceNormal) {
 
-			std::vector<std::tuple<Point, Vector, Cylinder>> testData = {
+			std::vector<std::tuple<Point, Vector, std::shared_ptr<Cylinder>>> testData = {
 				//Input, Expected output, cylinder
 				//Normal vectors on the cylinder's walls
-				{Point::CreatePoint(1.0, 0.0, 0.0), Vector::CreateVector(1.0, 0.0, 0.0), Cylinder() },
-				{Point::CreatePoint(0.0, 5.0, -1.0), Vector::CreateVector(0.0, 0.0, -1.0), Cylinder() },
-				{Point::CreatePoint(0.0, -2.0, 1.0), Vector::CreateVector(0.0, 0.0, 1.0),  Cylinder() },
-				{Point::CreatePoint(-1.0, 1.0, 0.0), Vector::CreateVector(-1.0, 0.0, 0.0),  Cylinder() },
+				{Point::CreatePoint(1.0, 0.0, 0.0), Vector::CreateVector(1.0, 0.0, 0.0), Shape::MakeShared<Cylinder>() },
+				{Point::CreatePoint(0.0, 5.0, -1.0), Vector::CreateVector(0.0, 0.0, -1.0), Shape::MakeShared<Cylinder>() },
+				{Point::CreatePoint(0.0, -2.0, 1.0), Vector::CreateVector(0.0, 0.0, 1.0),  Shape::MakeShared<Cylinder>() },
+				{Point::CreatePoint(-1.0, 1.0, 0.0), Vector::CreateVector(-1.0, 0.0, 0.0),  Shape::MakeShared<Cylinder>() },
 				//Normal vectors on the end caps
-				{Point::CreatePoint(0.0, 1.0, 0.0), Vector::CreateVector(0.0, -1.0, 0.0),  Cylinder(1.0, 2.0, true) },
-				{Point::CreatePoint(0.5, 1.0, 0.0), Vector::CreateVector(0.0, -1.0, 0.0),  Cylinder(1.0, 2.0, true) },
-				{Point::CreatePoint(0.0, 1.0, 0.5), Vector::CreateVector(0.0, -1.0, 0.0),  Cylinder(1.0, 2.0, true) },
-				{Point::CreatePoint(0.0, 2.0, 0.0), Vector::CreateVector(0.0, 1.0, 0.0),  Cylinder(1.0, 2.0, true) },
-				{Point::CreatePoint(0.5, 2.0, 0.0), Vector::CreateVector(0.0, 1.0, 0.0),  Cylinder(1.0, 2.0, true) },
-				{Point::CreatePoint(0.0, 2.0, 0.5), Vector::CreateVector(0.0, 1.0, 0.0),  Cylinder(1.0, 2.0, true) }
+				{Point::CreatePoint(0.0, 1.0, 0.0), Vector::CreateVector(0.0, -1.0, 0.0),  Shape::MakeShared<Cylinder>(1.0, 2.0, true) },
+				{Point::CreatePoint(0.5, 1.0, 0.0), Vector::CreateVector(0.0, -1.0, 0.0),  Shape::MakeShared<Cylinder>(1.0, 2.0, true) },
+				{Point::CreatePoint(0.0, 1.0, 0.5), Vector::CreateVector(0.0, -1.0, 0.0),  Shape::MakeShared<Cylinder>(1.0, 2.0, true) },
+				{Point::CreatePoint(0.0, 2.0, 0.0), Vector::CreateVector(0.0, 1.0, 0.0),  Shape::MakeShared<Cylinder>(1.0, 2.0, true) },
+				{Point::CreatePoint(0.5, 2.0, 0.0), Vector::CreateVector(0.0, 1.0, 0.0),  Shape::MakeShared<Cylinder>(1.0, 2.0, true) },
+				{Point::CreatePoint(0.0, 2.0, 0.5), Vector::CreateVector(0.0, 1.0, 0.0),  Shape::MakeShared<Cylinder>(1.0, 2.0, true) }
 			};
 
 
 			for (auto test : testData) {
-				Assert::IsTrue(std::get<2>(test).SurfaceNormal(std::get<0>(test)) == std::get<1>(test));
+				Assert::IsTrue(std::get<2>(test)->SurfaceNormal(std::get<0>(test)) == std::get<1>(test));
 			}
 
 		}
@@ -87,6 +87,35 @@ namespace TheRayTracesChallengeTests
 				Ray(Point::CreatePoint(0.0, -1.0, -2.0), Vector::CreateVector(0.0, 1.0, 1.0).Normalize())
 			};
 
+			//Cylinders that will be intersected
+			std::vector<std::shared_ptr<Shape>> cylinders = {
+				//Untruncated cylinders
+				//Results for rays that miss the cylinder
+				Shape::MakeShared<Cylinder>(),
+				Shape::MakeShared<Cylinder>(),
+				Shape::MakeShared<Cylinder>(),
+
+				//Expected results for rays hitting the cylinder
+				Shape::MakeShared<Cylinder>(),
+				Shape::MakeShared<Cylinder>(),
+				Shape::MakeShared<Cylinder>(),
+
+				//Truncated cylinder
+				Shape::MakeShared<Cylinder>(1.0, 2.0, false),
+				Shape::MakeShared<Cylinder>(1.0, 2.0, false),
+				Shape::MakeShared<Cylinder>(1.0, 2.0, false),
+				Shape::MakeShared<Cylinder>(1.0, 2.0, false),
+				Shape::MakeShared<Cylinder>(1.0, 2.0, false),
+				Shape::MakeShared<Cylinder>(1.0, 2.0, false),
+
+				//Cylinder with end caps
+				Shape::MakeShared<Cylinder>(1.0, 2.0, true),
+				Shape::MakeShared<Cylinder>(1.0, 2.0, true),
+				Shape::MakeShared<Cylinder>(1.0, 2.0, true),
+				Shape::MakeShared<Cylinder>(1.0, 2.0, true),
+				Shape::MakeShared<Cylinder>(1.0, 2.0, true)
+			};
+
 			//Expected results of the intersection tests
 			std::vector<IntersectionBuffer> expected = {
 				//Untruncated cylinders
@@ -96,9 +125,9 @@ namespace TheRayTracesChallengeTests
 				IntersectionBuffer(),
 
 				//Expected results for rays hitting the cylinder
-				IntersectionBuffer(Intersection(5.0, id), Intersection(5.0, id)),
-				IntersectionBuffer(Intersection(4.0, id), Intersection(6.0, id)),
-				IntersectionBuffer(Intersection(6.80798, id), Intersection(7.08872, id)),
+				IntersectionBuffer(Intersection(5.0, cylinders[3]), Intersection(5.0, cylinders[3])),
+				IntersectionBuffer(Intersection(4.0, cylinders[4]), Intersection(6.0, cylinders[4])),
+				IntersectionBuffer(Intersection(6.80798, cylinders[5]), Intersection(7.08872, cylinders[5])),
 
 				//Truncated cylinder
 				IntersectionBuffer(),
@@ -106,43 +135,14 @@ namespace TheRayTracesChallengeTests
 				IntersectionBuffer(),
 				IntersectionBuffer(),
 				IntersectionBuffer(),
-				IntersectionBuffer(Intersection(0.0, id), Intersection(0.0, id)),
+				IntersectionBuffer(Intersection(0.0, cylinders[11]), Intersection(0.0, cylinders[11])),
 				
 				//Cylinder with end caps
-				IntersectionBuffer(Intersection(0.0, id), Intersection(0.0, id)),
-				IntersectionBuffer(Intersection(0.0, id), Intersection(0.0, id)),
-				IntersectionBuffer(Intersection(0.0, id), Intersection(0.0, id)),
-				IntersectionBuffer(Intersection(0.0, id), Intersection(0.0, id)),
-				IntersectionBuffer(Intersection(0.0, id), Intersection(0.0, id))
-			};
-
-			//Cylinders that will be intersected
-			std::vector<Cylinder> cylinders = {
-				//Untruncated cylinders
-				//Results for rays that miss the cylinder
-				Cylinder(),
-				Cylinder(),
-				Cylinder(),
-
-				//Expected results for rays hitting the cylinder
-				Cylinder(),
-				Cylinder(),
-				Cylinder(),
-
-				//Truncated cylinder
-				Cylinder(1.0, 2.0, false),
-				Cylinder(1.0, 2.0, false),
-				Cylinder(1.0, 2.0, false),
-				Cylinder(1.0, 2.0, false),
-				Cylinder(1.0, 2.0, false),
-				Cylinder(1.0, 2.0, false),
-
-				//Cylinder with end caps
-				Cylinder(1.0, 2.0, true),
-				Cylinder(1.0, 2.0, true),
-				Cylinder(1.0, 2.0, true),
-				Cylinder(1.0, 2.0, true),
-				Cylinder(1.0, 2.0, true)
+				IntersectionBuffer(Intersection(0.0, cylinders[12]), Intersection(0.0, cylinders[12])),
+				IntersectionBuffer(Intersection(0.0, cylinders[13]), Intersection(0.0, cylinders[13])),
+				IntersectionBuffer(Intersection(0.0, cylinders[14]), Intersection(0.0, cylinders[14])),
+				IntersectionBuffer(Intersection(0.0, cylinders[15]), Intersection(0.0, cylinders[15])),
+				IntersectionBuffer(Intersection(0.0, cylinders[16]), Intersection(0.0, cylinders[16]))
 			};
 
 			//Does only the number of intersections matter (skip verifying the exact values)
@@ -164,10 +164,9 @@ namespace TheRayTracesChallengeTests
 			for (size_t testNr = 0; testNr < expected.size(); testNr++) {
 				Ray testRay = rays[testNr];
 				IntersectionBuffer expectedIntersections = expected[testNr];
-				Cylinder testCylinder = cylinders[testNr];
-				testCylinder.SetID(id);
+				auto testCylinder = cylinders[testNr];
 
-				IntersectionBuffer intersections = testCylinder.FindIntersections(testRay);
+				IntersectionBuffer intersections = testCylinder->FindIntersections(testRay);
 				
 				//Logger::WriteMessage(std::to_string(testNr).c_str());
 
@@ -180,10 +179,10 @@ namespace TheRayTracesChallengeTests
 					//Logger::WriteMessage(std::to_string(intersections[1].t).c_str());
 					
 					Assert::IsTrue(Constants::DoubleEqual(intersections[0].t, expectedIntersections[0].t));
-					Assert::IsTrue(intersections[0].objectID == expectedIntersections[0].objectID);
+					Assert::IsTrue(intersections[0].shape == expectedIntersections[0].shape);
 
 					Assert::IsTrue(Constants::DoubleEqual(intersections[1].t, expectedIntersections[1].t));
-					Assert::IsTrue(intersections[1].objectID == expectedIntersections[1].objectID);
+					Assert::IsTrue(intersections[1].shape == expectedIntersections[1].shape);
 				}
 			}
 		}

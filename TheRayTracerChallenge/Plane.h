@@ -28,7 +28,7 @@ inline IntersectionBuffer Plane::FindObjectSpaceIntersections(Ray ray)
 	//How far does the ray need to travel, until it reaches the plane (at y = 0.0)
 	double t = -ray.origin.y / ray.direction.y;
 
-	return IntersectionBuffer(Intersection(t, GetID()));
+	return IntersectionBuffer(Intersection(t, GetPointer()));
 }
 
 inline Vector Plane::FindObjectSpaceNormal(Point p)

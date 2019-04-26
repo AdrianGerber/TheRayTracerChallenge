@@ -55,23 +55,21 @@ namespace TheRayTracesChallengeTests
 
         TEST_METHOD(IntersectionDataStructure) {
             Intersection i;
-            auto s = std::make_shared<Sphere>();
-            s->SetID(12);
+            auto s = Shape::MakeShared<Sphere>();
 
-            i.objectID = s->GetID();
+            i.shape = s;
             i.t = 3.5f;
 
             Assert::IsTrue(Constants::DoubleEqual(i.t, 3.5f));
-            Assert::IsTrue(i.objectID == s->GetID());
+            Assert::IsTrue(i.shape == s);
         }
 
         TEST_METHOD(IntersectionAggregation) {
-            Sphere s;
-            s.SetID(1);
+			auto s = Shape::MakeShared<Sphere>();
             IntersectionBuffer i;
 
-            i.Add(Intersection(1.0f, s.GetID()));
-            i.Add(Intersection(2.0f, s.GetID()));
+            i.Add(Intersection(1.0f, s));
+            i.Add(Intersection(2.0f, s));
 
             Assert::IsTrue(i.GetCount() == 2);
 
@@ -85,35 +83,32 @@ namespace TheRayTracesChallengeTests
                 Vector::CreateVector(0.0f, 0.0f, 1.0f)
             );
 
-            auto s = std::make_shared<Sphere>();
-
-            s->SetID(29);
+			auto s = Shape::MakeShared<Sphere>();
 
             IntersectionBuffer xs = s->FindIntersections(ray);
 
             Assert::IsTrue(xs.GetCount() == 2);
-            Assert::IsTrue(xs[0].objectID == s->GetID());
-            Assert::IsTrue(xs[1].objectID == s->GetID());
+            Assert::IsTrue(xs[0].shape == s);
+            Assert::IsTrue(xs[1].shape == s);
         }
 
         TEST_METHOD(Hit1) {
-            auto s = std::make_shared<Sphere>();
-            s->SetID(9);
+			auto s = Shape::MakeShared<Sphere>();
+
             //Positive t
-            Intersection i1 = Intersection(1.0f, s->GetID());
-            Intersection i2 = Intersection(2.0f, s->GetID());
+            Intersection i1 = Intersection(1.0f, s);
+            Intersection i2 = Intersection(2.0f, s);
             IntersectionBuffer i(i2, i1);
 
             Assert::IsTrue(i.GetFirstHit() == i1);
         }
 
         TEST_METHOD(Hit2) {
-            auto s = std::make_shared<Sphere>();
-            s->SetID(1);
+			auto s = Shape::MakeShared<Sphere>();
 
             //Positive and negative t
-            Intersection i1 = Intersection(-1.0f, s->GetID());
-            Intersection i2 = Intersection(1.0f, s->GetID());
+            Intersection i1 = Intersection(-1.0f, s);
+            Intersection i2 = Intersection(1.0f, s);
             IntersectionBuffer i(i2, i1);
 
             Assert::IsTrue(i.GetFirstHit() == i2);
@@ -121,25 +116,24 @@ namespace TheRayTracesChallengeTests
 
         TEST_METHOD(Hit3) {
 
-            auto s = std::make_shared<Sphere>();
-            s->SetID(12);
+			auto s = Shape::MakeShared<Sphere>();
+
             //Negative t
-            Intersection i1 = Intersection(-2.0f, s->GetID());
-            Intersection i2 = Intersection(-1.0f, s->GetID());
+            Intersection i1 = Intersection(-2.0f, s);
+            Intersection i2 = Intersection(-1.0f, s);
             IntersectionBuffer i(i2, i1);
 
             Assert::IsFalse(i.GetFirstHit().IsValid());
         }
 
         TEST_METHOD(Hit4) {
-            auto s = std::make_shared<Sphere>();
-            s->SetID(123);
+			auto s = Shape::MakeShared<Sphere>();
 
             //Hit must always be the lowest, non negative intersection
-            Intersection i1 = Intersection(5.0f, s->GetID());
-            Intersection i2 = Intersection(7.0f, s->GetID());
-            Intersection i3 = Intersection(-3.0f, s->GetID());
-            Intersection i4 = Intersection(2.0f, s->GetID());
+            Intersection i1 = Intersection(5.0f, s);
+            Intersection i2 = Intersection(7.0f, s);
+            Intersection i3 = Intersection(-3.0f, s);
+            Intersection i4 = Intersection(2.0f, s);
             IntersectionBuffer i;
 
             i.Add(i1);
@@ -198,7 +192,7 @@ namespace TheRayTracesChallengeTests
                 Vector::CreateVector(0.0f, 0.0f, 1.0f)
             );
 
-            auto s = std::make_shared<Sphere>();
+            auto s = Shape::MakeShared<Sphere>();
 
             s->SetTransform(Transform::CreateScale(2.0f, 2.0f, 2.0f));
 

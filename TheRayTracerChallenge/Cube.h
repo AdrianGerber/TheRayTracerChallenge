@@ -39,7 +39,7 @@ inline IntersectionBuffer Cube::FindObjectSpaceIntersections(Ray ray)
 	}
 
 
-	return IntersectionBuffer(Intersection(minimumT, GetID()), Intersection(maximumT, GetID()));
+	return IntersectionBuffer(Intersection(minimumT, GetPointer()), Intersection(maximumT, GetPointer()));
 }
 
 inline Vector Cube::FindObjectSpaceNormal(Point p)

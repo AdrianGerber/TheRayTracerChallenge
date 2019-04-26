@@ -32,12 +32,12 @@ namespace TheRayTracesChallengeTests
 			Assert::IsTrue(cone.IsClosed() == false);
 		}
 		TEST_METHOD(SurfaceNormal) {
-			std::vector<std::tuple<Point, Vector, Cone>> testData = {
+			std::vector<std::tuple<Point, Vector, std::shared_ptr<Cone>>> testData = {
 				//Input, Expected output, cone
 
-				{Point::CreatePoint(0.0, 0.0, 0.0), Vector::CreateVector(0.0, 0.0, 0.0).Normalize(),  Cone() },
-				{Point::CreatePoint(1.0, 1.0, 1.0), Vector::CreateVector(1.0, -sqrt(2.0), 1.0).Normalize(),  Cone() },
-				{Point::CreatePoint(-1.0, -1.0, 0.0), Vector::CreateVector(-1.0, 1.0, 0.0).Normalize(),  Cone() },
+				{Point::CreatePoint(0.0, 0.0, 0.0), Vector::CreateVector(0.0, 0.0, 0.0).Normalize(),  Shape::MakeShared<Cone>() },
+				{Point::CreatePoint(1.0, 1.0, 1.0), Vector::CreateVector(1.0, -sqrt(2.0), 1.0).Normalize(),  Shape::MakeShared<Cone>() },
+				{Point::CreatePoint(-1.0, -1.0, 0.0), Vector::CreateVector(-1.0, 1.0, 0.0).Normalize(),  Shape::MakeShared<Cone>() },
 			};
 
 			size_t testNr = 0;
@@ -45,9 +45,9 @@ namespace TheRayTracesChallengeTests
 
 				Logger::WriteMessage(std::to_string(testNr).c_str());
 				Point input = std::get<0>(test);
-				Cone cone = std::get<2>(test);
+				auto cone = std::get<2>(test);
 				Vector expectedOutput = std::get<1>(test);
-				Vector output = cone.SurfaceNormal(input);
+				Vector output = cone->SurfaceNormal(input);
 
 				Assert::IsTrue(output == expectedOutput);
 				testNr++;
@@ -55,7 +55,6 @@ namespace TheRayTracesChallengeTests
 
 		}
 		TEST_METHOD(ConeIntersections) {
-			size_t id = 3;
 
 			//Rays that will be tested for intersections
 			std::vector<Ray> rays = {
@@ -72,35 +71,37 @@ namespace TheRayTracesChallengeTests
 				Ray(Point::CreatePoint(0.0, 0.0, -0.25), Vector::CreateVector(0.0, 1.0, 0.0).Normalize())
 			};
 
+			//Cylinders that will be intersected
+			std::vector<std::shared_ptr<Shape>> cones = {
+				//Untruncated cones
+				//Rays that hit the cone
+				Shape::MakeShared<Cone>(),
+				Shape::MakeShared<Cone>(),
+				Shape::MakeShared<Cone>(),
+				//Ray parallel to one wall of the cone
+				Shape::MakeShared<Cone>(),
+				//Ray hits the cone's end caps
+				Shape::MakeShared<Cone>(-0.5, 0.5, true),
+				Shape::MakeShared<Cone>(-0.5, 0.5, true),
+				Shape::MakeShared<Cone>(-0.5, 0.5, true)
+			};
+
 			//Expected results of the intersection tests
 			std::vector<IntersectionBuffer> expected = {
 				//Untruncated cones
 				//Rays that hit the cone
-				IntersectionBuffer(Intersection(5.0, id), Intersection(5.0, id)),
-				IntersectionBuffer(Intersection(8.66025, id), Intersection(8.66025, id)),
-				IntersectionBuffer(Intersection(4.55006, id), Intersection(49.44994, id)),
+				IntersectionBuffer(Intersection(5.0, cones[0]), Intersection(5.0, cones[0])),
+				IntersectionBuffer(Intersection(8.66025, cones[1]), Intersection(8.66025, cones[1])),
+				IntersectionBuffer(Intersection(4.55006, cones[2]), Intersection(49.44994, cones[2])),
 				//Ray parallel to one wall of the cone
-				IntersectionBuffer(Intersection(0.35355, id)),
+				IntersectionBuffer(Intersection(0.35355, cones[3])),
 				//Ray hits the cone's end caps
 				IntersectionBuffer(),
-				IntersectionBuffer(Intersection(1234.0, id), Intersection(1234.0, id)),
-				IntersectionBuffer(Intersection(1234.0, id), Intersection(1234.0, id), Intersection(1234.0, id), Intersection(1234.0, id))
+				IntersectionBuffer(Intersection(1234.0, cones[4]), Intersection(1234.0, cones[4])),
+				IntersectionBuffer(Intersection(1234.0, cones[5]), Intersection(1234.0, cones[5]), Intersection(1234.0, cones[5]), Intersection(1234.0, cones[5]))
 			};
 
-			//Cylinders that will be intersected
-			std::vector<Cone> cones = {
-				//Untruncated cones
-				//Rays that hit the cone
-				Cone(),
-				Cone(),
-				Cone(),
-				//Ray parallel to one wall of the cone
-				Cone(),
-				//Ray hits the cone's end caps
-				Cone(-0.5, 0.5, true),
-				Cone(-0.5, 0.5, true),
-				Cone(-0.5, 0.5, true)
-			};
+			
 
 			//Does only the number of intersections matter (skip verifying the exact values)
 			std::vector<bool> onlyCheckIntersectionCount = {
@@ -117,10 +118,8 @@ namespace TheRayTracesChallengeTests
 			for (size_t testNr = 0; testNr < expected.size(); testNr++) {
 				Ray testRay = rays[testNr];
 				IntersectionBuffer expectedIntersections = expected[testNr];
-				Cone testCone = cones[testNr];
-				testCone.SetID(id);
-
-				IntersectionBuffer intersections = testCone.FindIntersections(testRay);
+				auto testCone = cones[testNr];
+				IntersectionBuffer intersections = testCone->FindIntersections(testRay);
 
 				Logger::WriteMessage(std::to_string(testNr).c_str());
 
@@ -133,7 +132,7 @@ namespace TheRayTracesChallengeTests
 						Logger::WriteMessage(std::to_string(intersections[i].t).c_str());
 
 						Assert::IsTrue(Constants::DoubleEqual(intersections[i].t, expectedIntersections[i].t));
-						Assert::IsTrue(intersections[i].objectID == expectedIntersections[i].objectID);
+						Assert::IsTrue(intersections[i].shape == expectedIntersections[i].shape);
 					}
 				}
 			}

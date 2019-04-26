@@ -67,10 +67,9 @@ namespace TheRayTracesChallengeTests
 				Vector::CreateVector(0.0f, 0.0f, 1.0f)
 			);
 
-			auto s = std::make_shared<Sphere>();
-			s->SetID(29);
-
-			IntersectionBuffer xs = (*s).FindIntersections(ray);
+			auto s = Shape::MakeShared<Sphere>();
+			
+			IntersectionBuffer xs = s->FindIntersections(ray);
 
 			//Ray hits 2 points
 			Assert::IsTrue(xs.GetCount() == 2);
@@ -84,7 +83,7 @@ namespace TheRayTracesChallengeTests
 				Vector::CreateVector(0.0f, 0.0f, 1.0f)
 			);
 
-			auto s = std::make_shared<Sphere>();
+			auto s = Shape::MakeShared<Sphere>();
 
 			IntersectionBuffer xs = s->FindIntersections(ray);
 
@@ -101,7 +100,7 @@ namespace TheRayTracesChallengeTests
 				Vector::CreateVector(0.0f, 0.0f, 1.0f)
 			);
 
-			auto s = std::make_shared<Sphere>();
+			auto s = Shape::MakeShared<Sphere>();
 
 			IntersectionBuffer xs = s->FindIntersections(ray);
 
@@ -116,7 +115,7 @@ namespace TheRayTracesChallengeTests
 				Vector::CreateVector(0.0f, 0.0f, 1.0f)
 			);
 
-			auto s = std::make_shared<Sphere>();
+			auto s = Shape::MakeShared<Sphere>();
 
 			IntersectionBuffer xs = s->FindIntersections(ray);
 
@@ -132,7 +131,7 @@ namespace TheRayTracesChallengeTests
 				Vector::CreateVector(0.0f, 0.0f, 1.0f)
 			);
 
-			auto s = std::make_shared<Sphere>();
+			auto s = Shape::MakeShared<Sphere>();
 
 			IntersectionBuffer xs = s->FindIntersections(ray);
 

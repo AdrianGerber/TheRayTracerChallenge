@@ -19,8 +19,6 @@ public:
 
 	Vector FindObjectSpaceNormal(Point p) override;
     
-private:
-	
 };
 
 inline IntersectionBuffer Sphere::FindObjectSpaceIntersections(Ray ray) {
@@ -44,8 +42,8 @@ inline IntersectionBuffer Sphere::FindObjectSpaceIntersections(Ray ray) {
 	i1.t = (-b - sqrt(discriminant)) / (2.0 * a);
 	i2.t = (-b + sqrt(discriminant)) / (2.0 * a);
 
-	i1.objectID = GetID();
-	i2.objectID = GetID();
+	i1.shape = GetPointer();
+	i2.shape = GetPointer();
 
 	return IntersectionBuffer(i1, i2);
 }

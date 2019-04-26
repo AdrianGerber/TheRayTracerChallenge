@@ -9,17 +9,13 @@
 class Shape
 {
 public:
-	Shape() { material = Material(); id = Intersection::invalidID; }
+	Shape() { material = Material(); }
     ~Shape() = default;
-
-    void SetID(size_t newID) { id = newID; }
-    size_t GetID() { return id; }
 
     void SetTransform(Transform newTransform) { transform = newTransform; }
 	Transform GetTransformCopy() { return transform; }
 	//Get the shape's transform by reference (Caching of calculations can improve performance
     Transform& GetTransformRef() { return transform; }
-
 
 
     void SetMaterial(Material newMaterial) { material = newMaterial; }
@@ -38,15 +34,29 @@ public:
 	virtual Vector FindObjectSpaceNormal(Point p) = 0;
 
 
-	//Comparison of shapes
-	bool operator==(Shape& s);
+	//Check if both shapes have the same pointer
+	bool operator==(std::shared_ptr<Shape> s);
+	//Shapes are not the same pointer, but have the same transform
+	bool SameTransform(std::shared_ptr<Shape> s);
 
-    bool operator!=(Shape& s) { return !(*this == s); }
+
+
+	//Create an initialized instance of a shape
+	template<typename T, typename ...Args>
+	static std::shared_ptr<T> MakeShared(Args&& ...args) {
+		auto shape = std::make_shared<T>(std::forward<Args>(args)...);
+		shape->SetPointer(shape);
+		return shape;
+	}
+
+	std::shared_ptr<Shape> GetPointer() { return static_cast<std::shared_ptr<Shape>>(thisShapePtr); }
+	void SetPointer(std::shared_ptr<Shape> newPtr) { thisShapePtr = static_cast<std::weak_ptr<Shape>>(newPtr); }
+
 
 private:
-    size_t id;
     Transform transform;
     Material material;
+	std::weak_ptr<Shape> thisShapePtr;
 };
 
 
@@ -74,9 +84,14 @@ inline Vector Shape::SurfaceNormal(Point p) {
 	return worldSpaceNormal.Normalize();
 }
 
-inline bool Shape::operator==(Shape& s) {
+
+//Check if both shapes have the same pointer
+inline bool Shape::operator==(std::shared_ptr<Shape> s) {
+	return GetPointer() == s->GetPointer();
+}
+
+//Shapes are not the same pointer, but otherwise equal
+inline bool Shape::SameTransform(std::shared_ptr<Shape> s) {
 	return
-		GetTransformRef() == s.GetTransformRef()
-		&& GetMaterial() == s.GetMaterial()
-		&& GetID() == s.GetID();
+		GetTransformRef() == s->GetTransformRef();
 }

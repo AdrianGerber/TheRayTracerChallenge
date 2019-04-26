@@ -31,7 +31,6 @@ public:
 
 	void AddShape(std::shared_ptr<Shape> shape) {
 		shapes.push_back(shape);
-		shapes.back()->SetID(shapes.size() - 1);
 	}
 
 	void AddLightSource(std::shared_ptr<LightSource> lightSource) {

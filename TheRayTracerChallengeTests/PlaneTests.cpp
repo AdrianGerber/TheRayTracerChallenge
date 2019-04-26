@@ -59,25 +59,23 @@ namespace TheRayTracesChallengeTests
 		}
 		TEST_METHOD(PlaneIntersection3) {
 			//Ray hits plane from above
-			Plane p;
-			p.SetID(12);
+			auto p = Shape::MakeShared<Plane>();
 
 			Ray r(Point::CreatePoint(0.0, 1.0, 0.0), Vector::CreateVector(0.0, -1.0, 0.0));
-			IntersectionBuffer xs = p.FindObjectSpaceIntersections(r);
+			IntersectionBuffer xs = p->FindObjectSpaceIntersections(r);
 			Assert::IsTrue(xs.GetCount() == 1);
 			Assert::IsTrue(Constants::DoubleEqual(xs[0].t, 1.0));
-			Assert::IsTrue(xs[0].objectID == p.GetID());
+			Assert::IsTrue(xs[0].shape == p);
 		}
 		TEST_METHOD(PlaneIntersection4) {
 			//Ray hits plane from below
-			Plane p;
-			p.SetID(12);
+			auto p = Shape::MakeShared<Plane>();
 
 			Ray r(Point::CreatePoint(0.0, -1.0, 0.0), Vector::CreateVector(0.0, 1.0, 0.0));
-			IntersectionBuffer xs = p.FindObjectSpaceIntersections(r);
+			IntersectionBuffer xs = p->FindObjectSpaceIntersections(r);
 			Assert::IsTrue(xs.GetCount() == 1);
 			Assert::IsTrue(Constants::DoubleEqual(xs[0].t, 1.0));
-			Assert::IsTrue(xs[0].objectID == p.GetID());
+			Assert::IsTrue(xs[0].shape == p);
 		}
 	};
 }

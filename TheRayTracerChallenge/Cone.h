@@ -75,7 +75,7 @@ inline IntersectionBuffer Cone::FindObjectSpaceIntersections(Ray ray)
 
 			//Make sure the hit is inside the cone's limits
 			if (y0 < maximum && y0 > minimum) {
-				intersections.Add(Intersection(t, GetID()));
+				intersections.Add(Intersection(t, GetPointer()));
 			}
 		}		
 	}
@@ -93,11 +93,11 @@ inline IntersectionBuffer Cone::FindObjectSpaceIntersections(Ray ray)
 		//Intersections with the walls
 		double y1 = ray.origin.y + (solution1 * ray.direction.y);
 		if (y1 < maximum && y1 > minimum) {
-			intersections.Add(Intersection(solution1, GetID()));
+			intersections.Add(Intersection(solution1, GetPointer()));
 		}
 		double y2 = ray.origin.y + (solution2 * ray.direction.y);
 		if (y2 < maximum && y2 > minimum) {
-			intersections.Add(Intersection(solution2, GetID()));
+			intersections.Add(Intersection(solution2, GetPointer()));
 		}
 	}
 	
@@ -152,13 +152,13 @@ inline IntersectionBuffer Cone::IntersectEndCaps(Ray ray) {
 	//Check if the ray hit the cap at the 'minimum'
 	double t = (minimum - ray.origin.y) / ray.direction.y;
 	if (CheckCap(ray, t, minimum)) {
-		intersections.Add(Intersection(t, GetID()));
+		intersections.Add(Intersection(t, GetPointer()));
 	}
 
 	//Check if the ray hit the cap at the 'maximum'
 	t = (maximum - ray.origin.y) / ray.direction.y;
 	if (CheckCap(ray, t, maximum)) {
-		intersections.Add(Intersection(t, GetID()));
+		intersections.Add(Intersection(t, GetPointer()));
 	}
 
 	return intersections;

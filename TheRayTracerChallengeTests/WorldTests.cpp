@@ -32,27 +32,19 @@ namespace TheRayTracesChallengeTests
 
 			LightSource l(Point::CreatePoint(-10.0f, 10.0f, -10.0f), Color(1.0f, 1.0f, 1.0f));
 
-			Material m;
-			m.pattern = world.shapes[0]->GetMaterial().pattern;
-			m.diffuse = 0.7f;
-			m.specular = 0.2f;
 
-			Sphere s1;
-			s1.SetMaterial(m);
-			s1.SetID(0);
+			auto s1 = Shape::MakeShared<Sphere>();
 
 			Material m2;
 			m2.pattern = world.shapes[1]->GetMaterial().pattern;
-			Sphere s2;
-			s2.SetTransform(Transform::CreateScale(0.5f, 0.5f, 0.5f));
-			s2.SetMaterial(m2);
-			s2.SetID(1);
+			auto s2 = Shape::MakeShared<Sphere>();
+			s2->SetTransform(Transform::CreateScale(0.5f, 0.5f, 0.5f));
 
 			Assert::IsTrue(world.shapes.size() == 2);
 			Assert::IsTrue(world.lightSources.size() == 1);
 
-			Assert::IsTrue(*world.shapes[0] == s1);
-			Assert::IsTrue(*world.shapes[1] == s2);
+			Assert::IsTrue(world.shapes[0]->SameTransform(s1));
+			Assert::IsTrue(world.shapes[1]->SameTransform(s2));
 			Assert::IsTrue(*world.lightSources[0] == l);
 		}
 		TEST_METHOD(Intersections) {
@@ -76,7 +68,7 @@ namespace TheRayTracesChallengeTests
 			Ray ray(Point::CreatePoint(0.0f, 0.0f, -5.0f), Vector::CreateVector(0.0f, 0.0f, 1.0f));
 			auto shape = world.shapes[0];
 
-			IntersectionBuffer intersections(Intersection(4.0f, shape->GetID()));
+			IntersectionBuffer intersections(Intersection(4.0f, shape));
 			HitCalculations hit(intersections.GetFirstHit(), intersections, ray, world.shapes);
 
 			Assert::IsTrue(world.ShadeHit(hit) == Color(0.38066f, 0.47583f, 0.2855f));
@@ -94,7 +86,7 @@ namespace TheRayTracesChallengeTests
 			
 			auto shape = world.shapes[1];
 
-			IntersectionBuffer intersections(Intersection(0.5f, shape->GetID()));
+			IntersectionBuffer intersections(Intersection(0.5f, shape));
 			HitCalculations hit(intersections.GetFirstHit(), intersections, ray, world.shapes);
 
 			Assert::IsTrue(world.ShadeHit(hit) == Color(0.90498f, 0.90498f, 0.90498f));
@@ -209,8 +201,8 @@ namespace TheRayTracesChallengeTests
 			w.lightSources[0]->SetIntensity(Color(1.0f, 1.0f, 1.0f));
 			w.lightSources[0]->SetPosition(Point::CreatePoint(0.0f, 0.0f, -10.0f));
 
-			w.AddShape(std::make_shared<Sphere>());
-			w.AddShape(std::make_shared<Sphere>());
+			w.AddShape(Shape::MakeShared<Sphere>());
+			w.AddShape(Shape::MakeShared<Sphere>());
 			w.shapes[1]->SetTransform(Transform::CreateTranslation(0.0f, 0.0f, 10.0f));
 			
 			Ray ray(
@@ -218,7 +210,7 @@ namespace TheRayTracesChallengeTests
 				Vector::CreateVector(0.0f, 0.0f, 1.0f)
 			);
 
-			Intersection intersection(4.0f, w.shapes[1]->GetID());
+			Intersection intersection(4.0f, w.shapes[1]);
 			IntersectionBuffer intersections(intersection);
 
 			HitCalculations comps(intersections.GetFirstHit(), intersections, ray, w.shapes);
@@ -243,7 +235,7 @@ namespace TheRayTracesChallengeTests
 			material.ambient = 1.0;
 			shape->SetMaterial(material);
 
-			IntersectionBuffer intersections(Intersection(1.0, shape->GetID()));
+			IntersectionBuffer intersections(Intersection(1.0, shape));
 
 			HitCalculations hit(intersections.GetFirstHit(), intersections, ray, w.shapes);
 

@@ -13,7 +13,7 @@
 class HitCalculations {
 public:
 	double t;
-	size_t shapeID;
+	std::shared_ptr<Shape> shape;
 	Point point;
 	Point overPoint;
 	Point underPoint;
@@ -29,10 +29,10 @@ public:
 	HitCalculations(const Intersection& intersection, IntersectionBuffer& intersections, const Ray& ray, std::vector<std::shared_ptr<Shape>>& shapes) {
 
 		t = intersection.t;
-		shapeID = intersection.objectID;
+		shape = intersection.shape;
 		point = ray.PositionAt(t);
 		eyeVector = - ray.direction;
-		normalVector = shapes[shapeID]->SurfaceNormal(point);
+		normalVector = shape->SurfaceNormal(point);
 
 		//Flip the normal vector if it points away from the eye vector
 		if (Vector::DotProduct(normalVector, eyeVector) < 0.0) {
@@ -54,7 +54,7 @@ public:
 
 
 		//List of objects that the ray is currently inside of
-		std::vector<size_t> containers;
+		std::vector<std::shared_ptr<Shape>> containers;
 
 
 		intersections.Sort();
@@ -77,13 +77,13 @@ public:
 					refractiveIndex1 = 1.0;
 				}
 				else {
-					refractiveIndex1 = shapes[containers.back()]->GetMaterial().refractiveIndex;
+					refractiveIndex1 = containers.back()->GetMaterial().refractiveIndex;
 				}
 			}
 
 
 			//Keep track of the objects that the ray is currently inside of
-			auto objectPosition = std::find(containers.begin(), containers.end(), currentIntersection.objectID);
+			auto objectPosition = std::find(containers.begin(), containers.end(), currentIntersection.shape);
 			//The current object is already inside the list
 			if (objectPosition != containers.end()) {
 				//The ray leaves the shape at this intersection -> remove from containers
@@ -92,7 +92,7 @@ public:
 			//Object is not in the list
 			else {
 				//The ray enters the object at this intersection -> Add to container
-				containers.push_back(currentIntersection.objectID);
+				containers.push_back(currentIntersection.shape);
 			}
 
 			//Specified intersection was reached
@@ -102,7 +102,7 @@ public:
 					refractiveIndex2 = 1.0;
 				}
 				else {
-					refractiveIndex2 = shapes[containers.back()]->GetMaterial().refractiveIndex;
+					refractiveIndex2 = containers.back()->GetMaterial().refractiveIndex;
 				}
 
 				break;
