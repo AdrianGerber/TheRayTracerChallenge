@@ -282,3 +282,7 @@ void DrawChapter7Scene()
 	std::cout << "\n";
 	std::cout << "Rays: " << std::to_string(world.numberOfRaysCast) << "\n";
 }
+
+void DrawBoundingBoxScene()
+{
+}

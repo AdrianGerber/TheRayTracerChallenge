@@ -29,6 +29,10 @@ public:
 	bool IsClosed() { return closed; }
 	void SetClosed(bool isClosed) { closed = isClosed; }
 
+	BoundingBox GetObjectSpaceBounds() override {
+		return BoundingBox(Point::CreatePoint(-1.0, minimum, -1.0), Point::CreatePoint(1.0, maximum, 1.0));
+	}
+
 private:
 	double minimum, maximum;
 	bool closed;

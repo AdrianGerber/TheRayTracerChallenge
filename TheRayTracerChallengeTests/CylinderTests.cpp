@@ -186,6 +186,29 @@ namespace TheRayTracesChallengeTests
 				}
 			}
 		}
+
+		TEST_METHOD(Bounds) {
+			auto s = Shape::MakeShared<Cylinder>();
+			auto bounds = s->GetObjectSpaceBounds();
+
+			//Unbounded Cylinder	
+			auto max = bounds.GetMax();
+			auto min = bounds.GetMin();
+			Assert::IsTrue(Constants::DoubleEqual(min.x, -1.0) && Constants::DoubleEqual(min.z, -1.0));
+			Assert::IsTrue(Constants::DoubleEqual(max.x, 1.0) && Constants::DoubleEqual(max.z, 1.0));
+			Assert::IsTrue(std::isinf(min.y) && min.y < 0.0);
+			Assert::IsTrue(std::isinf(max.y) && max.y > 0.0);
+
+			//Bounded Cylinder
+			s->SetMaximum(3.0);
+			s->SetMinimum(-5.0);
+			bounds = s->GetObjectSpaceBounds();
+			max = bounds.GetMax();
+			min = bounds.GetMin();
+
+			Assert::IsTrue(min == Point::CreatePoint(-1.0, -5.0, -1.0));
+			Assert::IsTrue(max == Point::CreatePoint(1.0, 3.0, 1.0));
+		}
 		
 	};
 }

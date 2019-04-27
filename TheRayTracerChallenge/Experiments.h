@@ -35,3 +35,5 @@ void DrawSphere();
 void DrawSphereReflections();
 
 void DrawChapter7Scene();
+
+void DrawBoundingBoxScene();

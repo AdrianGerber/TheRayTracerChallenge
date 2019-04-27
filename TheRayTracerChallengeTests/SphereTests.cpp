@@ -10,6 +10,7 @@
 #include <Shape.h>
 #include <Sphere.h>
 #include <type_traits>
+#include <BoundingBox.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -139,6 +140,14 @@ namespace TheRayTracesChallengeTests
 			Assert::IsTrue(xs.GetCount() == 2);
 			Assert::IsTrue(Constants::DoubleEqual(xs[0].t, -6.0f));
 			Assert::IsTrue(Constants::DoubleEqual(xs[1].t, -4.0f));
+		}
+
+		TEST_METHOD(Bounds) {
+			auto s = Shape::MakeShared<Sphere>();
+			auto bounds = s->GetObjectSpaceBounds();
+
+			Assert::IsTrue(bounds.GetMax() == Point::CreatePoint(1.0, 1.0, 1.0));
+			Assert::IsTrue(bounds.GetMin() == Point::CreatePoint(-1.0, -1.0, -1.0));
 		}
     };
 }

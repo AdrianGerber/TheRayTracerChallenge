@@ -106,5 +106,17 @@ namespace TheRayTracesChallengeTests
 				}
 			}
 		}
+
+		TEST_METHOD(Bounds) {
+			auto s = Shape::MakeShared<Cube>();
+			auto bounds = s->GetObjectSpaceBounds();
+
+			auto max = bounds.GetMax();
+			auto min = bounds.GetMin();
+
+			Assert::IsTrue(max == Point::CreatePoint(1.0, 1.0, 1.0));
+			Assert::IsTrue(min == Point::CreatePoint(-1.0, -1.0, -1.0));
+		}
+
 	};
 }

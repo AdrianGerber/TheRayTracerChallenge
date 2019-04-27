@@ -18,6 +18,10 @@ public:
 
 	Vector FindObjectSpaceNormal(Point p) override;
 
+	BoundingBox GetObjectSpaceBounds() override {
+		return BoundingBox(Point::CreatePoint(-1.0, -1.0, -1.0), Point::CreatePoint(1.0, 1.0, 1.0));
+	}
+
 private:
 
 	std::shared_ptr<Shape> ShapeSpecificCopy() override{

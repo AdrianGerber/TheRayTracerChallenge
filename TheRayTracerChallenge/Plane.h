@@ -5,6 +5,7 @@
 #include "Intersection.h"
 #include "IntersectionBuffer.h"
 #include <cmath>
+#include <limits>
 
 //A plane that extends infinitly in every direction
 class Plane : public Shape
@@ -16,6 +17,11 @@ public:
 	IntersectionBuffer FindObjectSpaceIntersections(Ray ray) override;
 
 	Vector FindObjectSpaceNormal(Point p) override;
+
+	BoundingBox GetObjectSpaceBounds() override {
+		constexpr auto inf = std::numeric_limits<double>::infinity();
+		return BoundingBox(Point::CreatePoint(-inf, 0.0, -inf), Point::CreatePoint(inf, 0.0, inf));
+	}
 
 private:
 	std::shared_ptr<Shape> ShapeSpecificCopy() override{

@@ -29,6 +29,14 @@ public:
 	bool IsClosed() { return closed; }
 	void SetClosed(bool isClosed) { closed = isClosed; }
 
+	BoundingBox GetObjectSpaceBounds() override {
+		double a = abs(minimum);
+		double b = abs(maximum);
+		double limit = fmax(a, b);
+
+		return BoundingBox(Point::CreatePoint(-limit, minimum, -limit), Point::CreatePoint(limit, maximum, limit));
+	}
+
 private:
 	double minimum, maximum;
 	bool closed;

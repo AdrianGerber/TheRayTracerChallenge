@@ -10,6 +10,7 @@
 #include <Shape.h>
 #include <Plane.h>
 #include <type_traits>
+#include <limits>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -76,6 +77,22 @@ namespace TheRayTracesChallengeTests
 			Assert::IsTrue(xs.GetCount() == 1);
 			Assert::IsTrue(Constants::DoubleEqual(xs[0].t, 1.0));
 			Assert::IsTrue(xs[0].shape == p);
+		}
+
+		TEST_METHOD(Bounds) {
+			auto s = Shape::MakeShared<Plane>();
+			auto bounds = s->GetObjectSpaceBounds();
+
+			auto max = bounds.GetMax();
+			auto min = bounds.GetMin();
+
+			Assert::IsTrue(std::isinf(min.x) && min.x < 0.0);
+			Assert::IsTrue(std::isinf(min.z) && min.z < 0.0);
+			Assert::IsTrue(Constants::DoubleEqual(min.y, 0.0));
+
+			Assert::IsTrue(std::isinf(max.x) && max.x > 0.0);
+			Assert::IsTrue(std::isinf(max.z) && max.z > 0.0);
+			Assert::IsTrue(Constants::DoubleEqual(max.y, 0.0));
 		}
 	};
 }

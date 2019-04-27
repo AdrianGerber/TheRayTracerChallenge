@@ -138,5 +138,32 @@ namespace TheRayTracesChallengeTests
 			}
 		}
 
+		TEST_METHOD(Bounds) {
+			auto s = Shape::MakeShared<Cone>();
+			auto bounds = s->GetObjectSpaceBounds();
+
+			//Unbounded Cone	
+			auto max = bounds.GetMax();
+			auto min = bounds.GetMin();
+
+			Assert::IsTrue(std::isinf(min.x) && min.x < 0.0);
+			Assert::IsTrue(std::isinf(min.y) && min.y < 0.0);
+			Assert::IsTrue(std::isinf(min.z) && min.z < 0.0);
+
+			Assert::IsTrue(std::isinf(max.x) && max.x > 0.0);
+			Assert::IsTrue(std::isinf(max.y) && max.y > 0.0);
+			Assert::IsTrue(std::isinf(max.z) && max.z > 0.0);
+
+			//Bounded Cone
+			s->SetMaximum(3.0);
+			s->SetMinimum(-5.0);
+			bounds = s->GetObjectSpaceBounds();
+			max = bounds.GetMax();
+			min = bounds.GetMin();
+
+
+			Assert::IsTrue(min == Point::CreatePoint(-5.0, -5.0, -5.0));
+			Assert::IsTrue(max == Point::CreatePoint(5.0, 3.0, 5.0));
+		}
 	};
 }

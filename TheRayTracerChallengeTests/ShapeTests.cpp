@@ -36,6 +36,10 @@ namespace TheRayTracesChallengeTests
 				return Vector::CreateVector(p.x, p.y, p.z);
 			}
 
+			BoundingBox GetObjectSpaceBounds() override {
+				return BoundingBox(Point::CreatePoint(-1.0, -1.0, -1.0), Point::CreatePoint(1.0, 1.0, 1.0));
+			}
+
 		private:
 			std::shared_ptr<Shape> ShapeSpecificCopy() override {
 				return Shape::MakeShared<TestShape>(*this);

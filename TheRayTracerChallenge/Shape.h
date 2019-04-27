@@ -4,6 +4,7 @@
 #include "IntersectionBuffer.h"
 #include "Ray.h"
 #include "Matrix.h"
+#include "BoundingBox.h"
 
 //Abstract class common to all shapes
 class Shape
@@ -68,6 +69,10 @@ public:
 		shape->SetTransform(GetTransformCopy());
 		return shape;
 	}
+
+	BoundingBox GetParentSpaceBounds() { return GetObjectSpaceBounds().ApplyTransform(transform); }
+
+	virtual BoundingBox GetObjectSpaceBounds() = 0;
 
 private:
 

@@ -21,12 +21,18 @@ public:
 
 	size_t GetShapeCount() { return shapes.size(); }
 	std::shared_ptr<Shape> GetShape(size_t index) { return shapes[index]; }
-	void AddShape(std::shared_ptr<Shape> shape) { shapes.push_back(shape); shape->SetParent(GetPointer()); }
+	void AddShape(std::shared_ptr<Shape> shape) { 
+		shapes.push_back(shape); shape->SetParent(GetPointer());
+		bounds.Add(shape->GetParentSpaceBounds());
+	}
 	bool ContainsShape(std::shared_ptr<Shape> shape) { return std::find(shapes.begin(), shapes.end(), shape) != shapes.end(); }
 
+	BoundingBox GetObjectSpaceBounds() override { return bounds; }
 
 private:
 	std::vector<std::shared_ptr<Shape>> shapes;
+
+	BoundingBox bounds;
 
 	std::shared_ptr<Shape> ShapeSpecificCopy() override {
 		auto group = Shape::MakeShared<ShapeGroup>();
@@ -43,10 +49,12 @@ private:
 inline IntersectionBuffer ShapeGroup::FindObjectSpaceIntersections(Ray ray) {
 	IntersectionBuffer intersections;
 
-
-	//Find all intersections inside this group of shapes
-	for (auto currentShape : shapes) {
-		intersections.Add(currentShape->FindIntersections(ray));
+	//The contained shapes only need to be checked when the bounding box is hit by the ray
+	if (bounds.CheckIntersection(ray)) {
+		//Find all intersections inside this group of shapes
+		for (auto currentShape : shapes) {
+			intersections.Add(currentShape->FindIntersections(ray));
+		}
 	}
 
 	return intersections;
