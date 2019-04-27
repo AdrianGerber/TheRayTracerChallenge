@@ -23,6 +23,8 @@ public:
 		return BoundingBox(Point::CreatePoint(-inf, 0.0, -inf), Point::CreatePoint(inf, 0.0, inf));
 	}
 
+	void PartitionChildren(size_t maximumShapeCount) override {}
+
 private:
 	std::shared_ptr<Shape> ShapeSpecificCopy() override{
 		return Shape::MakeShared<Plane>(*this);

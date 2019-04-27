@@ -9,6 +9,8 @@ public:
 
 	Vector FindObjectSpaceNormal(Point p) override { return Vector();}
 
+	void PartitionChildren(size_t maximumShapeCount) override {}
+
 	BoundingBox GetObjectSpaceBounds() override {
 		/*
 		function bounds_of(triangle)

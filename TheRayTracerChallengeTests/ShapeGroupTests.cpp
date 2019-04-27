@@ -37,6 +37,8 @@ namespace TheRayTracesChallengeTests
 				return BoundingBox(Point::CreatePoint(-1.0, -1.0, -1.0), Point::CreatePoint(1.0, 1.0, 1.0));
 			}
 
+			void PartitionChildren(size_t maximumShapeCount) override {}
+
 		private:
 			std::shared_ptr<Shape> ShapeSpecificCopy() override {
 				return Shape::MakeShared<TestShape>(*this);

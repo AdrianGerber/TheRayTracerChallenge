@@ -26,6 +26,8 @@ public:
 
 	bool CheckIntersection(Ray ray);
 
+	std::pair<BoundingBox, BoundingBox> SplitBox();
+
 private:
 	Point min, max;
 
@@ -128,4 +130,37 @@ inline std::pair<double, double> BoundingBox::CheckAxis(double origin, double di
 		return std::pair<double, double>(tMax, tMin);
 	}
 	return std::pair<double, double>(tMin, tMax);
+}
+
+inline std::pair<BoundingBox, BoundingBox> BoundingBox::SplitBox() {
+	//Lengths of the cube's sides
+	double dx = max.x - min.x;
+	double dy = max.y - min.y;
+	double dz = max.z - min.z;
+
+
+	Point middleMax = max;
+	Point middleMin = min;
+
+
+	//Split the cube's longest side in half (Determine the shared points)
+
+	//dx is the longest side
+	if (dx >= dy && dx >= dz) {
+		middleMax.x = middleMin.x = min.x + (dx / 2.0);
+	}
+	//dy is the longest side
+	else if (dy >= dz) {
+		middleMax.y = middleMin.y = min.y + (dy / 2.0);
+	}
+	//dz is the longest side
+	else {
+		middleMax.z = middleMin.z = min.z + (dz / 2.0);
+	}
+
+	//Create two new boxes that share a side
+	return std::make_pair<BoundingBox, BoundingBox>(
+		BoundingBox(min, middleMax), 
+		BoundingBox(middleMin, max)
+	);
 }

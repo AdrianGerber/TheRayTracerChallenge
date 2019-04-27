@@ -74,6 +74,8 @@ public:
 
 	virtual BoundingBox GetObjectSpaceBounds() = 0;
 
+	virtual void PartitionChildren(size_t maximumShapeCount) = 0;
+
 private:
 
 	virtual std::shared_ptr<Shape> ShapeSpecificCopy() = 0;

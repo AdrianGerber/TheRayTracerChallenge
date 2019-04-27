@@ -21,13 +21,15 @@ public:
 
 	size_t GetShapeCount() { return shapes.size(); }
 	std::shared_ptr<Shape> GetShape(size_t index) { return shapes[index]; }
-	void AddShape(std::shared_ptr<Shape> shape) { 
+	void AddShape(std::shared_ptr<Shape> shape) {
 		shapes.push_back(shape); shape->SetParent(GetPointer());
 		bounds.Add(shape->GetParentSpaceBounds());
 	}
 	bool ContainsShape(std::shared_ptr<Shape> shape) { return std::find(shapes.begin(), shapes.end(), shape) != shapes.end(); }
 
 	BoundingBox GetObjectSpaceBounds() override { return bounds; }
+
+	void PartitionChildren(size_t maximumShapeCount) override;
 
 private:
 	std::vector<std::shared_ptr<Shape>> shapes;
@@ -65,3 +67,60 @@ inline Vector ShapeGroup::FindObjectSpaceNormal(Point p) {
 	return Vector::CreateVector(0.0, 0.0, 0.0);
 }
 
+inline void ShapeGroup::PartitionChildren(size_t maximumShapeCount) {
+
+	//Only subdivide this group if the number of shapes is above the maximum
+	if (GetShapeCount() > maximumShapeCount) {
+		std::vector<std::shared_ptr<Shape>> keep;
+		auto shapes1 = Shape::MakeShared<ShapeGroup>();
+		auto shapes2 = Shape::MakeShared<ShapeGroup>();
+
+		auto subgroupBounds = bounds.SplitBox();
+
+		//Partition the shapes into two subgroups
+		for (auto shape : shapes) {
+			auto shapeBounds = shape->GetParentSpaceBounds();
+			bool isInFirstGroup = subgroupBounds.first.Contains(shapeBounds.GetMin()) && subgroupBounds.first.Contains(shapeBounds.GetMax());
+			bool isInSecondGroup = subgroupBounds.second.Contains(shapeBounds.GetMin()) && subgroupBounds.second.Contains(shapeBounds.GetMax());
+
+			//Shape fits into the first subgroup
+			if (isInFirstGroup && !isInSecondGroup) {
+				shapes1->AddShape(shape);
+			}
+			//Shape fits into the seconds subgroup
+			else if (isInSecondGroup) {
+				shapes2->AddShape(shape);
+			}
+			//Shape doesn't fit in either of the groups
+			else {
+				keep.push_back(shape);
+			}
+
+		}
+
+		//Remove all shapes from this group
+		shapes.clear();
+		//Only keep the shapes that don't fit in either one of the partitions
+		for (auto shape : keep) {
+			AddShape(shape);
+			shape->PartitionChildren(maximumShapeCount);
+		}
+
+		//Keep the subgroups only if they aren't empty
+		if (shapes1->GetShapeCount() != 0) {
+			AddShape(shapes1);
+			//Subdivide the subgroup
+			shapes1->PartitionChildren(maximumShapeCount);
+		}
+
+		if (shapes2->GetShapeCount() != 0) {
+			AddShape(shapes2);
+			shapes2->PartitionChildren(maximumShapeCount);
+		}
+	}
+
+	//Maybe one of the shapes is a group that can be subdivided
+	for (auto shape : shapes) {
+		shape->PartitionChildren(maximumShapeCount);
+	}
+}

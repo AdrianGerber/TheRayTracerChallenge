@@ -33,6 +33,8 @@ public:
 		return BoundingBox(Point::CreatePoint(-1.0, minimum, -1.0), Point::CreatePoint(1.0, maximum, 1.0));
 	}
 
+	void PartitionChildren(size_t maximumShapeCount) override {}
+
 private:
 	double minimum, maximum;
 	bool closed;

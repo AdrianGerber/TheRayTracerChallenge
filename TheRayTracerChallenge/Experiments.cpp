@@ -257,6 +257,7 @@ void DrawChapter7Scene()
 		shape->SetMaterial(m);
 		group->AddShape(shape);
 	}
+	group->PartitionChildren(3);
 	world.AddShape(group);
 
 	auto groupgroup = Shape::MakeShared<ShapeGroup>();
@@ -276,7 +277,6 @@ void DrawChapter7Scene()
 	}
 	
 
-
 	camera.RenderFrame(world).SaveToFile("chapter14");
 
 	std::cout << "\n";
@@ -285,4 +285,62 @@ void DrawChapter7Scene()
 
 void DrawBoundingBoxScene()
 {
+	World world;
+
+	//Camera
+	Camera camera(1920, 1080, Constants::PI / 3.0f,
+		Camera::CreateViewTransform(
+			Point::CreatePoint(17.0, 15.0, -10.0),
+			Point::CreatePoint(5.0, 3.0, 5.0),
+			Vector::CreateVector(0.0, 1.0, 0.0)
+		)
+	);
+
+	//Light source
+	auto lightSource = std::make_shared<LightSource>();
+	lightSource->SetIntensity(Color(1.0f, 1.0f, 1.0f));
+	lightSource->SetPosition(Point::CreatePoint(-10.0f, 10.0f, -10.0f));
+	world.AddLightSource(lightSource);
+
+	auto group = Shape::MakeShared<ShapeGroup>();
+
+	int size = 10;
+
+	for (int x = 0; x < size; x++) {
+		for (int y = 0; y < size; y++) {
+			for (int z = 0; z < size; z++) {
+				double fracX = static_cast<double>(x) / static_cast<double>(size);
+				double fracY = static_cast<double>(y) / static_cast<double>(size);
+				double fracZ = static_cast<double>(z) / static_cast<double>(size);
+
+				auto shape = Shape::MakeShared<Sphere>();
+
+				Material m;
+				m.shininess = 300;
+				m.ambient = 0.09;
+				m.diffuse = 0.3;
+				m.specular = 0.9;
+				m.reflective = 0.0;
+				m.transparency = 0.9;
+				m.pattern = std::make_shared<ColorPattern>(Color(fracX, fracY, fracZ));
+				shape->SetMaterial(m);
+
+				Transform t;
+				t.Scale(0.9, 0.9, 0.9);
+				t.Translate(fracX * 30.0 - 15.0, fracY * 30.0 - 15.0, fracZ * 20.0 + 3.0);
+				shape->SetTransform(t);
+
+				group->AddShape(shape);
+			}
+		}
+	}
+
+	group->PartitionChildren(5);
+	world.AddShape(group);
+
+
+	camera.RenderFrame(world).SaveToFile("boundingBoxTest");
+
+	std::cout << "\n";
+	std::cout << "Rays: " << std::to_string(world.numberOfRaysCast) << "\n";
 }

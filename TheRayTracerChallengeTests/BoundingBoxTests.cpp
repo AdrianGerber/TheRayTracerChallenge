@@ -34,6 +34,8 @@ namespace TheRayTracesChallengeTests
 			}
 			bool findIntersectionsCalled = false;
 
+			void PartitionChildren(size_t maximumShapeCount) override {}
+
 		private:
 			std::shared_ptr<Shape> ShapeSpecificCopy() override {
 				return Shape::MakeShared<TestShape>(*this);
@@ -264,5 +266,61 @@ Scenario: Intersecting ray+csg tests children if box is hit
   Then left.saved_ray is set
     And right.saved_ray is set*/
 
+		TEST_METHOD(SplitBox) {
+			//10x10x10 cube
+			BoundingBox box(Point::CreatePoint(-1.0, -4.0, -5.0), Point::CreatePoint(9.0, 6.0, 5.0));
+			auto split = box.SplitBox();
+			Assert::IsTrue(split.first.GetMin() == Point::CreatePoint(-1.0, -4.0, -5.0));
+			Assert::IsTrue(split.first.GetMax() == Point::CreatePoint(4.0, 6.0, 5.0));
+			Assert::IsTrue(split.second.GetMin() == Point::CreatePoint(4.0, -4.0, -5.0));
+			Assert::IsTrue(split.second.GetMax() == Point::CreatePoint(9.0, 6.0, 5.0));
+
+			//Longest side in x direction
+			box = BoundingBox(Point::CreatePoint(-1.0, -2.0, -3.0), Point::CreatePoint(9.0, 5.5, 3.0));
+			split = box.SplitBox();
+			Assert::IsTrue(split.first.GetMin() == Point::CreatePoint(-1.0, -2.0, -3.0));
+			Assert::IsTrue(split.first.GetMax() == Point::CreatePoint(4.0, 5.5, 3.0));
+			Assert::IsTrue(split.second.GetMin() == Point::CreatePoint(4.0, -2.0, -3.0));
+			Assert::IsTrue(split.second.GetMax() == Point::CreatePoint(9.0, 5.5, 3.0));
+
+			//Longest side in y direction
+			box = BoundingBox(Point::CreatePoint(-1.0, -2.0, -3.0), Point::CreatePoint(5.0, 8.0, 3.0));
+			split = box.SplitBox();
+			Assert::IsTrue(split.first.GetMin() == Point::CreatePoint(-1.0, -2.0, -3.0));
+			Assert::IsTrue(split.first.GetMax() == Point::CreatePoint(5.0, 3.0, 3.0));
+			Assert::IsTrue(split.second.GetMin() == Point::CreatePoint(-1.0, 3.0, -3.0));
+			Assert::IsTrue(split.second.GetMax() == Point::CreatePoint(5.0, 8.0, 3.0));
+
+			//Longest side in z direction
+			box = BoundingBox(Point::CreatePoint(-1.0, -2.0, -3.0), Point::CreatePoint(5.0, 3.0, 7.0));
+			split = box.SplitBox();
+			Assert::IsTrue(split.first.GetMin() == Point::CreatePoint(-1.0, -2.0, -3.0));
+			Assert::IsTrue(split.first.GetMax() == Point::CreatePoint(5.0, 3.0, 2.0));
+			Assert::IsTrue(split.second.GetMin() == Point::CreatePoint(-1.0, -2.0, 2.0));
+			Assert::IsTrue(split.second.GetMax() == Point::CreatePoint(5.0, 3.0, 7.0));
+		}
+
+		TEST_METHOD(SubdivideChildren) {
+			auto s1 = Shape::MakeShared<Sphere>();
+			auto s2 = Shape::MakeShared<Sphere>();
+			auto s3 = Shape::MakeShared<Sphere>();
+
+			s1->SetTransform(Transform::CreateTranslation(-2.0, -2.0, 0.0));
+			s2->SetTransform(Transform::CreateTranslation(-2.0, 2.0, 0.0));
+			s3->SetTransform(Transform::CreateScale(4.0, 4.0, 4.0));
+
+			auto g = Shape::MakeShared<ShapeGroup>();
+			g->AddShape(s1);
+			g->AddShape(s2);
+			g->AddShape(s3);
+
+			g->PartitionChildren(1);
+
+			Assert::IsTrue(g->GetShape(0) == s3);
+
+			//Other shapes were parititioned into new groups
+			Assert::IsTrue(g->GetShapeCount() == 2);
+			Assert::IsTrue(g->GetShape(1) != s2);
+		}
 	};
 }
