@@ -26,6 +26,7 @@
 #include "Cube.h"
 #include "Cylinder.h"
 #include "Cone.h"
+#include "ShapeGroup.h"
 
 void DrawWatchface();
 

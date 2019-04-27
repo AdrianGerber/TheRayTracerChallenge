@@ -16,6 +16,11 @@ public:
 	IntersectionBuffer FindObjectSpaceIntersections(Ray ray) override;
 
 	Vector FindObjectSpaceNormal(Point p) override;
+
+private:
+	std::shared_ptr<Shape> ShapeSpecificCopy() override{
+		return Shape::MakeShared<Plane>(*this);
+	}
 };
 
 inline IntersectionBuffer Plane::FindObjectSpaceIntersections(Ray ray)

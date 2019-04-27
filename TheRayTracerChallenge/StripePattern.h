@@ -31,6 +31,15 @@ public:
 
 	std::shared_ptr<Pattern> GetPattern1() { return pattern1; }
 	std::shared_ptr<Pattern> GetPattern2() { return pattern2; }
+
+
+private:
+	std::shared_ptr<Pattern> PatternSpecificCopy() override {
+		auto p1Copy = pattern1->Copy();
+		auto p2Copy = pattern2->Copy();
+
+		return std::make_shared<StripePattern>(p1Copy, p2Copy);
+	}
 };
 
 
@@ -54,7 +63,7 @@ inline StripePattern::StripePattern(std::shared_ptr<Pattern> p1, std::shared_ptr
 inline Color StripePattern::ReadPattern(Point point) {
 
 	if (Constants::DoubleEqual(fmod(floor(point.x), 2.0), 0.0)) {
-		return pattern1->ColorAtPoint(point, Transform());
+		return pattern1->ColorAtShapePoint(point);
 	}
-	return pattern2->ColorAtPoint(point, Transform());
+	return pattern2->ColorAtShapePoint(point);
 }

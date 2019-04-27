@@ -10,16 +10,16 @@ class Shape
 {
 public:
 	Shape() { material = Material(); }
-    ~Shape() = default;
+	~Shape() = default;
 
-    void SetTransform(Transform newTransform) { transform = newTransform; }
+	void SetTransform(Transform newTransform) { transform = newTransform; }
 	Transform GetTransformCopy() { return transform; }
 	//Get the shape's transform by reference (Caching of calculations can improve performance
-    Transform& GetTransformRef() { return transform; }
+	Transform& GetTransformRef() { return transform; }
 
 
-    void SetMaterial(Material newMaterial) { material = newMaterial; }
-    Material GetMaterial() { return material; }
+	void SetMaterial(Material newMaterial) { material = newMaterial; }
+	Material GetMaterial() { return material; }
 
 	//Find intersections of this shape and a ray
 	IntersectionBuffer FindIntersections(Ray ray);
@@ -39,24 +39,44 @@ public:
 	//Shapes are not the same pointer, but have the same transform
 	bool SameTransform(std::shared_ptr<Shape> s);
 
-
+	//Take transforms of parent shapes into consideration
+	Point PointToObjectSpace(Point p);
+	Vector NormalToWorldSpace(Vector normal);
 
 	//Create an initialized instance of a shape
 	template<typename T, typename ...Args>
 	static std::shared_ptr<T> MakeShared(Args&& ...args) {
 		auto shape = std::make_shared<T>(std::forward<Args>(args)...);
 		shape->SetPointer(shape);
+		shape->SetParent(nullptr);
 		return shape;
 	}
 
 	std::shared_ptr<Shape> GetPointer() { return static_cast<std::shared_ptr<Shape>>(thisShapePtr); }
 	void SetPointer(std::shared_ptr<Shape> newPtr) { thisShapePtr = static_cast<std::weak_ptr<Shape>>(newPtr); }
 
+	std::shared_ptr<Shape> GetParent() {
+		if (parent.expired()) return std::shared_ptr<Shape>();
+		return static_cast<std::shared_ptr<Shape>>(parent);
+	}
+	void SetParent(std::shared_ptr<Shape> newPtr) { parent = static_cast<std::weak_ptr<Shape>>(newPtr); }
+
+	std::shared_ptr<Shape> Copy() {
+		auto shape = ShapeSpecificCopy();
+		shape->SetMaterial(material.Copy());
+		shape->SetParent(GetParent());
+		shape->SetTransform(GetTransformCopy());
+		return shape;
+	}
 
 private:
-    Transform transform;
-    Material material;
+
+	virtual std::shared_ptr<Shape> ShapeSpecificCopy() = 0;
+
+	Transform transform;
+	Material material;
 	std::weak_ptr<Shape> thisShapePtr;
+	std::weak_ptr<Shape> parent;
 };
 
 
@@ -70,18 +90,13 @@ inline IntersectionBuffer Shape::FindIntersections(Ray ray) {
 
 inline Vector Shape::SurfaceNormal(Point p) {
 	//Point in object space
-	Point objectSpacePoint = GetTransformRef().Inversion() * p;
+	Point objectSpacePoint = PointToObjectSpace(p);
 
 	//Calculate normal
 	Vector objectSpaceNormal = FindObjectSpaceNormal(objectSpacePoint);
 
 	//Convert back to world space
-	Vector worldSpaceNormal = GetTransformRef().Inversion().GetMatrix().Transpose() * objectSpaceNormal;
-
-	//Force worldSpaceNormal to be a vector
-	worldSpaceNormal.w = 0.0;
-
-	return worldSpaceNormal.Normalize();
+	return NormalToWorldSpace(objectSpaceNormal);
 }
 
 
@@ -94,4 +109,27 @@ inline bool Shape::operator==(std::shared_ptr<Shape> s) {
 inline bool Shape::SameTransform(std::shared_ptr<Shape> s) {
 	return
 		GetTransformRef() == s->GetTransformRef();
+}
+
+
+inline Point Shape::PointToObjectSpace(Point p) {
+	//Handle the transforms of parent shapes
+	if (!parent.expired()) {
+		p = GetParent()->PointToObjectSpace(p);
+	}
+
+	return transform.Inversion() * p;
+}
+
+inline Vector Shape::NormalToWorldSpace(Vector normal) {
+	normal = transform.Inversion().GetMatrix().Transpose() * normal;
+	normal.w = 0.0;
+	normal = normal.Normalize();
+
+	//Handle parent transforms
+	if (!parent.expired()) {
+		normal = GetParent()->NormalToWorldSpace(normal);
+	}
+
+	return normal;
 }

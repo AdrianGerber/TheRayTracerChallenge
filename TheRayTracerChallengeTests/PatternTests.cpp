@@ -36,6 +36,10 @@ namespace TheRayTracesChallengeTests
 				//Pass through the point coordinates
 				return Color(point.x, point.y, point.z);
 			}
+
+			std::shared_ptr<Pattern> PatternSpecificCopy() override {
+				return std::make_shared<TestPattern>();
+			}
 		};
 
 	public:
@@ -66,28 +70,7 @@ namespace TheRayTracesChallengeTests
 			Point in = Point::CreatePoint(1.0, 2.0, 3.0);
 			Color out(1.0, 2.0, 3.0);
 
-			Assert::IsTrue(testPattern.ColorAtPoint(in, Transform()) == out);
-		}
-		TEST_METHOD(CorrectTransformation) {
-			//The pattern should be transformed by both the pattern's transform and
-			//the attached object's transform
-			TestPattern testPattern;
-
-			Point in = Point::CreatePoint(1.0, 2.0, 3.0);
-			Color out(1.0, 2.0, 3.0);
-
-			Transform t = Transform::CreateRotationX(0.2134);
-			testPattern.SetTransform(t.Inversion());
-
-			//t and t.Inversion should cancel out
-			Assert::IsTrue(testPattern.ColorAtPoint(in, t) == out);
-
-			testPattern.SetTransform(Transform::CreateTranslation(0.5, 1.0, 1.5));
-			//Specific shape and pattern transformations
-			Assert::IsTrue(
-			testPattern.ColorAtPoint(Point::CreatePoint(2.5, 3.0,3.5), Transform::CreateScale(2.0, 2.0, 2.0))
-				== Color(0.75, 0.5, 0.25)
-			);
+			Assert::IsTrue(testPattern.ColorAtShapePoint(in) == out);
 		}
 
 		TEST_METHOD(IsAppliedToLighting) {
@@ -127,10 +110,10 @@ namespace TheRayTracesChallengeTests
 			);
 
 			//Color is interpolated linearly between white and black
-			Assert::IsTrue(pattern.ColorAtPoint(Point::CreatePoint(0.0, 0.0, 0.0), Transform()) == white);
-			Assert::IsTrue(pattern.ColorAtPoint(Point::CreatePoint(0.25, 0.0, 0.0), Transform()) == Color(0.75, 0.75, 0.75));
-			Assert::IsTrue(pattern.ColorAtPoint(Point::CreatePoint(0.5, 0.0, 0.0), Transform()) == Color(0.5, 0.5, 0.5));
-			Assert::IsTrue(pattern.ColorAtPoint(Point::CreatePoint(0.75, 0.0, 0.0), Transform()) == Color(0.25, 0.25, 0.25));
+			Assert::IsTrue(pattern.ColorAtShapePoint(Point::CreatePoint(0.0, 0.0, 0.0)) == white);
+			Assert::IsTrue(pattern.ColorAtShapePoint(Point::CreatePoint(0.25, 0.0, 0.0)) == Color(0.75, 0.75, 0.75));
+			Assert::IsTrue(pattern.ColorAtShapePoint(Point::CreatePoint(0.5, 0.0, 0.0)) == Color(0.5, 0.5, 0.5));
+			Assert::IsTrue(pattern.ColorAtShapePoint(Point::CreatePoint(0.75, 0.0, 0.0)) == Color(0.25, 0.25, 0.25));
 		}
 
 		TEST_METHOD(StripePatternTest) {
@@ -142,20 +125,20 @@ namespace TheRayTracesChallengeTests
 			);
 
 			//Stripe pattern is constant in y direction
-			Assert::IsTrue(pattern.ColorAtPoint(Point::CreatePoint(0.0, 0.0, 0.0), Transform()) == white);
-			Assert::IsTrue(pattern.ColorAtPoint(Point::CreatePoint(0.0, 1.0, 0.0), Transform()) == white);
-			Assert::IsTrue(pattern.ColorAtPoint(Point::CreatePoint(0.0, 2.0, 0.0), Transform()) == white);
+			Assert::IsTrue(pattern.ColorAtShapePoint(Point::CreatePoint(0.0, 0.0, 0.0)) == white);
+			Assert::IsTrue(pattern.ColorAtShapePoint(Point::CreatePoint(0.0, 1.0, 0.0)) == white);
+			Assert::IsTrue(pattern.ColorAtShapePoint(Point::CreatePoint(0.0, 2.0, 0.0)) == white);
 			//Also constant in z direction
-			Assert::IsTrue(pattern.ColorAtPoint(Point::CreatePoint(0.0, 0.0, 0.0), Transform()) == white);
-			Assert::IsTrue(pattern.ColorAtPoint(Point::CreatePoint(0.0, 0.0, 1.0), Transform()) == white);
-			Assert::IsTrue(pattern.ColorAtPoint(Point::CreatePoint(0.0, 0.0, 2.0), Transform()) == white);
+			Assert::IsTrue(pattern.ColorAtShapePoint(Point::CreatePoint(0.0, 0.0, 0.0)) == white);
+			Assert::IsTrue(pattern.ColorAtShapePoint(Point::CreatePoint(0.0, 0.0, 1.0)) == white);
+			Assert::IsTrue(pattern.ColorAtShapePoint(Point::CreatePoint(0.0, 0.0, 2.0)) == white);
 			//Color alternates in x direction
-			Assert::IsTrue(pattern.ColorAtPoint(Point::CreatePoint(0.0, 0.0, 0.0), Transform()) == white);
-			Assert::IsTrue(pattern.ColorAtPoint(Point::CreatePoint(0.9, 0.0, 0.0), Transform()) == white);
-			Assert::IsTrue(pattern.ColorAtPoint(Point::CreatePoint(1.0, 0.0, 0.0), Transform()) == black);
-			Assert::IsTrue(pattern.ColorAtPoint(Point::CreatePoint(-0.1, 0.0, 0.0), Transform()) == black);
-			Assert::IsTrue(pattern.ColorAtPoint(Point::CreatePoint(-1.0, 0.0, 0.0), Transform()) == black);
-			Assert::IsTrue(pattern.ColorAtPoint(Point::CreatePoint(-1.1, 0.0, 0.0), Transform()) == white);
+			Assert::IsTrue(pattern.ColorAtShapePoint(Point::CreatePoint(0.0, 0.0, 0.0)) == white);
+			Assert::IsTrue(pattern.ColorAtShapePoint(Point::CreatePoint(0.9, 0.0, 0.0)) == white);
+			Assert::IsTrue(pattern.ColorAtShapePoint(Point::CreatePoint(1.0, 0.0, 0.0)) == black);
+			Assert::IsTrue(pattern.ColorAtShapePoint(Point::CreatePoint(-0.1, 0.0, 0.0)) == black);
+			Assert::IsTrue(pattern.ColorAtShapePoint(Point::CreatePoint(-1.0, 0.0, 0.0)) == black);
+			Assert::IsTrue(pattern.ColorAtShapePoint(Point::CreatePoint(-1.1, 0.0, 0.0)) == white);
 		}
 
 		TEST_METHOD(RingPatternTest) {
@@ -163,11 +146,11 @@ namespace TheRayTracesChallengeTests
 			Color white(1.0, 1.0, 1.0);
 			RingPattern pattern(white, black);
 
-			Assert::IsTrue(pattern.ColorAtPoint(Point::CreatePoint(0.0, 0.0, 0.0), Transform()) == white);
-			Assert::IsTrue(pattern.ColorAtPoint(Point::CreatePoint(1.0, 0.0, 0.0), Transform()) == black);
-			Assert::IsTrue(pattern.ColorAtPoint(Point::CreatePoint(0.0, 0.0, 1.0), Transform()) == black);
+			Assert::IsTrue(pattern.ColorAtShapePoint(Point::CreatePoint(0.0, 0.0, 0.0)) == white);
+			Assert::IsTrue(pattern.ColorAtShapePoint(Point::CreatePoint(1.0, 0.0, 0.0)) == black);
+			Assert::IsTrue(pattern.ColorAtShapePoint(Point::CreatePoint(0.0, 0.0, 1.0)) == black);
 			//Slightly more that sqrt(2.0)
-			Assert::IsTrue(pattern.ColorAtPoint(Point::CreatePoint(0.708, 0.0, 0.708), Transform()) == black);
+			Assert::IsTrue(pattern.ColorAtShapePoint(Point::CreatePoint(0.708, 0.0, 0.708)) == black);
 		}
 
 		TEST_METHOD(CheckerPatterTest) {
@@ -177,19 +160,19 @@ namespace TheRayTracesChallengeTests
 
 			
 			//Checkers repeat in x direction
-			Assert::IsTrue(pattern.ColorAtPoint(Point::CreatePoint(0.0, 0.0, 0.0), Transform()) == white);
-			Assert::IsTrue(pattern.ColorAtPoint(Point::CreatePoint(0.99, 0.0, 0.0), Transform()) == white);
-			Assert::IsTrue(pattern.ColorAtPoint(Point::CreatePoint(1.01, 0.0, 0.0), Transform()) == black);
+			Assert::IsTrue(pattern.ColorAtShapePoint(Point::CreatePoint(0.0, 0.0, 0.0)) == white);
+			Assert::IsTrue(pattern.ColorAtShapePoint(Point::CreatePoint(0.99, 0.0, 0.0)) == white);
+			Assert::IsTrue(pattern.ColorAtShapePoint(Point::CreatePoint(1.01, 0.0, 0.0)) == black);
 
 			//Checkers repeat in y direction
-			Assert::IsTrue(pattern.ColorAtPoint(Point::CreatePoint(0.0, 0.0, 0.0), Transform()) == white);
-			Assert::IsTrue(pattern.ColorAtPoint(Point::CreatePoint(0.0, 0.99, 0.0), Transform()) == white);
-			Assert::IsTrue(pattern.ColorAtPoint(Point::CreatePoint(0.0, 1.01, 0.0), Transform()) == black);
+			Assert::IsTrue(pattern.ColorAtShapePoint(Point::CreatePoint(0.0, 0.0, 0.0)) == white);
+			Assert::IsTrue(pattern.ColorAtShapePoint(Point::CreatePoint(0.0, 0.99, 0.0)) == white);
+			Assert::IsTrue(pattern.ColorAtShapePoint(Point::CreatePoint(0.0, 1.01, 0.0)) == black);
 			
 			//Checkers repeat in z direction
-			Assert::IsTrue(pattern.ColorAtPoint(Point::CreatePoint(0.0, 0.0, 0.0), Transform()) == white);
-			Assert::IsTrue(pattern.ColorAtPoint(Point::CreatePoint(0.0, 0.0, 0.99), Transform()) == white);
-			Assert::IsTrue(pattern.ColorAtPoint(Point::CreatePoint(0.0, 0.0, 1.01), Transform()) == black);
+			Assert::IsTrue(pattern.ColorAtShapePoint(Point::CreatePoint(0.0, 0.0, 0.0)) == white);
+			Assert::IsTrue(pattern.ColorAtShapePoint(Point::CreatePoint(0.0, 0.0, 0.99)) == white);
+			Assert::IsTrue(pattern.ColorAtShapePoint(Point::CreatePoint(0.0, 0.0, 1.01)) == black);
 
 		}
 		
@@ -199,7 +182,7 @@ namespace TheRayTracesChallengeTests
 				std::make_shared<ColorPattern>(Color(0.2, 0.3, 0.4)),
 				std::make_shared<ColorPattern>(Color(0.4, 0.3, 0.2))
 			);
-			Assert::IsTrue(blendedPattern.ColorAtPoint(Point::CreatePoint(0.0, 0.0, 0.0), Transform())
+			Assert::IsTrue(blendedPattern.ColorAtShapePoint(Point::CreatePoint(0.0, 0.0, 0.0))
 				== Color(0.6, 0.6, 0.6)
 			);
 
@@ -210,7 +193,7 @@ namespace TheRayTracesChallengeTests
 
 			blendedPattern = BlendedPattern(testPattern1, testPattern2);
 
-			blendedPattern.ColorAtPoint(Point::CreatePoint(1.0, 2.0, 3.0), Transform());
+			blendedPattern.ColorAtShapePoint(Point::CreatePoint(1.0, 2.0, 3.0));
 
 			Assert::IsTrue(testPattern1->lastPoint == Point::CreatePoint(1.0, 2.0, 3.0));
 			Assert::IsTrue(testPattern2->lastPoint == Point::CreatePoint(1.0, 2.0, 3.0));

@@ -19,8 +19,13 @@ public:
 
 	Color GetColor() { return color; }
 
+	
 
 private:
 	Color color;
+	
+	std::shared_ptr<Pattern> PatternSpecificCopy() override {
+		return std::make_shared<ColorPattern>(color);
+	}
 };
 

@@ -27,6 +27,10 @@ public:
 
 private:
 	Color color1, color2;
+
+	std::shared_ptr<Pattern> PatternSpecificCopy() override {
+		return std::make_shared<RingPattern>(color1, color2);
+	}
 };
 
 

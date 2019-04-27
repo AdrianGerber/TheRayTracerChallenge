@@ -315,6 +315,9 @@ namespace TheRayTracesChallengeTests
 				Color ReadPattern(Point point) override {
 					return Color(point.x, point.y, point.z);
 				}
+				std::shared_ptr<Pattern> PatternSpecificCopy() override {
+					return std::make_shared<TestPattern>();
+				}
 			};
 
 			World w;

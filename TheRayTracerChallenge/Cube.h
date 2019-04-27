@@ -19,6 +19,11 @@ public:
 	Vector FindObjectSpaceNormal(Point p) override;
 
 private:
+
+	std::shared_ptr<Shape> ShapeSpecificCopy() override{
+		return Shape::MakeShared<Cube>(*this);
+	}
+
 	//Calculate the ray's 't value' at the points '-1.0' and '0.0'
 	std::pair<double, double> checkAxis(double origin, double direction);
 };
@@ -77,3 +82,4 @@ inline std::pair<double, double> Cube::checkAxis(double origin, double direction
 	}
 	return std::pair<double, double>(tMin, tMax);
 }
+

@@ -38,6 +38,10 @@ private:
 
 	//Find the ray's intersections with the end caps
 	IntersectionBuffer IntersectEndCaps(Ray ray);
+
+	std::shared_ptr<Shape> ShapeSpecificCopy() override {
+		return Shape::MakeShared<Cylinder>(*this);
+	}
 };
 
 inline Cylinder::Cylinder() {

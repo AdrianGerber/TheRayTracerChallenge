@@ -26,7 +26,7 @@ public:
 
 	Color ReadPattern(Point point) override {
 		//Blend both patterns together
-		return pattern1->ColorAtPoint(point, Transform()) + pattern2->ColorAtPoint(point, Transform());
+		return pattern1->ColorAtShapePoint(point) + pattern2->ColorAtShapePoint(point);
 	}
 
 
@@ -36,8 +36,16 @@ public:
 	std::shared_ptr<Pattern> GetPattern1() { return pattern1; }
 	std::shared_ptr<Pattern> GetPattern2() { return pattern2; }
 
+	
 
 private:
 	std::shared_ptr<Pattern> pattern1, pattern2;
+
+	std::shared_ptr<Pattern> PatternSpecificCopy() override {
+		auto p1Copy = pattern1->Copy();
+		auto p2Copy = pattern2->Copy();
+
+		return std::make_shared<BlendedPattern>(p1Copy, p2Copy);
+	}
 };
 

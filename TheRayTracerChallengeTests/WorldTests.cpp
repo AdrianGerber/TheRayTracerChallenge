@@ -135,7 +135,7 @@ namespace TheRayTracesChallengeTests
 			Ray ray(Point::CreatePoint(0.0f, 0.0f, 0.75f), Vector::CreateVector(0.0f, 0.0f, -1.0f));
 
 			Assert::IsTrue(
-				world.FindRayColor(ray) == inner->GetMaterial().pattern->ColorAtPoint(Point::CreatePoint(0.0, 0.0, 0.0), Transform())
+				world.FindRayColor(ray) == inner->GetMaterial().pattern->ColorAtShapePoint(Point::CreatePoint(0.0, 0.0, 0.0))
 			);
 		}
 

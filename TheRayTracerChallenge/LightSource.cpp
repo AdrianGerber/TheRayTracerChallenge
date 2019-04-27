@@ -26,7 +26,7 @@ Color LightSource::Lighting(std::shared_ptr<Shape> shape, Point p, Vector eye, V
 	Material m = shape->GetMaterial();
 
     //Combine the colors of the light and the material
-    Color effectiveColor = m.pattern->ColorAtPoint(p, shape->GetTransformRef()) * intensity;
+    Color effectiveColor = m.pattern->ColorAtShapePoint(shape->PointToObjectSpace(p)) * intensity;
 
     //Ambient component
     ambient = effectiveColor * m.ambient;

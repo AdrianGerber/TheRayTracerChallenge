@@ -126,13 +126,13 @@ void DrawSphereReflections() {
 
 
 
-//End of chapter 7 / 8 / 9 / 10 / 11 / 12 / 13
+//End of chapter 7 / 8 / 9 / 10 / 11 / 12 / 13 / 14
 void DrawChapter7Scene()
 {
 	World world;
 	
 	//Camera
-	Camera camera(200, 100, Constants::PI / 3.0f, 
+	Camera camera(1920, 1080, Constants::PI / 3.0f, 
 		Camera::CreateViewTransform(
 			Point::CreatePoint(0.0f, 1.5f, -5.0f),
 			Point::CreatePoint(0.0f, 1.0f, 0.0f),
@@ -246,7 +246,38 @@ void DrawChapter7Scene()
 	left->SetTransform(transform);
 	world.AddShape(left);
 
-	camera.RenderFrame(world).SaveToFile("chapter13");
+	auto group = Shape::MakeShared<ShapeGroup>();
+	
+	for (int i = -3; i <= 3; i++) {
+		auto shape = Shape::MakeShared<Sphere>();
+		shape->SetTransform(Transform::CreateScale(0.1, 0.1, 0.1).Translate(static_cast<double>(i), 0.2, -1.0));
+		auto m = shape->GetMaterial();
+		m.pattern = std::make_shared<StripePattern>(Color((static_cast<double>(i)+6.0) / 6.0, 0.0, 0.0), Color(0.1, 0.1, 0.1));
+		m.pattern->SetTransform(Transform::CreateScale(0.1, 0.1, 0.1));
+		shape->SetMaterial(m);
+		group->AddShape(shape);
+	}
+	world.AddShape(group);
+
+	auto groupgroup = Shape::MakeShared<ShapeGroup>();
+
+	for (int i = 0; i < 4; i++) {
+		auto copy = group->Copy();
+		copy->SetTransform(Transform::CreateTranslation(0.0, static_cast<double>(i) / 2.0, -1.5));
+
+		groupgroup->AddShape(copy);
+	}
+
+	for (int i = 0; i < 4; i++) {
+		auto groupgroupgroup = groupgroup->Copy();
+		groupgroupgroup->SetTransform(Transform::CreateTranslation(0.0, static_cast<double>(i) / 4.0, static_cast<double>(i) / 4.0).RotateY(Constants::PI / 6.0));
+
+		world.AddShape(groupgroupgroup);
+	}
+	
+
+
+	camera.RenderFrame(world).SaveToFile("chapter14");
 
 	std::cout << "\n";
 	std::cout << "Rays: " << std::to_string(world.numberOfRaysCast) << "\n";

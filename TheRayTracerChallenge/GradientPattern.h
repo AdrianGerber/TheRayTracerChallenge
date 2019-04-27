@@ -31,8 +31,13 @@ public:
 	Color GetColor1() { return color1; }
 	Color GetColor2() { return color2; }
 
+	
 
 private:
 	Color color1, color2;
+	
+	std::shared_ptr<Pattern> PatternSpecificCopy() override {
+		return std::make_shared<GradientPattern>(color1, color2);
+	}
 };
 

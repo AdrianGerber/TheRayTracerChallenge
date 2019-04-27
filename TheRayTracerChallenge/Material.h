@@ -32,6 +32,8 @@ public:
 
 	//Create a material that looks like glass
 	static Material CreateGlass();
+
+	Material Copy();
 };
 
 
@@ -73,5 +75,12 @@ inline Material Material::CreateGlass() {
 	m.refractiveIndex = 1.5;
 	m.transparency = 1.0;
 
+	return m;
+}
+
+
+inline Material Material::Copy() {
+	Material m(*this);
+	m.pattern = pattern->Copy();
 	return m;
 }
