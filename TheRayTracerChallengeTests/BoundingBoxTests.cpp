@@ -25,7 +25,7 @@ namespace TheRayTracesChallengeTests
 		class TestShape : public Shape {
 
 		public:
-			IntersectionBuffer FindObjectSpaceIntersections(Ray ray) override { findIntersectionsCalled = true; return IntersectionBuffer(); }
+			void FindObjectSpaceIntersections(Ray ray, IntersectionBuffer& buffer) override { findIntersectionsCalled = true; }
 
 			Vector FindObjectSpaceNormal(Point p) override { return Vector(); }
 
@@ -236,13 +236,16 @@ namespace TheRayTracesChallengeTests
 
 			//Ray misses the bounding box
 			Ray ray(Point::CreatePoint(0.0, 0.0, -5.0), Vector::CreateVector(0.0, 1.0, 0.0));
-			auto xs = group->FindIntersections(ray);
+			IntersectionBuffer xs;
+			group->FindIntersections(ray, xs);
 			//The shape was not checked for intersections because the ray misses the bounding box
 			Assert::IsTrue(shape->findIntersectionsCalled == false);
 
+			xs.Reset();
+
 			//Ray hits the bounding box
 			ray = Ray(Point::CreatePoint(0.0, 0.0, -5.0), Vector::CreateVector(0.0, 0.0, 1.0));
-			xs = group->FindIntersections(ray);
+			group->FindIntersections(ray, xs);
 			//The shape needs to be checked for intersections
 			Assert::IsTrue(shape->findIntersectionsCalled == true);
 		}

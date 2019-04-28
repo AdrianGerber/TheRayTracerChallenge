@@ -85,7 +85,8 @@ namespace TheRayTracesChallengeTests
 
 			auto s = Shape::MakeShared<Sphere>();
 
-            IntersectionBuffer xs = s->FindIntersections(ray);
+			IntersectionBuffer xs;
+			s->FindIntersections(ray, xs);
 
             Assert::IsTrue(xs.GetCount() == 2);
             Assert::IsTrue(xs[0].shape == s);
@@ -197,7 +198,8 @@ namespace TheRayTracesChallengeTests
             s->SetTransform(Transform::CreateScale(2.0f, 2.0f, 2.0f));
 
 
-            IntersectionBuffer xs = s->FindIntersections(r);
+			IntersectionBuffer xs;
+			s->FindIntersections(r, xs);
             Assert::IsTrue(xs.GetCount() == 2);
             Assert::IsTrue(Constants::DoubleEqual(xs[0].t, 3.0f));
             Assert::IsTrue(Constants::DoubleEqual(xs[1].t, 7.0f));
@@ -214,7 +216,8 @@ namespace TheRayTracesChallengeTests
             s->SetTransform(Transform::CreateTranslation(5.0f, 0.0f, 0.0f));
 
 
-            IntersectionBuffer xs = s->FindIntersections(r);
+			IntersectionBuffer xs;
+			s->FindIntersections(r, xs);
             Assert::IsTrue(xs.GetCount() == 0);
         }
     };

@@ -14,7 +14,7 @@ public:
 	Cube() = default;
 	~Cube() = default;
 
-	IntersectionBuffer FindObjectSpaceIntersections(Ray ray) override;
+	void FindObjectSpaceIntersections(Ray ray, IntersectionBuffer& buffer) override;
 
 	Vector FindObjectSpaceNormal(Point p) override;
 
@@ -34,7 +34,7 @@ private:
 	std::pair<double, double> checkAxis(double origin, double direction);
 };
 
-inline IntersectionBuffer Cube::FindObjectSpaceIntersections(Ray ray)
+inline void Cube::FindObjectSpaceIntersections(Ray ray, IntersectionBuffer& buffer)
 {
 	//Calculating the ray's 't' value for every plane where it could intersect the cube (each of the 6 sides)
 	auto xValues = checkAxis(ray.origin.x, ray.direction.x);
@@ -46,11 +46,10 @@ inline IntersectionBuffer Cube::FindObjectSpaceIntersections(Ray ray)
 
 	if (minimumT > maximumT) {
 		//There was no intersection with the cube
-		return IntersectionBuffer();
+		return;
 	}
-
-
-	return IntersectionBuffer(Intersection(minimumT, GetPointer()), Intersection(maximumT, GetPointer()));
+	buffer.Add(Intersection(minimumT, GetPointer()));
+	buffer.Add(Intersection(maximumT, GetPointer()));
 }
 
 inline Vector Cube::FindObjectSpaceNormal(Point p)

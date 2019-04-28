@@ -90,7 +90,8 @@ namespace TheRayTracesChallengeTests
 			for (size_t testNr = 0; testNr < expected.size(); testNr++) {
 				Ray testRay = rays[testNr];
 				IntersectionBuffer expectedIntersections = expected[testNr];
-				IntersectionBuffer intersections = cube->FindIntersections(testRay);
+				IntersectionBuffer intersections;
+				cube->FindIntersections(testRay, intersections);
 
 
 				//Make sure the correct number of hits was found

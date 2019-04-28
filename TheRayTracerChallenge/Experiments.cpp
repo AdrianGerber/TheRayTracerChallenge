@@ -53,7 +53,8 @@ void DrawSphere() {
           
             //Cast the ray
             Ray ray(origin, direction);
-            IntersectionBuffer intersections = s->FindIntersections(ray);
+			IntersectionBuffer intersections;
+			s->FindIntersections(ray, intersections);
 
 
             //Color all pixels that represent the sphere
@@ -100,7 +101,8 @@ void DrawSphereReflections() {
 
             //Cast the ray
             Ray ray(origin, direction);
-            IntersectionBuffer intersections = s->FindIntersections(ray);
+			IntersectionBuffer intersections;
+			s->FindIntersections(ray, intersections);
 
 
             //There was an intersection
@@ -290,7 +292,7 @@ void DrawBoundingBoxScene()
 	//Camera
 	Camera camera(1920, 1080, Constants::PI / 3.0f,
 		Camera::CreateViewTransform(
-			Point::CreatePoint(17.0, 15.0, -10.0),
+			Point::CreatePoint(10.0, 5.0, -5.0),
 			Point::CreatePoint(5.0, 3.0, 5.0),
 			Vector::CreateVector(0.0, 1.0, 0.0)
 		)
@@ -320,8 +322,8 @@ void DrawBoundingBoxScene()
 				m.ambient = 0.09;
 				m.diffuse = 0.3;
 				m.specular = 0.9;
-				m.reflective = 0.0;
-				m.transparency = 0.9;
+				m.reflective = 0.3;
+				m.transparency = 0.0;
 				m.pattern = std::make_shared<ColorPattern>(Color(fracX, fracY, fracZ));
 				shape->SetMaterial(m);
 
@@ -337,7 +339,6 @@ void DrawBoundingBoxScene()
 
 	group->PartitionChildren(5);
 	world.AddShape(group);
-
 
 	camera.RenderFrame(world).SaveToFile("boundingBoxTest");
 

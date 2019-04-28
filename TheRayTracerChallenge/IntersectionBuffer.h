@@ -21,6 +21,7 @@ public:
 	//Access individual intersections
     Intersection operator[](size_t i) const;
     size_t GetCount();
+	void Reset() { IsSorted = false; intersections.clear(); }
 
     void Sort();
 

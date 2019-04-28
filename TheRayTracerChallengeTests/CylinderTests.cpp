@@ -166,7 +166,8 @@ namespace TheRayTracesChallengeTests
 				IntersectionBuffer expectedIntersections = expected[testNr];
 				auto testCylinder = cylinders[testNr];
 
-				IntersectionBuffer intersections = testCylinder->FindIntersections(testRay);
+				IntersectionBuffer intersections;
+				testCylinder->FindIntersections(testRay, intersections);
 				
 				//Logger::WriteMessage(std::to_string(testNr).c_str());
 

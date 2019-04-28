@@ -52,9 +52,11 @@ namespace TheRayTracesChallengeTests
 			world.LoadDefaultWorld();
 			Ray ray(Point::CreatePoint(0.0f, 0.0f, -5.0f), Vector::CreateVector(0.0f, 0.0f, 1.0f));
 
-			auto i = world.IntersectRay(ray);
+			IntersectionBuffer i;
+			world.IntersectRay(ray, i);
 
 			Assert::IsTrue(i.GetCount() == 4);
+			i.Sort();
 			Assert::IsTrue(Constants::DoubleEqual(i[0].t, 4.0f));
 			Assert::IsTrue(Constants::DoubleEqual(i[1].t, 4.5f));
 			Assert::IsTrue(Constants::DoubleEqual(i[2].t, 5.5f));

@@ -29,7 +29,8 @@ namespace TheRayTracesChallengeTests
 			std::vector<std::shared_ptr<Shape>> shapes;
 			shapes.push_back(shape);
 
-			IntersectionBuffer i = shape->FindIntersections(r);
+			IntersectionBuffer i;
+			shape->FindIntersections(r, i);
 
 			HitCalculations comps(i.GetFirstHit(), i, r, shapes);
 

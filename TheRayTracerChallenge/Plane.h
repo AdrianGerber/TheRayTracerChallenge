@@ -14,7 +14,7 @@ public:
 	Plane() = default;
 	~Plane() = default;
 
-	IntersectionBuffer FindObjectSpaceIntersections(Ray ray) override;
+	void FindObjectSpaceIntersections(Ray ray, IntersectionBuffer& buffer) override;
 
 	Vector FindObjectSpaceNormal(Point p) override;
 
@@ -31,17 +31,17 @@ private:
 	}
 };
 
-inline IntersectionBuffer Plane::FindObjectSpaceIntersections(Ray ray)
+inline void Plane::FindObjectSpaceIntersections(Ray ray, IntersectionBuffer& buffer)
 {
 	//Plane and ray parallel -> no intersections
 	if (abs(ray.direction.y) < Constants::EPSILON) {
-		return IntersectionBuffer();
+		return;
 	}
 
 	//How far does the ray need to travel, until it reaches the plane (at y = 0.0)
 	double t = -ray.origin.y / ray.direction.y;
 
-	return IntersectionBuffer(Intersection(t, GetPointer()));
+	buffer.Add(Intersection(t, GetPointer()));
 }
 
 inline Vector Plane::FindObjectSpaceNormal(Point p)

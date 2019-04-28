@@ -7,7 +7,7 @@
 #include "Ray.h"
 #include "Shape.h"
 
-//A sphere of radius 1 (unless transformed)
+//A Group of multiple shapes
 class ShapeGroup : public Shape
 {
 public:
@@ -15,7 +15,7 @@ public:
 	~ShapeGroup() = default;
 
 	//Virtual methods that need to be implemented
-	IntersectionBuffer FindObjectSpaceIntersections(Ray ray) override;
+	void FindObjectSpaceIntersections(Ray ray, IntersectionBuffer& buffer) override;
 
 	Vector FindObjectSpaceNormal(Point p) override;
 
@@ -48,18 +48,16 @@ private:
 	}
 };
 
-inline IntersectionBuffer ShapeGroup::FindObjectSpaceIntersections(Ray ray) {
+inline void ShapeGroup::FindObjectSpaceIntersections(Ray ray, IntersectionBuffer& buffer) {
 	IntersectionBuffer intersections;
 
 	//The contained shapes only need to be checked when the bounding box is hit by the ray
 	if (bounds.CheckIntersection(ray)) {
 		//Find all intersections inside this group of shapes
 		for (auto currentShape : shapes) {
-			intersections.Add(currentShape->FindIntersections(ray));
+			currentShape->FindIntersections(ray, buffer);
 		}
 	}
-
-	return intersections;
 }
 
 inline Vector ShapeGroup::FindObjectSpaceNormal(Point p) {

@@ -5,7 +5,7 @@
 class Triangle : public Shape {
 public:
 
-	IntersectionBuffer FindObjectSpaceIntersections(Ray ray) override { return IntersectionBuffer(); }
+	void FindObjectSpaceIntersections(Ray ray, IntersectionBuffer& buffer) override { return; }
 
 	Vector FindObjectSpaceNormal(Point p) override { return Vector();}
 

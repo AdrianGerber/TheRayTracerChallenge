@@ -22,7 +22,7 @@ public:
 
 
     void LoadDefaultWorld();
-    IntersectionBuffer IntersectRay(Ray ray);
+    void IntersectRay(Ray ray, IntersectionBuffer& buffer);
 	Color ShadeHit(const HitCalculations& hitInfo, size_t remainingReflections = 5);
 	Color FindReflectedColor(const HitCalculations& hitInfo, size_t remainingReflections = 5);
 	Color FindRefractedColor(const HitCalculations& hitInfo, size_t remainingRefractions = 5);
@@ -38,5 +38,7 @@ public:
 	}
 
 	Color FindRayColor(Ray ray, size_t remainingReflections = 5);
+
+private:
 };
 

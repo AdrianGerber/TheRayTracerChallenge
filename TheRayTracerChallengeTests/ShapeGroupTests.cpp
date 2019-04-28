@@ -24,9 +24,8 @@ namespace TheRayTracesChallengeTests
 		public:
 			Ray receivedRay;
 
-			IntersectionBuffer FindObjectSpaceIntersections(Ray ray) {
+			void FindObjectSpaceIntersections(Ray ray, IntersectionBuffer& buffer) override {
 				receivedRay = ray;
-				return IntersectionBuffer();
 			}
 
 			Vector FindObjectSpaceNormal(Point p) {
@@ -75,8 +74,9 @@ namespace TheRayTracesChallengeTests
 				Point::CreatePoint(0.0, 0.0, 0.0),
 				Vector::CreateVector(0.0, 0.0, 1.0)
 			);
-
-			Assert::IsTrue(group->FindIntersections(ray).GetCount() == 0);
+			IntersectionBuffer xs;
+			group->FindIntersections(ray, xs);
+			Assert::IsTrue(xs.GetCount() == 0);
 		}
 
 		TEST_METHOD(NonemtpyGroupIntersection) {
@@ -97,7 +97,8 @@ namespace TheRayTracesChallengeTests
 				Vector::CreateVector(0.0, 0.0, 1.0)
 			);
 
-			auto xs = group->FindObjectSpaceIntersections(ray);
+			IntersectionBuffer xs;
+			group->FindObjectSpaceIntersections(ray, xs);
 
 			Assert::IsTrue(xs.GetCount() == 4);
 
@@ -123,7 +124,8 @@ namespace TheRayTracesChallengeTests
 				Vector::CreateVector(0.0, 0.0, 1.0)
 			);
 
-			auto xs = group->FindIntersections(ray);
+			IntersectionBuffer xs;
+			group->FindIntersections(ray, xs);
 			Assert::IsTrue(xs.GetCount() == 2);
 		}
 

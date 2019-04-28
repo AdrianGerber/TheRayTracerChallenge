@@ -23,13 +23,13 @@ public:
 	Material GetMaterial() { return material; }
 
 	//Find intersections of this shape and a ray
-	IntersectionBuffer FindIntersections(Ray ray);
+	void FindIntersections(Ray ray, IntersectionBuffer& buffer);
 
 	//Calculate the surface normal at a point on the shape (Point assumed to be on shape's surface)
 	Vector SurfaceNormal(Point p);
 
 	//Calculate all intersections with a ray in object space (Individually implemented by each shape)
-	virtual IntersectionBuffer FindObjectSpaceIntersections(Ray ray) = 0;
+	virtual void FindObjectSpaceIntersections(Ray ray, IntersectionBuffer& buffer) = 0;
 
 	//Calculate the normal vector of a point in object space (Implemented by each concrete shape)
 	virtual Vector FindObjectSpaceNormal(Point p) = 0;
@@ -87,12 +87,12 @@ private:
 };
 
 
-inline IntersectionBuffer Shape::FindIntersections(Ray ray) {
+inline void Shape::FindIntersections(Ray ray, IntersectionBuffer& buffer) {
 	//Transform the ray into object space
 	Ray objectSpaceRay = ray.Transform(GetTransformRef().Inversion());
 
 	//Find intersections
-	return FindObjectSpaceIntersections(objectSpaceRay);
+	FindObjectSpaceIntersections(objectSpaceRay, buffer);
 }
 
 inline Vector Shape::SurfaceNormal(Point p) {

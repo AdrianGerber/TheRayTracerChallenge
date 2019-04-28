@@ -119,7 +119,8 @@ namespace TheRayTracesChallengeTests
 				Ray testRay = rays[testNr];
 				IntersectionBuffer expectedIntersections = expected[testNr];
 				auto testCone = cones[testNr];
-				IntersectionBuffer intersections = testCone->FindIntersections(testRay);
+				IntersectionBuffer intersections;
+				testCone->FindIntersections(testRay, intersections);
 
 				Logger::WriteMessage(std::to_string(testNr).c_str());
 

@@ -27,9 +27,8 @@ namespace TheRayTracesChallengeTests
 		public:
 			Ray receivedRay;
 
-			IntersectionBuffer FindObjectSpaceIntersections(Ray ray) {
+			void FindObjectSpaceIntersections(Ray ray, IntersectionBuffer& buffer) override {
 				receivedRay = ray;
-				return IntersectionBuffer();
 			}
 
 			Vector FindObjectSpaceNormal(Point p) {
@@ -96,7 +95,8 @@ namespace TheRayTracesChallengeTests
 
 			s.SetTransform(Transform::CreateScale(2.0, 2.0, 2.0));
 
-			auto xs = s.FindIntersections(ray);
+			IntersectionBuffer xs;
+			s.FindIntersections(ray, xs);
 
 			Assert::IsTrue(s.receivedRay.origin == Point::CreatePoint(0.0, 0.0, -2.5));
 			Assert::IsTrue(s.receivedRay.direction == Vector::CreateVector(0.0, 0.0, 0.5));
@@ -108,7 +108,8 @@ namespace TheRayTracesChallengeTests
 
 			s.SetTransform(Transform::CreateTranslation(5.0, 0.0, 0.0));
 
-			auto xs = s.FindIntersections(ray);
+			IntersectionBuffer xs;
+			s.FindIntersections(ray, xs);
 
 			Assert::IsTrue(s.receivedRay.origin == Point::CreatePoint(-5.0, 0.0, -5.0));
 			Assert::IsTrue(s.receivedRay.direction == Vector::CreateVector(0.0, 0.0, 1.0));

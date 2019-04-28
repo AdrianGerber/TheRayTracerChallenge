@@ -15,7 +15,7 @@ public:
     ~Sphere() = default;
 
 	//Virtual methods that need to be implemented
-	IntersectionBuffer FindObjectSpaceIntersections(Ray ray) override;
+	void FindObjectSpaceIntersections(Ray ray, IntersectionBuffer& buffer) override;
 
 	Vector FindObjectSpaceNormal(Point p) override;
     
@@ -31,7 +31,7 @@ private:
 	}
 };
 
-inline IntersectionBuffer Sphere::FindObjectSpaceIntersections(Ray ray) {
+inline void Sphere::FindObjectSpaceIntersections(Ray ray, IntersectionBuffer& buffer) {
 	//Vector from the sphere's center to the ray's origin (Sphere centered at 0/0/0)
 	Vector sphereToRayOrigin = ray.origin - Point::CreatePoint(0.0, 0.0, 0.0);
 
@@ -45,7 +45,7 @@ inline IntersectionBuffer Sphere::FindObjectSpaceIntersections(Ray ray) {
 
 	//No intersections
 	if (discriminant < 0) {
-		return IntersectionBuffer();
+		return;
 	}
 
 	Intersection i1, i2;
@@ -55,7 +55,8 @@ inline IntersectionBuffer Sphere::FindObjectSpaceIntersections(Ray ray) {
 	i1.shape = GetPointer();
 	i2.shape = GetPointer();
 
-	return IntersectionBuffer(i1, i2);
+	buffer.Add(i1);
+	buffer.Add(i2);
 }
 
 inline Vector Sphere::FindObjectSpaceNormal(Point p) {

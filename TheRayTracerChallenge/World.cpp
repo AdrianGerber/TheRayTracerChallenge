@@ -39,18 +39,13 @@ void World::LoadDefaultWorld()
 }
 
 
-IntersectionBuffer World::IntersectRay(Ray ray)
+void World::IntersectRay(Ray ray, IntersectionBuffer& buffer)
 {
-    IntersectionBuffer allIntersections;
 	numberOfRaysCast++;
 
     for (auto currentShape : shapes) {
-        allIntersections.Add(currentShape->FindIntersections(ray));
+		currentShape->FindIntersections(ray, buffer);
     }
-
-    allIntersections.Sort();
-
-    return allIntersections;
 }
 
 Color World::ShadeHit(const HitCalculations& hitInfo, size_t remainingReflections)
@@ -145,20 +140,33 @@ Color World::FindRefractedColor(const HitCalculations& hitInfo, size_t remaining
 
 bool World::PointIsInShadow(std::shared_ptr<LightSource> lightSource, Point point)
 {
+	//Static buffer for memory reuse
+	static IntersectionBuffer intersections;
+
 	Vector vectorToLightSource = lightSource->GetPosition() - point;
 	double distanceToLightSource = vectorToLightSource.Magnitude();
 
 	//Ray from the point to the light source
 	Ray ray(point, vectorToLightSource.Normalize());
 
-	IntersectionBuffer intersections = IntersectRay(ray);
-	Intersection hit = intersections.GetFirstHit();
+	IntersectRay(ray, intersections);
 
-	//Is anything blocking the light from reaching the point (-> object between point and light source)?
-	if (hit.IsValid() && hit.t < distanceToLightSource) {
-		//Point is in shadow
-		return true;
+
+	size_t cnt = intersections.GetCount();
+
+	for (size_t index = 0; index < cnt; index++) {
+		Intersection i = intersections[index];
+		
+		//Is anything blocking the light from reaching the point (-> object between point and light source)?
+		if (i.t >= 0.0 && i.t < distanceToLightSource) {
+			//Prepare the buffer for reuse
+			intersections.Reset();
+			return true;
+		}
 	}
+
+	//Prepare the buffer for reuse
+	intersections.Reset();
 
 	//Point is illuminated by the light source
 	return false;
@@ -166,9 +174,20 @@ bool World::PointIsInShadow(std::shared_ptr<LightSource> lightSource, Point poin
 
 Color World::FindRayColor(Ray ray, size_t remainingReflections)
 {
-	IntersectionBuffer intersections = IntersectRay(ray);
+	//Static buffer in order to reuse allocated memory
+	static IntersectionBuffer intersections;
+	
+	IntersectRay(ray, intersections);
 
+	//Nothing was hit
 	if (intersections.GetCount() == 0 || !intersections.GetFirstHit().IsValid()) return Color(0.0, 0.0, 0.0);
 
-	return ShadeHit(HitCalculations(intersections.GetFirstHit(), intersections, ray, shapes), remainingReflections);
+	//Find the position of the hit
+	auto hit = HitCalculations(intersections.GetFirstHit(), intersections, ray, shapes);
+
+	//Prepare the buffer for reuse
+	intersections.Reset();
+
+	//Calculate the ray's color
+	return ShadeHit(hit, remainingReflections);
 }

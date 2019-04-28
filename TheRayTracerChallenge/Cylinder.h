@@ -15,7 +15,7 @@ public:
 	Cylinder(double min, double max, bool isClosed);
 	~Cylinder() = default;
 
-	IntersectionBuffer FindObjectSpaceIntersections(Ray ray) override;
+	void FindObjectSpaceIntersections(Ray ray, IntersectionBuffer& buffer) override;
 
 	Vector FindObjectSpaceNormal(Point p) override;
 
@@ -43,7 +43,7 @@ private:
 	bool CheckCap(Ray ray, double t);
 
 	//Find the ray's intersections with the end caps
-	IntersectionBuffer IntersectEndCaps(Ray ray);
+	void IntersectEndCaps(Ray ray, IntersectionBuffer& buffer);
 
 	std::shared_ptr<Shape> ShapeSpecificCopy() override {
 		return Shape::MakeShared<Cylinder>(*this);
@@ -62,13 +62,14 @@ inline Cylinder::Cylinder(double min, double max, bool isClosed) {
 	closed = isClosed;
 }
 
-inline IntersectionBuffer Cylinder::FindObjectSpaceIntersections(Ray ray)
+inline void Cylinder::FindObjectSpaceIntersections(Ray ray, IntersectionBuffer& buffer)
 {
 	double a = (ray.direction.x * ray.direction.x) + (ray.direction.z * ray.direction.z);
 
 	//Ray is parallel to y axis -> ray can only hit the end caps
 	if (Constants::DoubleEqual(a, 0.0)) {
-		return IntersectEndCaps(ray);
+		IntersectEndCaps(ray, buffer);
+		return;
 	}
 
 	double b = (2.0 * ray.origin.x * ray.direction.x)
@@ -80,7 +81,7 @@ inline IntersectionBuffer Cylinder::FindObjectSpaceIntersections(Ray ray)
 
 	//No intersections with the walls -> ray can only hit the end caps
 	if (discriminant < 0.0) {
-		return IntersectEndCaps(ray);
+		return IntersectEndCaps(ray, buffer);
 	}
 
 	double solution1 = (-b - sqrt(discriminant)) / (2.0 * a);
@@ -90,21 +91,17 @@ inline IntersectionBuffer Cylinder::FindObjectSpaceIntersections(Ray ray)
 		std::swap(solution1, solution2);
 	}
 
-	IntersectionBuffer intersections;
-
 	//Intersections with the walls
 	double y1 = ray.origin.y + (solution1 * ray.direction.y);
 	if (y1 < maximum && y1 > minimum) {
-		intersections.Add(Intersection(solution1, GetPointer()));
+		buffer.Add(Intersection(solution1, GetPointer()));
 	}
 	double y2 = ray.origin.y + (solution2 * ray.direction.y);
 	if (y2 < maximum && y2 > minimum) {
-		intersections.Add(Intersection(solution2, GetPointer()));
+		buffer.Add(Intersection(solution2, GetPointer()));
 	}
 	//Intersections with the end caps
-	intersections.Add(IntersectEndCaps(ray));
-
-	return intersections;
+	IntersectEndCaps(ray, buffer);
 }
 
 inline Vector Cylinder::FindObjectSpaceNormal(Point p)
@@ -132,25 +129,21 @@ inline bool Cylinder::CheckCap(Ray ray, double t) {
 	return (x * x) + (z * z) <= 1.0;
 }
 
-inline IntersectionBuffer Cylinder::IntersectEndCaps(Ray ray) {
+inline void Cylinder::IntersectEndCaps(Ray ray, IntersectionBuffer& buffer) {
 	//Make sure the caps exist and could possibly be hit by the ray
 	if (!closed || Constants::DoubleEqual(ray.direction.y, 0.0)) {
-		return IntersectionBuffer();
+		return;
 	}
-
-	IntersectionBuffer intersections;
 
 	//Check if the ray hit the cap at the 'minimum'
 	double t = (minimum - ray.origin.y) / ray.direction.y;
 	if (CheckCap(ray, t)) {
-		intersections.Add(Intersection(t, GetPointer()));
+		buffer.Add(Intersection(t, GetPointer()));
 	}
 
 	//Check if the ray hit the cap at the 'maximum'
 	t = (maximum - ray.origin.y) / ray.direction.y;
 	if (CheckCap(ray, t)) {
-		intersections.Add(Intersection(t, GetPointer()));
+		buffer.Add(Intersection(t, GetPointer()));
 	}
-
-	return intersections;
 }

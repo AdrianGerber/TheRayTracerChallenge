@@ -48,14 +48,16 @@ namespace TheRayTracesChallengeTests
 			//Ray is parallel to the plane
 			Plane p;
 			Ray r(Point::CreatePoint(0.0, 10.0, 0.0), Vector::CreateVector(0.0, 0.0, 1.0));
-			IntersectionBuffer xs = p.FindObjectSpaceIntersections(r);
+			IntersectionBuffer xs;
+			p.FindObjectSpaceIntersections(r, xs);
 			Assert::IsTrue(xs.GetCount() == 0);
 		}
 		TEST_METHOD(PlaneIntersection2) {
 			//Ray is coplanar to the plane
 			Plane p;
 			Ray r(Point::CreatePoint(0.0, 0.0, 0.0), Vector::CreateVector(0.0, 0.0, 1.0));
-			IntersectionBuffer xs = p.FindObjectSpaceIntersections(r);
+			IntersectionBuffer xs;
+			p.FindObjectSpaceIntersections(r, xs);
 			Assert::IsTrue(xs.GetCount() == 0);
 		}
 		TEST_METHOD(PlaneIntersection3) {
@@ -63,7 +65,8 @@ namespace TheRayTracesChallengeTests
 			auto p = Shape::MakeShared<Plane>();
 
 			Ray r(Point::CreatePoint(0.0, 1.0, 0.0), Vector::CreateVector(0.0, -1.0, 0.0));
-			IntersectionBuffer xs = p->FindObjectSpaceIntersections(r);
+			IntersectionBuffer xs;
+			p->FindObjectSpaceIntersections(r, xs);
 			Assert::IsTrue(xs.GetCount() == 1);
 			Assert::IsTrue(Constants::DoubleEqual(xs[0].t, 1.0));
 			Assert::IsTrue(xs[0].shape == p);
@@ -73,7 +76,8 @@ namespace TheRayTracesChallengeTests
 			auto p = Shape::MakeShared<Plane>();
 
 			Ray r(Point::CreatePoint(0.0, -1.0, 0.0), Vector::CreateVector(0.0, 1.0, 0.0));
-			IntersectionBuffer xs = p->FindObjectSpaceIntersections(r);
+			IntersectionBuffer xs;
+			p->FindObjectSpaceIntersections(r, xs);
 			Assert::IsTrue(xs.GetCount() == 1);
 			Assert::IsTrue(Constants::DoubleEqual(xs[0].t, 1.0));
 			Assert::IsTrue(xs[0].shape == p);

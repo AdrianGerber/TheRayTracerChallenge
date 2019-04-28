@@ -70,7 +70,8 @@ namespace TheRayTracesChallengeTests
 
 			auto s = Shape::MakeShared<Sphere>();
 			
-			IntersectionBuffer xs = s->FindIntersections(ray);
+			IntersectionBuffer xs;
+			s->FindIntersections(ray, xs);
 
 			//Ray hits 2 points
 			Assert::IsTrue(xs.GetCount() == 2);
@@ -86,7 +87,8 @@ namespace TheRayTracesChallengeTests
 
 			auto s = Shape::MakeShared<Sphere>();
 
-			IntersectionBuffer xs = s->FindIntersections(ray);
+			IntersectionBuffer xs;
+			s->FindIntersections(ray, xs);
 
 
 			//Ray is tangent to the sphere
@@ -103,7 +105,8 @@ namespace TheRayTracesChallengeTests
 
 			auto s = Shape::MakeShared<Sphere>();
 
-			IntersectionBuffer xs = s->FindIntersections(ray);
+			IntersectionBuffer xs;
+			s->FindIntersections(ray, xs);
 
 
 			//Ray doesn't intersect sphere
@@ -118,7 +121,8 @@ namespace TheRayTracesChallengeTests
 
 			auto s = Shape::MakeShared<Sphere>();
 
-			IntersectionBuffer xs = s->FindIntersections(ray);
+			IntersectionBuffer xs;
+			s->FindIntersections(ray, xs);
 
 			//One intersection 'behind' the origin (negative t)
 			Assert::IsTrue(xs.GetCount() == 2);
@@ -134,7 +138,8 @@ namespace TheRayTracesChallengeTests
 
 			auto s = Shape::MakeShared<Sphere>();
 
-			IntersectionBuffer xs = s->FindIntersections(ray);
+			IntersectionBuffer xs;
+			s->FindIntersections(ray, xs);
 
 			//Both intersections 'behind' the origin (negative t)
 			Assert::IsTrue(xs.GetCount() == 2);

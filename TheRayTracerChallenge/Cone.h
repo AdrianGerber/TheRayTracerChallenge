@@ -15,7 +15,7 @@ public:
 	Cone(double min, double max, bool isClosed);
 	~Cone() = default;
 
-	IntersectionBuffer FindObjectSpaceIntersections(Ray ray) override;
+	void FindObjectSpaceIntersections(Ray ray, IntersectionBuffer& buffer) override;
 
 	Vector FindObjectSpaceNormal(Point p) override;
 
@@ -47,7 +47,7 @@ private:
 	bool CheckCap(Ray ray, double t, double radius);
 
 	//Find the ray's intersections with the end caps
-	IntersectionBuffer IntersectEndCaps(Ray ray);
+	void IntersectEndCaps(Ray ray, IntersectionBuffer& buffer);
 
 	std::shared_ptr<Shape> ShapeSpecificCopy() override {
 		return Shape::MakeShared<Cone>(*this);
@@ -66,10 +66,8 @@ inline Cone::Cone(double min, double max, bool isClosed) {
 	closed = isClosed;
 }
 
-inline IntersectionBuffer Cone::FindObjectSpaceIntersections(Ray ray)
+inline void Cone::FindObjectSpaceIntersections(Ray ray, IntersectionBuffer& buffer)
 {
-	IntersectionBuffer intersections;
-
 
 	double a = (ray.direction.x * ray.direction.x) - (ray.direction.y * ray.direction.y) + (ray.direction.z * ray.direction.z);
 
@@ -89,7 +87,7 @@ inline IntersectionBuffer Cone::FindObjectSpaceIntersections(Ray ray)
 
 			//Make sure the hit is inside the cone's limits
 			if (y0 < maximum && y0 > minimum) {
-				intersections.Add(Intersection(t, GetPointer()));
+				buffer.Add(Intersection(t, GetPointer()));
 			}
 		}		
 	}
@@ -107,17 +105,16 @@ inline IntersectionBuffer Cone::FindObjectSpaceIntersections(Ray ray)
 		//Intersections with the walls
 		double y1 = ray.origin.y + (solution1 * ray.direction.y);
 		if (y1 < maximum && y1 > minimum) {
-			intersections.Add(Intersection(solution1, GetPointer()));
+			buffer.Add(Intersection(solution1, GetPointer()));
 		}
 		double y2 = ray.origin.y + (solution2 * ray.direction.y);
 		if (y2 < maximum && y2 > minimum) {
-			intersections.Add(Intersection(solution2, GetPointer()));
+			buffer.Add(Intersection(solution2, GetPointer()));
 		}
 	}
 	
 	//Intersections with the end caps
-	intersections.Add(IntersectEndCaps(ray));
-	return intersections;
+	IntersectEndCaps(ray, buffer);
 }
 
 inline Vector Cone::FindObjectSpaceNormal(Point p)
@@ -154,27 +151,22 @@ inline bool Cone::CheckCap(Ray ray, double t, double radius) {
 	return false;
 }
 
-inline IntersectionBuffer Cone::IntersectEndCaps(Ray ray) {
+inline void Cone::IntersectEndCaps(Ray ray, IntersectionBuffer& buffer) {
 	
 	//Make sure the caps exist
 	if (!closed) {
-		return IntersectionBuffer();
+		return;
 	}
-
-	IntersectionBuffer intersections;
 
 	//Check if the ray hit the cap at the 'minimum'
 	double t = (minimum - ray.origin.y) / ray.direction.y;
 	if (CheckCap(ray, t, minimum)) {
-		intersections.Add(Intersection(t, GetPointer()));
+		buffer.Add(Intersection(t, GetPointer()));
 	}
 
 	//Check if the ray hit the cap at the 'maximum'
 	t = (maximum - ray.origin.y) / ray.direction.y;
 	if (CheckCap(ray, t, maximum)) {
-		intersections.Add(Intersection(t, GetPointer()));
+		buffer.Add(Intersection(t, GetPointer()));
 	}
-
-	return intersections;
-	
 }
