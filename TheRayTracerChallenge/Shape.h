@@ -10,10 +10,10 @@
 class Shape
 {
 public:
-	Shape() { material = Material(); }
+	Shape() { material = Material(); transformIsActive = false; }
 	~Shape() = default;
 
-	void SetTransform(Transform newTransform) { transform = newTransform; }
+	void SetTransform(Transform newTransform) { transform = newTransform; transformIsActive = true; }
 	Transform GetTransformCopy() { return transform; }
 	//Get the shape's transform by reference (Caching of calculations can improve performance
 	Transform& GetTransformRef() { return transform; }
@@ -80,6 +80,8 @@ private:
 
 	virtual std::shared_ptr<Shape> ShapeSpecificCopy() = 0;
 
+
+	bool transformIsActive;
 	Transform transform;
 	Material material;
 	std::weak_ptr<Shape> thisShapePtr;
@@ -88,11 +90,15 @@ private:
 
 
 inline void Shape::FindIntersections(Ray ray, IntersectionBuffer& buffer) {
-	//Transform the ray into object space
-	Ray objectSpaceRay = ray.Transform(GetTransformRef().Inversion());
 
+	if (transformIsActive) {
+		//Transform the ray into object space
+		ray = ray.Transform(GetTransformRef().Inversion());
+
+	}
+	
 	//Find intersections
-	FindObjectSpaceIntersections(objectSpaceRay, buffer);
+	FindObjectSpaceIntersections(ray, buffer);
 }
 
 inline Vector Shape::SurfaceNormal(Point p) {
@@ -125,11 +131,17 @@ inline Point Shape::PointToObjectSpace(Point p) {
 		p = GetParent()->PointToObjectSpace(p);
 	}
 
-	return transform.Inversion() * p;
+	//Only transform the point if a transform was set
+	if (transformIsActive) {
+		return transform.Inversion()* p;
+	}
+
+	return p;
 }
 
 inline Vector Shape::NormalToWorldSpace(Vector normal) {
 	normal = transform.Inversion().GetMatrix().Transpose() * normal;
+	
 	normal.w = 0.0;
 	normal = normal.Normalize();
 
