@@ -116,9 +116,10 @@ inline void ShapeGroup::PartitionChildren(size_t maximumShapeCount) {
 			shapes2->PartitionChildren(maximumShapeCount);
 		}
 	}
-
-	//Maybe one of the shapes is a group that can be subdivided
-	for (auto shape : shapes) {
-		shape->PartitionChildren(maximumShapeCount);
+	else {
+		//Maybe one of the shapes is a group that can be subdivided
+		for (auto shape : shapes) {
+			shape->PartitionChildren(maximumShapeCount);
+		}
 	}
 }
