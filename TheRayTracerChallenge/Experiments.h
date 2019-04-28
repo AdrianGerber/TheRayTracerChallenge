@@ -27,6 +27,8 @@
 #include "Cylinder.h"
 #include "Cone.h"
 #include "ShapeGroup.h"
+#include "Triangle.h"
+#include "OBJParser.h"
 
 void DrawWatchface();
 
@@ -37,3 +39,5 @@ void DrawSphereReflections();
 void DrawChapter7Scene();
 
 void DrawBoundingBoxScene();
+
+void DrawTriangleScene();

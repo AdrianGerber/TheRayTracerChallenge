@@ -290,7 +290,7 @@ void DrawBoundingBoxScene()
 	World world;
 
 	//Camera
-	Camera camera(1920, 1080, Constants::PI / 3.0f,
+	Camera camera(100, 50, Constants::PI / 3.0f,
 		Camera::CreateViewTransform(
 			Point::CreatePoint(10.0, 5.0, -5.0),
 			Point::CreatePoint(5.0, 3.0, 5.0),
@@ -341,6 +341,51 @@ void DrawBoundingBoxScene()
 	world.AddShape(group);
 
 	camera.RenderFrame(world).SaveToFile("boundingBoxTest");
+
+	std::cout << "\n";
+	std::cout << "Rays: " << std::to_string(world.numberOfRaysCast) << "\n";
+}
+
+void DrawTriangleScene()
+{
+	World world;
+
+	//Camera
+	Camera camera(1920, 1080, Constants::PI / 3.0f,
+		Camera::CreateViewTransform(
+			Point::CreatePoint(0.0, 5.0, -9.0),
+			Point::CreatePoint(0.0, 1.0, 0.0),
+			Vector::CreateVector(0.0, 1.0, 0.0)
+		)
+	);
+
+	//Light source
+	auto lightSource = std::make_shared<LightSource>();
+	lightSource->SetIntensity(Color(1.0f, 1.0f, 1.0f));
+	lightSource->SetPosition(Point::CreatePoint(-10.0f, 10.0f, -10.0f));
+	world.AddLightSource(lightSource);
+
+	OBJParser parser;
+	
+	parser.ParseFile("C:/Users/Monst/Desktop/test.obj");
+
+	std::cout << "Splitting groups and generating bounding boxes ... ";
+	std::cout << "Done\n";
+
+	auto group = parser.MakeGroup();
+	auto group2 = group->Copy();
+
+	group->SetTransform(Transform::CreateRotationY(-Constants::PI / 4.0).Translate(-2.5, 0.0, 0.0));
+	group->PartitionChildren(5);
+	
+	group2->SetTransform(Transform::CreateRotationY(Constants::PI / 2.0).Translate(2.5, 0.0, 0.0));
+	group2->PartitionChildren(5);
+	
+	world.AddShape(group);
+	world.AddShape(group2);
+
+
+	camera.RenderFrame(world).SaveToFile("Triangles");
 
 	std::cout << "\n";
 	std::cout << "Rays: " << std::to_string(world.numberOfRaysCast) << "\n";
