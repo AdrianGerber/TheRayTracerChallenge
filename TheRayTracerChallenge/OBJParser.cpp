@@ -1,12 +1,15 @@
 #include "OBJParser.h"
 
-
-
 OBJParser::OBJParser()
 {
 	ignoredLines = 0;
 	currentGroup = "default";
 	groups.emplace(currentGroup, std::vector<std::shared_ptr<Triangle>>());
+
+	commands.emplace(std::string("v"), std::make_shared<ParseVertexCommand>());
+	commands.emplace(std::string("vn"), std::make_shared<ParseVertexNormalCommand>());
+	commands.emplace(std::string("g"), std::make_shared<ParseGroupCommand>());
+	commands.emplace(std::string("f"), std::make_shared<ParseFaceCommand>());
 }
 
 
@@ -16,134 +19,36 @@ OBJParser::~OBJParser()
 
 void OBJParser::ParseLine(std::string& line)
 {
-	if (line.length() == 0) {
+	if (line.length() <= 3) {
 		ignoredLines++;
 		return;
 	}
 
-	switch (line[0]) {
-		//Vertex command
-	case 'v': {
-		try {
-			auto numbers = Parse3Numbers<double>(line);
+	
+	size_t endOfCommand = line.find(' ');
+	size_t beginningOfData = line.find_first_not_of(' ', endOfCommand);
 
-			//Store the vertex for later
-			vertices.push_back(Point::CreatePoint(
-				std::get<0>(numbers),
-				std::get<1>(numbers),
-				std::get<2>(numbers)
-			));
+	std::string command = line.substr(0, endOfCommand);
+	
 
+	if (commands.find(command) != commands.end()) {
+		//Find end of parameter (remove whitespace at the end)
+		size_t endOfData = line.find_last_not_of(' ');
+		//Extract the command's parameters
+		std::string data = line.substr(beginningOfData, endOfData - beginningOfData + 1);
+
+
+		if (commands[command]->operator()(data, *this)) {
+			//Command successful
 		}
-		catch (std::exception & e) {
+		else {
+			//Command failed
 			ignoredLines++;
-			return;
 		}
-		break;
 	}
-
-	//Face command (create a triangle or polygon)
-	case 'f': {
-		try {
-			//Each vertex nr is prefixed with ' '
-			size_t vertexCount = std::count(line.begin(), line.end(), ' ');
-
-			//????????
-			if (vertexCount < 3) {
-				ignoredLines++;
-				return;
-			}
-
-			//Triangle
-			if (vertexCount == 3) {
-				auto vertexNumbers = Parse3Numbers<size_t>(line);
-
-				groups[currentGroup].push_back(
-					Shape::MakeShared<Triangle>(
-						GetVertex(std::get<0>(vertexNumbers)),
-						GetVertex(std::get<1>(vertexNumbers)),
-						GetVertex(std::get<2>(vertexNumbers))
-						)
-				);
-			}
-			//Convex Polygon
-			else {
-				try {
-					std::vector<size_t> vertexIndices;
-
-					//Positions of the spaces before and after each number
-					size_t numberStart = 0;
-					size_t numberEnd = 1;
-
-					//Read all numbers on the line
-					bool endReached = false;
-					while (!endReached) {
-
-						numberStart = numberEnd;
-
-						//Numbers are delimited by spaces (or \n for the last number)
-						numberEnd = line.find_first_of(" \n", numberStart + 1);
-
-						//Last number when line is not terminated with \n
-						if (numberEnd == std::string::npos) {
-							numberEnd = line.size() - 1;
-							endReached = true;
-						}
-
-						if (line[numberEnd] == '\n') {
-							endReached = true;
-						}
-
-						//String that contains the number
-						std::string nr = line.substr(numberStart + 1, numberEnd - numberStart - 1);
-
-						//Attempt to convert the number
-						vertexIndices.push_back(StrToNr<size_t>(nr));
-					}
-
-					//Build the polygon from triangles
-					for (size_t index = 2; index < vertexIndices.size(); index++) {
-						groups[currentGroup].push_back(
-							Shape::MakeShared<Triangle>(
-								GetVertex(vertexIndices[0]),
-								GetVertex(vertexIndices[index - 1]),
-								GetVertex(vertexIndices[index])
-								)
-						);
-					}
-				}
-
-				catch (std::exception & e) {
-					ignoredLines++;
-					return;
-				}
-			}
-		}
-		catch (std::exception & e) {
-			ignoredLines++;
-			return;
-		}
-		break;
-	}
-
-	//Group command
-	case 'g': {
-		//g + ' ' + characters + '\n'
-		if (line.size() < 4) {
-			ignoredLines++;
-			return;
-		}
-
-		//Create the new group
-		currentGroup = line.substr(2, line.size() - 3);
-		if (!HasGroup(currentGroup)) {
-			groups.emplace(currentGroup, std::vector<std::shared_ptr<Triangle>>());
-		}
-		break;
-	}
-
-	//Unidentified command
-	default: ignoredLines++; break;
+	else {
+		//No command found
+		ignoredLines++;
 	}
 }
 
@@ -159,12 +64,18 @@ bool OBJParser::ParseFile(std::string fileName)
 	//Parse each line
 	std::string line;
 	while (std::getline(file, line)) {
-		line += "\n";
 		ParseLine(line);
 	}
 
 	std::cout << "Done\n";
 	std::cout << ignoredLines << " Line(s) ignored\n";
+	
+	size_t triangleCount = 0;
+	for (auto& group : groups) {
+		triangleCount += group.second.size();
+	}
+
+	std::cout << triangleCount << " Triangles\n";
 
 	return true;
 }
@@ -185,4 +96,206 @@ std::shared_ptr<ShapeGroup> OBJParser::MakeGroup()
 	}
 
 	return shapeGroup;
+}
+
+void OBJParser::SetActiveGroup(std::string groupName)
+{
+	if (!HasGroup(groupName)) {
+		groups.emplace(groupName, std::vector<std::shared_ptr<Triangle>>());
+	}
+	currentGroup = groupName;
+}
+
+//Templates to parse numbers
+template<typename T> static T StrToNr(std::string& str);
+
+template<> static double StrToNr<double>(std::string& str) {
+	return std::stod(str);
+}
+
+template<> static size_t StrToNr<size_t>(std::string& str) {
+	return std::stoul(str);
+}
+
+template<typename T>
+static std::vector<T> ParseNumbers(const std::string& str, size_t count) {
+	std::vector<T> values;
+	values.reserve(count);
+
+	size_t startOfNumber = 0;
+	size_t endOfNumber = str.find_first_of(" /");
+	std::string numberString = "";
+	T currentNumber;
+
+	for (size_t numberIndex = 0; numberIndex < count; numberIndex++) {
+
+		//Read the number
+		numberString = str.substr(startOfNumber, endOfNumber - startOfNumber + 1);
+		currentNumber = StrToNr<T>(numberString);
+
+		values.push_back(currentNumber);
+
+		//Find the position of the next number
+		//Was the last digit reached?
+		if (endOfNumber == str.length() - 1) {
+			if (numberIndex == count - 1) {
+				//Success
+				break;
+			}
+			else {
+				//End of string reached, but not enough numbers read...
+				throw std::invalid_argument("String is not formatted correctly");
+			}
+		}
+
+		startOfNumber = endOfNumber;
+		endOfNumber = str.find_first_of(" /", startOfNumber + 1);
+
+		//Last digit of the string is the end of the next number (no trailing whitespace)
+		if (endOfNumber == std::string::npos) {
+			endOfNumber = str.length() - 1;
+		}
+	}
+
+	return values;
+}
+
+
+bool OBJParser::ParseVertexCommand::operator()(std::string& str, OBJParser& parser)
+{
+	try {
+		auto numbers = ParseNumbers<double>(str, 3);
+
+		//Store the vertex for later
+		parser.AddVertex(Point::CreatePoint(
+			numbers[0],
+			numbers[1],
+			numbers[2]
+		));
+		return true;
+	}
+	catch (std::exception & e) {
+		return false;
+	}
+}
+
+bool OBJParser::ParseFaceCommand::operator()(std::string& str, OBJParser& parser)
+{
+	//Each vertex nr, except the first one, is prefixed with ' '
+	size_t vertexCount = std::count(str.begin(), str.end(), ' ') + 1;
+	
+
+	//????????
+	if (vertexCount < 3) {
+		return false;
+	}
+
+
+	try {
+		std::vector<size_t> vertexIndices;
+		std::vector<size_t> normalIndices;
+
+		//Face with texture coordinates and/or normal vectors
+		if (str.find('/') != std::string::npos) {
+			std::string numberString = "";
+			size_t numberStart = 0;
+			size_t numberEnd = str.find('/');
+
+			for (size_t i = 0; i < vertexCount; i++) {
+				//Vertex Index
+				numberString = str.substr(numberStart, numberEnd - numberStart + 1);
+				vertexIndices.push_back(StrToNr<size_t>(numberString));
+
+				//Texture Coordinate
+				numberStart = numberEnd + 1;
+				numberEnd = str.find('/', numberStart);
+				if (str.size() != 1) {
+					numberString = str.substr(numberStart, numberEnd - numberStart + 1);
+					//.push_back(StrToNr<size_t>(numberString));
+				}
+					
+				
+				//Normal Index
+				numberStart = numberEnd + 1;
+				numberEnd = str.find(' ', numberStart);
+
+				//End of string was reached (Last number)
+				if (numberEnd == std::string::npos) {
+					numberEnd = str.size() - 1;
+				}
+
+				numberString = str.substr(numberStart, numberEnd - numberStart + 1);
+				normalIndices.push_back(StrToNr<size_t>(numberString));
+				
+
+				//Prepare next vertex index
+				numberStart = numberEnd + 1;
+				numberEnd = str.find('/', numberStart);
+			}
+		}
+		//Face command only contains vertex indices
+		else {
+			vertexIndices = ParseNumbers<size_t>(str, vertexCount);
+		}
+
+		//Only use normal vectors if they were parsed correctly
+		bool useNormalVectors = !normalIndices.empty() && normalIndices.size() == vertexIndices.size();
+
+		//Build the polygon from triangles
+		for (size_t index = 2; index < vertexIndices.size(); index++) {
+			if (useNormalVectors) {
+				parser.AddTriangle(
+					Shape::MakeShared<Triangle>(
+						parser.GetVertex(vertexIndices[0]),
+						parser.GetVertex(vertexIndices[index - 1]),
+						parser.GetVertex(vertexIndices[index]),
+						parser.GetNormal(normalIndices[0]),
+						parser.GetNormal(normalIndices[index - 1]),
+						parser.GetNormal(normalIndices[index])
+					)
+				);
+			}
+			else {
+				parser.AddTriangle(
+					Shape::MakeShared<Triangle>(
+						parser.GetVertex(vertexIndices[0]),
+						parser.GetVertex(vertexIndices[index - 1]),
+						parser.GetVertex(vertexIndices[index])
+					)
+				);
+			}
+		}
+
+		return true;
+	}
+
+	catch (std::exception & e) {
+		return false;
+	}
+
+}
+
+bool OBJParser::ParseGroupCommand::operator()(std::string & str, OBJParser & parser)
+{
+	parser.SetActiveGroup(str);
+
+	return true;
+}
+
+bool OBJParser::ParseVertexNormalCommand::operator()(std::string & str, OBJParser & parser)
+{
+	try {
+		auto numbers = ParseNumbers<double>(str, 3);
+
+		parser.AddNormal(Vector::CreateVector(
+			numbers[0],
+			numbers[1],
+			numbers[2]
+		));
+
+		return true;
+	}
+	catch (std::exception & e) {
+		return false;
+	}
 }
