@@ -32,7 +32,7 @@ public:
 		shape = intersection.shape;
 		point = ray.PositionAt(t);
 		eyeVector = - ray.direction;
-		normalVector = shape->SurfaceNormal(point);
+		normalVector = shape->SurfaceNormal(point, intersection);
 
 		//Flip the normal vector if it points away from the eye vector
 		if (Vector::DotProduct(normalVector, eyeVector) < 0.0) {

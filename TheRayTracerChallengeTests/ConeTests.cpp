@@ -47,7 +47,8 @@ namespace TheRayTracesChallengeTests
 				Point input = std::get<0>(test);
 				auto cone = std::get<2>(test);
 				Vector expectedOutput = std::get<1>(test);
-				Vector output = cone->SurfaceNormal(input);
+				Intersection i;
+				Vector output = cone->SurfaceNormal(input, i);
 
 				Assert::IsTrue(output == expectedOutput);
 				testNr++;

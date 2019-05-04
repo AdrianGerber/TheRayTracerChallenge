@@ -110,7 +110,7 @@ void DrawSphereReflections() {
                 Intersection hit = intersections.GetFirstHit();
 
                 Point hitPoint = ray.PositionAt(hit.t);
-                Vector normal = s->SurfaceNormal(hitPoint);
+                Vector normal = s->SurfaceNormal(hitPoint, hit);
                 Vector eye = -ray.direction;
 
                 canvas.WritePixel(l.Lighting(s, hitPoint, eye, normal, false) , x, y);
@@ -351,10 +351,10 @@ void DrawTriangleScene()
 	World world;
 
 	//Camera
-	Camera camera(1920, 1080, Constants::PI / 3.0f,
+	Camera camera(1080, 1920, Constants::PI / 3.0f,
 		Camera::CreateViewTransform(
-			Point::CreatePoint(0.0, 5.0, -9.0),
-			Point::CreatePoint(0.0, 1.0, 0.0),
+			Point::CreatePoint(-50.0, 260.0, -70.0),
+			Point::CreatePoint(45.0, 60.0, 0.0),
 			Vector::CreateVector(0.0, 1.0, 0.0)
 		)
 	);
@@ -362,28 +362,52 @@ void DrawTriangleScene()
 	//Light source
 	auto lightSource = std::make_shared<LightSource>();
 	lightSource->SetIntensity(Color(1.0f, 1.0f, 1.0f));
-	lightSource->SetPosition(Point::CreatePoint(-10.0f, 10.0f, -10.0f));
+	lightSource->SetPosition(Point::CreatePoint(-70.0f, 400.0f, -70.0f));
 	world.AddLightSource(lightSource);
 
 	OBJParser parser;
 	
-	parser.ParseFile("C:/Users/Monst/Desktop/test.obj");
+	parser.ParseFile("C:/Users/Monst/Desktop/ML_HP.obj");
 
 	std::cout << "Splitting groups and generating bounding boxes ... ";
-	std::cout << "Done\n";
 
 	auto group = parser.MakeGroup();
-	auto group2 = group->Copy();
+	Material groupMaterial;
+	groupMaterial.ambient = 0.4;
+	groupMaterial.specular = 0.4;
+	groupMaterial.shininess = 200;
+	group->SetMaterial(groupMaterial);
+	//auto group2 = group->Copy();
 
-	group->SetTransform(Transform::CreateRotationY(-Constants::PI / 4.0).Translate(-2.5, 0.0, 0.0));
+	auto background = Shape::MakeShared<Plane>();
+	//background->SetTransform(Transform::CreateRotationX(Constants::PI / 2.0).Translate(0.0, 0.0, 5.0));
+	Material backgroundMaterial;
+	backgroundMaterial.reflective = 0.0;
+	backgroundMaterial.specular = 0.2;
+	backgroundMaterial.pattern = std::make_shared<CheckerPattern>(Color(0.1, 0.1, 0.1), Color(0.4, 0.4, 0.4));
+	backgroundMaterial.pattern->SetTransform(Transform::CreateScale(10, 10, 10));
+	background->SetMaterial(backgroundMaterial);
+
+	group->SetTransform(Transform::CreateTranslation(-60.0, 0.0, -50.0));
 	group->PartitionChildren(5);
 	
-	group2->SetTransform(Transform::CreateRotationY(Constants::PI / 2.0).Translate(2.5, 0.0, 0.0));
+	/*group2->SetTransform(Transform::CreateRotationY(Constants::PI / 2.7).Translate(2.5, 0.0, 0.0));
 	group2->PartitionChildren(5);
-	
+	Material m;
+	m.pattern = std::make_shared<RingPattern>(Color(1.0, 1.0, 0.0), Color(0.3, 0.0, 0.0));
+	m.shininess = 400;
+	m.specular = 0.6;
+	m.diffuse = 0.6;
+	m.pattern->SetTransform(Transform::CreateScale(0.1, 0.1, 0.1));
+	group2->SetMaterial(m);
+	*/
 	world.AddShape(group);
-	world.AddShape(group2);
+	world.AddShape(background);
+	//world.AddShape(group2);
 
+
+
+	std::cout << "Done\n";
 
 	camera.RenderFrame(world).SaveToFile("Triangles");
 

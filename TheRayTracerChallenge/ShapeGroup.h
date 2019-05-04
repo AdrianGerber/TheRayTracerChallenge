@@ -17,7 +17,7 @@ public:
 	//Virtual methods that need to be implemented
 	void FindObjectSpaceIntersections(Ray ray, IntersectionBuffer& buffer) override;
 
-	Vector FindObjectSpaceNormal(Point p) override;
+	Vector FindObjectSpaceNormal(Point p, const Intersection& globalIntersection) override;
 
 	size_t GetShapeCount() { return shapes.size(); }
 	std::shared_ptr<Shape> GetShape(size_t index) { return shapes[index]; }
@@ -30,6 +30,8 @@ public:
 	BoundingBox GetObjectSpaceBounds() override { return bounds; }
 
 	void PartitionChildren(size_t maximumShapeCount) override;
+
+	void SetMaterial(Material newMaterial) override;
 
 private:
 	std::vector<std::shared_ptr<Shape>> shapes;
@@ -60,7 +62,7 @@ inline void ShapeGroup::FindObjectSpaceIntersections(Ray ray, IntersectionBuffer
 	}
 }
 
-inline Vector ShapeGroup::FindObjectSpaceNormal(Point p) {
+inline Vector ShapeGroup::FindObjectSpaceNormal(Point p, const Intersection& globalIntersection) {
 	std::cerr << "Normal of Group\n";
 	return Vector::CreateVector(0.0, 0.0, 0.0);
 }
@@ -121,5 +123,14 @@ inline void ShapeGroup::PartitionChildren(size_t maximumShapeCount) {
 		for (auto shape : shapes) {
 			shape->PartitionChildren(maximumShapeCount);
 		}
+	}
+}
+
+
+inline void ShapeGroup::SetMaterial(Material newMaterial) {
+	material = newMaterial;
+
+	for (auto shape : shapes) {
+		shape->SetMaterial(material);
 	}
 }

@@ -17,7 +17,7 @@ public:
 
 	void FindObjectSpaceIntersections(Ray ray, IntersectionBuffer& buffer) override;
 
-	Vector FindObjectSpaceNormal(Point p) override;
+	Vector FindObjectSpaceNormal(Point p, const Intersection& globalIntersection) override;
 
 	//Limit the length of the cone
 	void SetMaximum(double value) { maximum = value; }
@@ -117,7 +117,7 @@ inline void Cone::FindObjectSpaceIntersections(Ray ray, IntersectionBuffer& buff
 	IntersectEndCaps(ray, buffer);
 }
 
-inline Vector Cone::FindObjectSpaceNormal(Point p)
+inline Vector Cone::FindObjectSpaceNormal(Point p, const Intersection& globalIntersection)
 {
 	double distance = sqrt((p.x * p.x) + (p.z * p.z));
 

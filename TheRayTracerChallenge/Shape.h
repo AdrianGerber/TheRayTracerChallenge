@@ -19,20 +19,20 @@ public:
 	Transform& GetTransformRef() { return transform; }
 
 
-	void SetMaterial(Material newMaterial) { material = newMaterial; }
+	virtual void SetMaterial(Material newMaterial) { material = newMaterial; }
 	Material GetMaterial() { return material; }
 
 	//Find intersections of this shape and a ray
 	void FindIntersections(Ray ray, IntersectionBuffer& buffer);
 
 	//Calculate the surface normal at a point on the shape (Point assumed to be on shape's surface)
-	Vector SurfaceNormal(Point p);
+	Vector SurfaceNormal(Point p, const Intersection& i);
 
 	//Calculate all intersections with a ray in object space (Individually implemented by each shape)
 	virtual void FindObjectSpaceIntersections(Ray ray, IntersectionBuffer& buffer) = 0;
 
 	//Calculate the normal vector of a point in object space (Implemented by each concrete shape)
-	virtual Vector FindObjectSpaceNormal(Point p) = 0;
+	virtual Vector FindObjectSpaceNormal(Point p, const Intersection& globalIntersection) = 0;
 
 
 	//Check if both shapes have the same pointer
@@ -80,12 +80,14 @@ private:
 
 	virtual std::shared_ptr<Shape> ShapeSpecificCopy() = 0;
 
-
 	bool transformIsActive;
 	Transform transform;
-	Material material;
+	
 	std::weak_ptr<Shape> thisShapePtr;
 	std::weak_ptr<Shape> parent;
+
+protected:
+	Material material;
 };
 
 
@@ -101,12 +103,12 @@ inline void Shape::FindIntersections(Ray ray, IntersectionBuffer& buffer) {
 	FindObjectSpaceIntersections(ray, buffer);
 }
 
-inline Vector Shape::SurfaceNormal(Point p) {
+inline Vector Shape::SurfaceNormal(Point p, const Intersection& i) {
 	//Point in object space
 	Point objectSpacePoint = PointToObjectSpace(p);
 
 	//Calculate normal
-	Vector objectSpaceNormal = FindObjectSpaceNormal(objectSpacePoint);
+	Vector objectSpaceNormal = FindObjectSpaceNormal(objectSpacePoint, i);
 
 	//Convert back to world space
 	return NormalToWorldSpace(objectSpaceNormal);

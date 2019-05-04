@@ -40,7 +40,8 @@ namespace TheRayTracesChallengeTests
 
 
 			for (auto test : testData) {
-				Assert::IsTrue(cube.SurfaceNormal(test.first) == test.second);
+				Intersection i;
+				Assert::IsTrue(cube.SurfaceNormal(test.first, i) == test.second);
 			}
 
 		}

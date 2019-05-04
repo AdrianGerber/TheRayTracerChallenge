@@ -17,7 +17,7 @@ public:
 	//Virtual methods that need to be implemented
 	void FindObjectSpaceIntersections(Ray ray, IntersectionBuffer& buffer) override;
 
-	Vector FindObjectSpaceNormal(Point p) override;
+	Vector FindObjectSpaceNormal(Point p, const Intersection& globalIntersection) override;
     
 	BoundingBox GetObjectSpaceBounds() override {
 		return BoundingBox(Point::CreatePoint(-1.0, -1.0, -1.0), Point::CreatePoint(1.0, 1.0, 1.0));
@@ -59,7 +59,7 @@ inline void Sphere::FindObjectSpaceIntersections(Ray ray, IntersectionBuffer& bu
 	buffer.Add(i2);
 }
 
-inline Vector Sphere::FindObjectSpaceNormal(Point p) {
+inline Vector Sphere::FindObjectSpaceNormal(Point p, const Intersection& globalIntersection) {
 	return p - Point::CreatePoint(0.0, 0.0, 0.0);
 }
 

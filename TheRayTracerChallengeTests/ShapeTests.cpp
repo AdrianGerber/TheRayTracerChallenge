@@ -31,7 +31,7 @@ namespace TheRayTracesChallengeTests
 				receivedRay = ray;
 			}
 
-			Vector FindObjectSpaceNormal(Point p) {
+			Vector FindObjectSpaceNormal(Point p, const Intersection& i) {
 				return Vector::CreateVector(p.x, p.y, p.z);
 			}
 
@@ -118,9 +118,9 @@ namespace TheRayTracesChallengeTests
 		TEST_METHOD(TranslatedNormal) {
 			TestShape s;
 			s.SetTransform(Transform::CreateTranslation(0.0, 1.0, 0.0));
-
+			Intersection i;
 			Assert::IsTrue(
-				s.SurfaceNormal(Point::CreatePoint(0.0, 1.70711, -0.70711))
+				s.SurfaceNormal(Point::CreatePoint(0.0, 1.70711, -0.70711), i)
 				==
 				Vector::CreateVector(0.0, 0.70711, -0.70711)
 			);
@@ -131,9 +131,9 @@ namespace TheRayTracesChallengeTests
 			s.SetTransform(Transform::CreateScale(1.0, 0.5, 1.0)
 				* Transform::CreateRotationZ(Constants::PI / 5.0)
 			);
-
+			Intersection i;
 			Assert::IsTrue(
-				s.SurfaceNormal(Point::CreatePoint(0.0, sqrt(2.0)/2.0, -sqrt(2.0) / 2.0))
+				s.SurfaceNormal(Point::CreatePoint(0.0, sqrt(2.0)/2.0, -sqrt(2.0) / 2.0), i)
 				==
 				Vector::CreateVector(0.0, 0.97014, -0.24254)
 			);
@@ -182,8 +182,8 @@ namespace TheRayTracesChallengeTests
 
 			g1->AddShape(g2);
 			g2->AddShape(s);
-
-			Vector v = s->SurfaceNormal(Point::CreatePoint(1.7321, 1.1547, -5.5774));
+			Intersection i;
+			Vector v = s->SurfaceNormal(Point::CreatePoint(1.7321, 1.1547, -5.5774), i);
 			Assert::IsTrue(v == Vector::CreateVector(0.285703, 0.428543, -0.857160));
 		}
 	};

@@ -16,7 +16,7 @@ public:
 
 	void FindObjectSpaceIntersections(Ray ray, IntersectionBuffer& buffer) override;
 
-	Vector FindObjectSpaceNormal(Point p) override;
+	Vector FindObjectSpaceNormal(Point p, const Intersection& globalIntersection) override;
 
 	BoundingBox GetObjectSpaceBounds() override {
 		constexpr auto inf = std::numeric_limits<double>::infinity();
@@ -44,7 +44,7 @@ inline void Plane::FindObjectSpaceIntersections(Ray ray, IntersectionBuffer& buf
 	buffer.Add(Intersection(t, GetPointer()));
 }
 
-inline Vector Plane::FindObjectSpaceNormal(Point p)
+inline Vector Plane::FindObjectSpaceNormal(Point p, const Intersection& globalIntersection)
 {
 	//The normal vector does not depend on the point
 	return Vector::CreateVector(0.0, 1.0, 0.0);

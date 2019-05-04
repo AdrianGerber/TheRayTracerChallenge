@@ -16,7 +16,7 @@ public:
 
 	void FindObjectSpaceIntersections(Ray ray, IntersectionBuffer& buffer) override;
 
-	Vector FindObjectSpaceNormal(Point p) override;
+	Vector FindObjectSpaceNormal(Point p, const Intersection& globalIntersection) override;
 
 	BoundingBox GetObjectSpaceBounds() override {
 		return BoundingBox(Point::CreatePoint(-1.0, -1.0, -1.0), Point::CreatePoint(1.0, 1.0, 1.0));
@@ -52,7 +52,7 @@ inline void Cube::FindObjectSpaceIntersections(Ray ray, IntersectionBuffer& buff
 	buffer.Add(Intersection(maximumT, GetPointer()));
 }
 
-inline Vector Cube::FindObjectSpaceNormal(Point p)
+inline Vector Cube::FindObjectSpaceNormal(Point p, const Intersection& globalIntersection)
 {
 	//Determine the axis that the surface normal should be alligned with
 	//The largest coordinate value of the point corresponds to this axis

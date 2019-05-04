@@ -27,18 +27,19 @@ namespace TheRayTracesChallengeTests
 		TEST_METHOD(SurfaceNormal) {
 			Plane p;
 			//Normal vector should be the same at every point
+			Intersection i;
 			Assert::IsTrue(
-				p.FindObjectSpaceNormal(Point::CreatePoint(0.0, 0.0, 0.0))
+				p.FindObjectSpaceNormal(Point::CreatePoint(0.0, 0.0, 0.0), i)
 				==
 				Vector::CreateVector(0.0, 1.0, 0.0)
 			);
 			Assert::IsTrue(
-				p.FindObjectSpaceNormal(Point::CreatePoint(10.0, 0.0, -10.0))
+				p.FindObjectSpaceNormal(Point::CreatePoint(10.0, 0.0, -10.0), i)
 				==
 				Vector::CreateVector(0.0, 1.0, 0.0)
 			);
 			Assert::IsTrue(
-				p.FindObjectSpaceNormal(Point::CreatePoint(-5.0, 0.0, 150.0))
+				p.FindObjectSpaceNormal(Point::CreatePoint(-5.0, 0.0, 150.0), i)
 				==
 				Vector::CreateVector(0.0, 1.0, 0.0)
 			);

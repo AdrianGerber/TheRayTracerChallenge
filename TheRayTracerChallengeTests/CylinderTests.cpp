@@ -49,9 +49,9 @@ namespace TheRayTracesChallengeTests
 				{Point::CreatePoint(0.0, 2.0, 0.5), Vector::CreateVector(0.0, 1.0, 0.0),  Shape::MakeShared<Cylinder>(1.0, 2.0, true) }
 			};
 
-
+			Intersection i;
 			for (auto test : testData) {
-				Assert::IsTrue(std::get<2>(test)->SurfaceNormal(std::get<0>(test)) == std::get<1>(test));
+				Assert::IsTrue(std::get<2>(test)->SurfaceNormal(std::get<0>(test), i) == std::get<1>(test));
 			}
 
 		}

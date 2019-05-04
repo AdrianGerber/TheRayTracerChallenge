@@ -5,13 +5,14 @@
 class Triangle : public Shape {
 public:
 
-	Triangle() = default;
+	Triangle() { isSmoothTriangle = false; }
 	Triangle(Point point0, Point point1, Point point2);
+	Triangle(Point point0, Point point1, Point point2, Vector normal0, Vector normal1, Vector normal2);
 	~Triangle() = default;
 
 	void FindObjectSpaceIntersections(Ray ray, IntersectionBuffer& buffer) override;
 
-	Vector FindObjectSpaceNormal(Point p) override { return normal; }
+	Vector FindObjectSpaceNormal(Point p, const Intersection& globalIntersection) override;
 
 	void PartitionChildren(size_t maximumShapeCount) override {}
 
@@ -20,9 +21,17 @@ public:
 	Point GetPoint(size_t nr);
 	Vector GetEdge(size_t nr);
 
+	Vector GetNormal(size_t nr);
+
+	void SetNormals(Vector normal0, Vector normal1, Vector normal2) { n0 = normal0; n1 = normal1; n2 = normal2; }
+
 private:
 	Point p0, p1, p2;
 	Vector e0, e1, normal;
+
+	//Normal vectors for smooth triangles
+	Vector n0, n1, n2;
+	bool isSmoothTriangle;
 
 	void CalculateAttributes();
 
@@ -35,6 +44,20 @@ inline Triangle::Triangle(Point point0, Point point1, Point point2) {
 	p0 = point0;
 	p1 = point1;
 	p2 = point2;
+	isSmoothTriangle = false;
+	CalculateAttributes();
+}
+
+inline Triangle::Triangle(Point point0, Point point1, Point point2, Vector normal0, Vector normal1, Vector normal2) {
+	p0 = point0;
+	p1 = point1;
+	p2 = point2;
+
+	n0 = normal0;
+	n1 = normal1;
+	n2 = normal2;
+	
+	isSmoothTriangle = true;
 
 	CalculateAttributes();
 }
@@ -73,6 +96,18 @@ inline BoundingBox Triangle::GetObjectSpaceBounds() {
 	return bounds;
 }
 
+inline Vector Triangle::GetNormal(size_t nr) {
+	if (isSmoothTriangle) {
+		switch (nr) {
+			case 0: return n0;
+			case 1: return n1;
+			case 2: return n2;
+		}
+	}
+
+	return normal;
+}
+
 inline void Triangle::FindObjectSpaceIntersections(Ray ray, IntersectionBuffer& buffer) {
 	auto dirCrossE1 = Vector::CrossProduct(ray.direction, e1);
 	double det = Vector::DotProduct(e0, dirCrossE1);
@@ -93,5 +128,16 @@ inline void Triangle::FindObjectSpaceIntersections(Ray ray, IntersectionBuffer& 
 	double t = f * Vector::DotProduct(e1, originCrossE0);
 
 	//Ray intersects triangle
-	buffer.Add(Intersection(t, GetPointer()));
+	buffer.Add(Intersection(t, GetPointer(), u, v));
+}
+
+inline Vector Triangle::FindObjectSpaceNormal(Point p, const Intersection& globalIntersection) {
+	if (isSmoothTriangle) {
+		return
+			(n1 * globalIntersection.u)
+			+ (n2 * globalIntersection.v)
+			+ (n0 * (1.0 - globalIntersection.u - globalIntersection.v));
+	}
+	
+	return normal; 
 }

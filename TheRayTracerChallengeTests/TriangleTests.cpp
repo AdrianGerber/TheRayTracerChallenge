@@ -12,6 +12,7 @@
 #include <Triangle.h>
 #include <BoundingBox.h>
 #include <type_traits>
+#include <HitCalculations.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -40,7 +41,8 @@ namespace TheRayTracesChallengeTests
 
 			Assert::IsTrue(triangle.GetEdge(0) == Vector::CreateVector(-1.0, -1.0, 0.0));
 			Assert::IsTrue(triangle.GetEdge(1) == Vector::CreateVector(1.0, -1.0, 0.0));
-			Assert::IsTrue(triangle.FindObjectSpaceNormal(p0) == Vector::CreateVector(0.0, 0.0, -1.0));
+			Intersection i;
+			Assert::IsTrue(triangle.FindObjectSpaceNormal(p0, i) == Vector::CreateVector(0.0, 0.0, -1.0));
 		}
 		TEST_METHOD(BoundingBox) {
 			Triangle triangle(
@@ -85,10 +87,88 @@ namespace TheRayTracesChallengeTests
 
 				if (expected.GetCount() > 0) {
 					for (size_t i = 0; i < expected.GetCount(); i++) {
-						Assert::IsTrue(expected[i] == result[i]);
+						Assert::IsTrue(expected[i].shape == result[i].shape);
+						Assert::IsTrue(Constants::DoubleEqual(expected[i].t, result[i].t));
 					}
 				}
 			}
+		}
+		TEST_METHOD(SmoothTriangle) {
+			auto p0 = Point::CreatePoint(0.0, 1.0, 0.0);
+			auto p1 = Point::CreatePoint(-1.0, 0.0, 0.0);
+			auto p2 = Point::CreatePoint(1.0, 0.0, 0.0);
+
+			auto n0 = Vector::CreateVector(0.0, 1.0, 0.0);
+			auto n1 = Vector::CreateVector(-1.0, 0.0, 0.0);
+			auto n2 = Vector::CreateVector(1.0, 0.0, 0.0);
+
+			Triangle triangle(p0, p1, p2, n0, n1, n2);
+
+			Assert::IsTrue(triangle.GetNormal(0) == n0);
+			Assert::IsTrue(triangle.GetNormal(1) == n1);
+			Assert::IsTrue(triangle.GetNormal(2) == n2);
+
+			Assert::IsTrue(triangle.GetPoint(0) == p0);
+			Assert::IsTrue(triangle.GetPoint(1) == p1);
+			Assert::IsTrue(triangle.GetPoint(2) == p2);
+		}
+
+		TEST_METHOD(HitPosition) {
+			auto p0 = Point::CreatePoint(0.0, 1.0, 0.0);
+			auto p1 = Point::CreatePoint(-1.0, 0.0, 0.0);
+			auto p2 = Point::CreatePoint(1.0, 0.0, 0.0);
+
+			auto n0 = Vector::CreateVector(0.0, 1.0, 0.0);
+			auto n1 = Vector::CreateVector(-1.0, 0.0, 0.0);
+			auto n2 = Vector::CreateVector(1.0, 0.0, 0.0);
+
+			auto triangle = Shape::MakeShared<Triangle>(p0, p1, p2, n0, n1, n2);
+
+			Ray ray(Point::CreatePoint(-0.2, 0.3, -2.0),
+						Vector::CreateVector(0.0, 0.0, 1.0));
+
+			IntersectionBuffer xs;
+			triangle->FindObjectSpaceIntersections(ray, xs);
+
+			Assert::IsTrue(Constants::DoubleEqual(xs[0].u, 0.45));
+			Assert::IsTrue(Constants::DoubleEqual(xs[0].v, 0.25));
+		}
+
+		TEST_METHOD(NormalInterpolation) {
+			auto p0 = Point::CreatePoint(0.0, 1.0, 0.0);
+			auto p1 = Point::CreatePoint(-1.0, 0.0, 0.0);
+			auto p2 = Point::CreatePoint(1.0, 0.0, 0.0);
+
+			auto n0 = Vector::CreateVector(0.0, 1.0, 0.0);
+			auto n1 = Vector::CreateVector(-1.0, 0.0, 0.0);
+			auto n2 = Vector::CreateVector(1.0, 0.0, 0.0);
+
+			auto triangle = Shape::MakeShared<Triangle>(p0, p1, p2, n0, n1, n2);
+			Intersection i(1.0, triangle, 0.45, 0.25);
+
+			auto normal = triangle->SurfaceNormal(Point::CreatePoint(0.0, 0.0, 0.0), i);
+
+			Assert::IsTrue(
+				normal
+				==
+				Vector::CreateVector(-0.5547, 0.83205, 0.0)
+			);
+
+
+			
+			std::vector<std::shared_ptr<Shape>> shapes;
+			shapes.push_back(triangle);
+
+			IntersectionBuffer xs(i);
+			Ray ray(Point::CreatePoint(-0.2, 0.3, -2.0), Vector::CreateVector(0.0, 0.0, 1.0));
+
+			//Normal is computed correctly inside HitCalculations
+			HitCalculations hit(xs[0], xs, ray, shapes);
+
+			Assert::IsTrue(
+				hit.normalVector
+				== Vector::CreateVector(-0.5547, 0.83205, 0.0)
+			);
 		}
 	};
 }

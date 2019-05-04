@@ -62,6 +62,13 @@ namespace TheRayTracesChallengeTests
 
             Assert::IsTrue(Constants::DoubleEqual(i.t, 3.5f));
             Assert::IsTrue(i.shape == s);
+
+			i = Intersection(3.5, s, 0.2, 0.4);
+
+			Assert::IsTrue(Constants::DoubleEqual(i.t, 3.5));
+			Assert::IsTrue(i.shape == s);
+			Assert::IsTrue(Constants::DoubleEqual(i.u, 0.2));
+			Assert::IsTrue(Constants::DoubleEqual(i.v, 0.4));
         }
 
         TEST_METHOD(IntersectionAggregation) {

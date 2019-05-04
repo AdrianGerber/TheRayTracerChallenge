@@ -28,7 +28,7 @@ namespace TheRayTracesChallengeTests
 				receivedRay = ray;
 			}
 
-			Vector FindObjectSpaceNormal(Point p) {
+			Vector FindObjectSpaceNormal(Point p, const Intersection& i) {
 				return Vector::CreateVector(p.x, p.y, p.z);
 			}
 

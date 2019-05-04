@@ -17,7 +17,7 @@ public:
 
 	void FindObjectSpaceIntersections(Ray ray, IntersectionBuffer& buffer) override;
 
-	Vector FindObjectSpaceNormal(Point p) override;
+	Vector FindObjectSpaceNormal(Point p, const Intersection& globalIntersection) override;
 
 	//Limit the length of the cylinder
 	void SetMaximum(double value) { maximum = value; }
@@ -104,7 +104,7 @@ inline void Cylinder::FindObjectSpaceIntersections(Ray ray, IntersectionBuffer& 
 	IntersectEndCaps(ray, buffer);
 }
 
-inline Vector Cylinder::FindObjectSpaceNormal(Point p)
+inline Vector Cylinder::FindObjectSpaceNormal(Point p, const Intersection& globalIntersection)
 {
 	double distanceSquared = (p.x * p.x) + (p.z * p.z);
 

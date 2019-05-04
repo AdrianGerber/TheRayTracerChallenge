@@ -27,17 +27,19 @@ namespace TheRayTracesChallengeTests
             Sphere s;
 
             //Normal vectors at different points
-            Assert::IsTrue(s.SurfaceNormal(Point::CreatePoint(1.0f, 0.0f, 0.0f)) == Vector::CreateVector(1.0f, 0.0f, 0.0f));
-            Assert::IsTrue(s.SurfaceNormal(Point::CreatePoint(0.0f, 1.0f, 0.0f)) == Vector::CreateVector(0.0f, 1.0f, 0.0f));
-            Assert::IsTrue(s.SurfaceNormal(Point::CreatePoint(0.0f, 0.0f, 1.0f)) == Vector::CreateVector(0.0f, 0.0f, 1.0f));
+			Intersection i;
+            Assert::IsTrue(s.SurfaceNormal(Point::CreatePoint(1.0f, 0.0f, 0.0f), i) == Vector::CreateVector(1.0f, 0.0f, 0.0f));
+            Assert::IsTrue(s.SurfaceNormal(Point::CreatePoint(0.0f, 1.0f, 0.0f), i) == Vector::CreateVector(0.0f, 1.0f, 0.0f));
+            Assert::IsTrue(s.SurfaceNormal(Point::CreatePoint(0.0f, 0.0f, 1.0f), i) == Vector::CreateVector(0.0f, 0.0f, 1.0f));
             float result = sqrtf(3.0f) / 3.0f;
+
             Assert::IsTrue(
-                s.SurfaceNormal(Point::CreatePoint(result, result, result))
+                s.SurfaceNormal(Point::CreatePoint(result, result, result), i)
                 == Vector::CreateVector(result, result, result)
             );
 
             //Normal vectors should be normalized
-            Vector v = s.SurfaceNormal(Point::CreatePoint(result, result, result));
+            Vector v = s.SurfaceNormal(Point::CreatePoint(result, result, result), i);
             Assert::IsTrue(v == v.Normalize());
         }
 
@@ -45,9 +47,9 @@ namespace TheRayTracesChallengeTests
             Sphere s;
             //Translated Sphere
             s.SetTransform(Transform::CreateTranslation(0.0f, 1.0f, 0.0f));
-
+			Intersection i;
             Assert::IsTrue(
-                s.SurfaceNormal(Point::CreatePoint(0.0f, 1.70711f, -0.70711f))
+                s.SurfaceNormal(Point::CreatePoint(0.0f, 1.70711f, -0.70711f), i)
                 == Vector::CreateVector(0.0f, 0.70711f, -0.70711f)
             );
 
@@ -55,9 +57,9 @@ namespace TheRayTracesChallengeTests
             s.SetTransform(
                 Transform::CreateScale(1.0f, 0.5f, 1.0f) * Transform::CreateRotationZ(Constants::PI / 5.0f)
             );
-
+			
             Assert::IsTrue(
-                s.SurfaceNormal(Point::CreatePoint(0.0f, sqrtf(2.0f) / 2.0f, -sqrtf(2.0f) / 2.0f))
+                s.SurfaceNormal(Point::CreatePoint(0.0f, sqrtf(2.0f) / 2.0f, -sqrtf(2.0f) / 2.0f), i)
                 == Vector::CreateVector(0.0f, 0.97014f, -0.24254f)
             );
         }

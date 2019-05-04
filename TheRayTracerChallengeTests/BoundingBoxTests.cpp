@@ -27,7 +27,7 @@ namespace TheRayTracesChallengeTests
 		public:
 			void FindObjectSpaceIntersections(Ray ray, IntersectionBuffer& buffer) override { findIntersectionsCalled = true; }
 
-			Vector FindObjectSpaceNormal(Point p) override { return Vector(); }
+			Vector FindObjectSpaceNormal(Point p, const Intersection& i) override { return Vector(); }
 
 			BoundingBox GetObjectSpaceBounds() override {
 				return BoundingBox(Point::CreatePoint(-1.0, -1.0, -1.0), Point::CreatePoint(1.0, 1.0, 1.0));
