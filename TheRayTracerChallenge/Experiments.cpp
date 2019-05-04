@@ -1,7 +1,7 @@
 #include "Experiments.h"
 
 //End of chapter 4
-void DrawWatchface() {
+void RayTracer::DrawWatchface() {
     const size_t xSize = 100, ySize = 100;
     Canvas canvas(xSize, ySize);
 
@@ -29,7 +29,7 @@ void DrawWatchface() {
 }
 
 //End of chapter 5
-void DrawSphere() {
+void RayTracer::DrawSphere() {
     const size_t xSize = 100, ySize = 100;
     Canvas canvas(xSize, ySize);
 
@@ -69,7 +69,7 @@ void DrawSphere() {
 }
 
 //End of chapter 6
-void DrawSphereReflections() {
+void RayTracer::DrawSphereReflections() {
     const size_t xSize = 100, ySize = 100;
     Canvas canvas(xSize, ySize);
 
@@ -129,7 +129,7 @@ void DrawSphereReflections() {
 
 
 //End of chapter 7 / 8 / 9 / 10 / 11 / 12 / 13 / 14
-void DrawChapter7Scene()
+void RayTracer::DrawChapter7Scene()
 {
 	World world;
 	
@@ -285,7 +285,7 @@ void DrawChapter7Scene()
 	std::cout << "Rays: " << std::to_string(world.numberOfRaysCast) << "\n";
 }
 
-void DrawBoundingBoxScene()
+void RayTracer::DrawBoundingBoxScene()
 {
 	World world;
 
@@ -346,7 +346,7 @@ void DrawBoundingBoxScene()
 	std::cout << "Rays: " << std::to_string(world.numberOfRaysCast) << "\n";
 }
 
-void DrawTriangleScene()
+void RayTracer::DrawTriangleScene()
 {
 	World world;
 
@@ -415,7 +415,7 @@ void DrawTriangleScene()
 	std::cout << "Rays: " << std::to_string(world.numberOfRaysCast) << "\n";
 }
 
-void DrawCSGScene()
+void RayTracer::DrawCSGScene()
 {
 	World world;
 

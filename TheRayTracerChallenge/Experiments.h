@@ -31,16 +31,20 @@
 #include "OBJParser.h"
 #include "CSGShape.h"
 
-void DrawWatchface();
+namespace RayTracer {
 
-void DrawSphere();
+	void DrawWatchface();
 
-void DrawSphereReflections();
+	void DrawSphere();
 
-void DrawChapter7Scene();
+	void DrawSphereReflections();
 
-void DrawBoundingBoxScene();
+	void DrawChapter7Scene();
 
-void DrawTriangleScene();
+	void DrawBoundingBoxScene();
 
-void DrawCSGScene();
+	void DrawTriangleScene();
+
+	void DrawCSGScene();
+
+}

@@ -2,7 +2,7 @@
 
 
 
-Canvas::Canvas(size_t xSize, size_t ySize)
+RayTracer::Canvas::Canvas(size_t xSize, size_t ySize)
 {
     canvasSizeX = xSize;
     canvasSizeY = ySize;
@@ -17,17 +17,17 @@ Canvas::Canvas(size_t xSize, size_t ySize)
     }
 }
 
-size_t Canvas::GetHeight()
+size_t RayTracer::Canvas::GetHeight()
 {
     return canvasSizeY;
 }
 
-size_t Canvas::GetWidth()
+size_t RayTracer::Canvas::GetWidth()
 {
     return canvasSizeX;
 }
 
-std::string Canvas::ConvertToPPM(unsigned int maxValue, size_t maxLineLength)
+std::string RayTracer::Canvas::ConvertToPPM(unsigned int maxValue, size_t maxLineLength)
 {
     std::cout << "Converting to PPM...\n";
     if (maxValue == 0) return std::string("Invalid maxValue");
@@ -95,7 +95,7 @@ std::string Canvas::ConvertToPPM(unsigned int maxValue, size_t maxLineLength)
     return ppmString;
 }
 
-bool Canvas::SaveToFile(std::string fileName, size_t maxValue, size_t maxLineLength) {
+bool RayTracer::Canvas::SaveToFile(std::string fileName, size_t maxValue, size_t maxLineLength) {
     if (maxValue == 0) return false;
     
     std::string header = "P3\n" + std::to_string(canvasSizeX) + " " + std::to_string(canvasSizeY) + "\n" + std::to_string(maxValue) + "\n";

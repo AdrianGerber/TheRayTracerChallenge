@@ -2,24 +2,24 @@
 
 
 
-LightSource::LightSource(Point position, Color intensity) 
+RayTracer::LightSource::LightSource(Point position, Color intensity)
 {
     SetIntensity(intensity);
     SetPosition(position);
 }
 
-LightSource::LightSource()
+RayTracer::LightSource::LightSource()
 {
     SetIntensity(Color(1.0, 1.0, 1.0));
     SetPosition(Point::CreatePoint(0.0, 0.0, 0.0));
 }
 
 
-LightSource::~LightSource()
+RayTracer::LightSource::~LightSource()
 {
 }
 
-Color LightSource::Lighting(std::shared_ptr<Shape> shape, Point p, Vector eye, Vector normal, bool IsInShadow)
+RayTracer::Color RayTracer::LightSource::Lighting(std::shared_ptr<Shape> shape, Point p, Vector eye, Vector normal, bool IsInShadow)
 {
     Color ambient, diffuse, specular;
 

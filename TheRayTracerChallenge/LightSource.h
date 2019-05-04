@@ -7,30 +7,32 @@
 #include "Pattern.h"
 #include "Shape.h"
 
-//Point light
-class LightSource
-{
-public:
-    LightSource(Point position, Color intensity);
-    LightSource();
-    ~LightSource();
+namespace RayTracer {
+	//Point light
+	class LightSource
+	{
+	public:
+		LightSource(Point position, Color intensity);
+		LightSource();
+		~LightSource();
 
-    Color GetIntensity() { return intensity; }
-    void SetIntensity(Color intensity) { this->intensity = intensity; }
+		Color GetIntensity() { return intensity; }
+		void SetIntensity(Color intensity) { this->intensity = intensity; }
 
-    Point GetPosition() { return position; }
-    void SetPosition(Point position) { this->position = position; }
+		Point GetPosition() { return position; }
+		void SetPosition(Point position) { this->position = position; }
 
-	//Calculate the color of a point when illuminated by this light source
-    Color Lighting(std::shared_ptr<Shape> shape, Point p, Vector eye, Vector normal, bool IsInShadow);
+		//Calculate the color of a point when illuminated by this light source
+		Color Lighting(std::shared_ptr<Shape> shape, Point p, Vector eye, Vector normal, bool IsInShadow);
 
-private:
-    Color intensity;
-    Point position;
-};
+	private:
+		Color intensity;
+		Point position;
+	};
 
-inline bool operator==(LightSource l1, LightSource l2) {
-    return
-        l1.GetIntensity() == l2.GetIntensity()
-        && l1.GetPosition() == l2.GetPosition();
+	inline bool operator==(LightSource l1, LightSource l2) {
+		return
+			l1.GetIntensity() == l2.GetIntensity()
+			&& l1.GetPosition() == l2.GetPosition();
+	}
 }

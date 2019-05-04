@@ -9,124 +9,128 @@
 #include "Canvas.h"
 #include "World.h"
 
-//Camera used to render a frame
-class Camera {
-private:
-	size_t xSize, ySize;
-	double fieldOfView;
-	Transform transform;
+namespace RayTracer {
 
-	double halfHeight, halfWidth, pixelSize;
+	//Camera used to render a frame
+	class Camera {
+	private:
+		size_t xSize, ySize;
+		double fieldOfView;
+		Transform transform;
 
-public:
+		double halfHeight, halfWidth, pixelSize;
 
-	Camera() {
-		halfHeight = halfWidth = pixelSize = 0.0f;
-		xSize = ySize = 100;
-		fieldOfView = Constants::PI / 2.0f;
-		CalculatePixelSize();
-	}
+	public:
 
-	Camera(size_t initialXSize, size_t initialYSize, double initialFieldOfView, Transform initialTransform) {
-		halfHeight = halfWidth = pixelSize = 0.0f;
-		xSize = initialXSize;
-		ySize = initialYSize;
-		fieldOfView = initialFieldOfView;
-		transform = initialTransform;
-		CalculatePixelSize();
-	}
+		Camera() {
+			halfHeight = halfWidth = pixelSize = 0.0f;
+			xSize = ySize = 100;
+			fieldOfView = Constants::PI / 2.0f;
+			CalculatePixelSize();
+		}
 
-	Camera(size_t initialXSize, size_t initialYSize, double initialFieldOfView) {
-		halfHeight = halfWidth = pixelSize = 0.0f;
-		xSize = initialXSize;
-		ySize = initialYSize;
-		fieldOfView = initialFieldOfView;
-		transform = Matrix::IndentityMatrix4x4();
-		CalculatePixelSize();
-	}
+		Camera(size_t initialXSize, size_t initialYSize, double initialFieldOfView, Transform initialTransform) {
+			halfHeight = halfWidth = pixelSize = 0.0f;
+			xSize = initialXSize;
+			ySize = initialYSize;
+			fieldOfView = initialFieldOfView;
+			transform = initialTransform;
+			CalculatePixelSize();
+		}
 
-	size_t GetXSize() { return xSize; }
+		Camera(size_t initialXSize, size_t initialYSize, double initialFieldOfView) {
+			halfHeight = halfWidth = pixelSize = 0.0f;
+			xSize = initialXSize;
+			ySize = initialYSize;
+			fieldOfView = initialFieldOfView;
+			transform = Matrix::IndentityMatrix4x4();
+			CalculatePixelSize();
+		}
 
-	size_t GetYSize() { return ySize; }
+		size_t GetXSize() { return xSize; }
 
-	double GetFieldOfView() { return fieldOfView; }
+		size_t GetYSize() { return ySize; }
 
-	Transform GetTransform() { return transform; }
-	void SetTransform(Transform newTransform) { transform = newTransform; }
+		double GetFieldOfView() { return fieldOfView; }
 
-	double GetPixelSize() { return pixelSize; }
+		Transform GetTransform() { return transform; }
+		void SetTransform(Transform newTransform) { transform = newTransform; }
+
+		double GetPixelSize() { return pixelSize; }
 
 
-	Ray CreateRayForPixel(size_t xPixel, size_t yPixel) {
-		//Offset from edge of canvas to the pixel's center
-		double xOffset = (static_cast<double>(xPixel) + 0.5) * pixelSize;
-		double yOffset = (static_cast<double>(yPixel) + 0.5) * pixelSize;
+		Ray CreateRayForPixel(size_t xPixel, size_t yPixel) {
+			//Offset from edge of canvas to the pixel's center
+			double xOffset = (static_cast<double>(xPixel) + 0.5) * pixelSize;
+			double yOffset = (static_cast<double>(yPixel) + 0.5) * pixelSize;
 
-		//Untransformed coordinates of the pixel
-		double worldX = halfWidth - xOffset;
-		double worldY = halfHeight - yOffset;
+			//Untransformed coordinates of the pixel
+			double worldX = halfWidth - xOffset;
+			double worldY = halfHeight - yOffset;
 
-		//Transform the the point (-> view transform)
-		//(Untransformed canvas is at z =-1) 
-		Point pixel = transform.Inversion() * Point::CreatePoint(worldX, worldY, -1.0f);
-		Point origin = transform.Inversion() * Point::CreatePoint(0.0f, 0.0f, 0.0f);
-		Vector direction = (pixel - origin).Normalize();
+			//Transform the the point (-> view transform)
+			//(Untransformed canvas is at z =-1) 
+			Point pixel = transform.Inversion() * Point::CreatePoint(worldX, worldY, -1.0f);
+			Point origin = transform.Inversion() * Point::CreatePoint(0.0f, 0.0f, 0.0f);
+			Vector direction = (pixel - origin).Normalize();
 
-		return Ray(origin, direction);
-	}
+			return Ray(origin, direction);
+		}
 
-	//Render a frame using the current settings
-	Canvas RenderFrame(World& world) {
-		Canvas image(xSize, ySize);
+		//Render a frame using the current settings
+		Canvas RenderFrame(World & world) {
+			Canvas image(xSize, ySize);
 
-		for (size_t x = 0; x < xSize; x++) {
-			for (size_t y = 0; y < ySize; y++) {
-				Ray currentRay = CreateRayForPixel(x, y);
-				Color pixelColor = world.FindRayColor(currentRay);
-				image.WritePixel(pixelColor, x, y);
+			for (size_t x = 0; x < xSize; x++) {
+				for (size_t y = 0; y < ySize; y++) {
+					Ray currentRay = CreateRayForPixel(x, y);
+					Color pixelColor = world.FindRayColor(currentRay);
+					image.WritePixel(pixelColor, x, y);
+				}
+
+				std::cout << std::to_string(static_cast<double>(x) / static_cast<double>(xSize) * 100.0f) + "%\n";
 			}
 
-			std::cout << std::to_string(static_cast<double>(x) / static_cast<double>(xSize) * 100.0f) + "%\n";
+			return image;
 		}
 
-		return image;
-	}
+		//Position the camera and define the viewing direction / orientation
+		static Transform CreateViewTransform(Point from, Point to, Vector up) {
+			Vector forward = (to - from).Normalize();
+			Vector left = Vector::CrossProduct(forward, up.Normalize());
+			Vector trueUp = Vector::CrossProduct(left, forward);
 
-	//Position the camera and define the viewing direction / orientation
-	static Transform CreateViewTransform(Point from, Point to, Vector up) {
-		Vector forward = (to - from).Normalize();
-		Vector left = Vector::CrossProduct(forward, up.Normalize());
-		Vector trueUp = Vector::CrossProduct(left, forward);
+			Matrix4x4 matrix = Matrix::Create(
+				left.x, left.y, left.z, 0.0f,
+				trueUp.x, trueUp.y, trueUp.z, 0.0f,
+				-forward.x, -forward.y, -forward.z, 0.0f,
+				0.0f, 0.0f, 0.0f, 1.0f
+			);
 
-		Matrix4x4 matrix = Matrix::Create(
-			left.x, left.y, left.z, 0.0f,
-			trueUp.x, trueUp.y, trueUp.z, 0.0f,
-			-forward.x, -forward.y, -forward.z, 0.0f,
-			0.0f, 0.0f, 0.0f, 1.0f
-		);
-
-		Transform orientation(matrix);
+			Transform orientation(matrix);
 
 
-		return orientation * Transform::CreateTranslation(-from.x, -from.y, -from.z);
-	}
-
-private:
-
-	//Calculate the size of a pixel on the image plane in 'world' units
-	void CalculatePixelSize() {
-		double halfView = tan(fieldOfView / 2.0);
-		double aspectRatio = static_cast<double>(xSize) / static_cast<double>(ySize);
-
-		if (aspectRatio >= 1.0) {
-			halfWidth = halfView;
-			halfHeight = halfView / aspectRatio;
-		}
-		else {
-			halfWidth = halfView * aspectRatio;
-			halfHeight = halfView;
+			return orientation * Transform::CreateTranslation(-from.x, -from.y, -from.z);
 		}
 
-		pixelSize = (halfWidth * 2.0) / static_cast<double>(xSize);
-	}
-};
+	private:
+
+		//Calculate the size of a pixel on the image plane in 'world' units
+		void CalculatePixelSize() {
+			double halfView = tan(fieldOfView / 2.0);
+			double aspectRatio = static_cast<double>(xSize) / static_cast<double>(ySize);
+
+			if (aspectRatio >= 1.0) {
+				halfWidth = halfView;
+				halfHeight = halfView / aspectRatio;
+			}
+			else {
+				halfWidth = halfView * aspectRatio;
+				halfHeight = halfView;
+			}
+
+			pixelSize = (halfWidth * 2.0) / static_cast<double>(xSize);
+		}
+	};
+
+}

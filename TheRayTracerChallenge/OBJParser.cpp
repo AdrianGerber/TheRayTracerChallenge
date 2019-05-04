@@ -1,6 +1,6 @@
 #include "OBJParser.h"
 
-OBJParser::OBJParser()
+RayTracer::OBJParser::OBJParser()
 {
 	ignoredLines = 0;
 	currentGroup = "default";
@@ -13,11 +13,11 @@ OBJParser::OBJParser()
 }
 
 
-OBJParser::~OBJParser()
+RayTracer::OBJParser::~OBJParser()
 {
 }
 
-void OBJParser::ParseLine(std::string& line)
+void RayTracer::OBJParser::ParseLine(std::string& line)
 {
 	if (line.length() <= 3) {
 		ignoredLines++;
@@ -53,7 +53,7 @@ void OBJParser::ParseLine(std::string& line)
 }
 
 
-bool OBJParser::ParseFile(std::string fileName)
+bool RayTracer::OBJParser::ParseFile(std::string fileName)
 {
 	//Open the file
 	std::ifstream file(fileName);
@@ -80,7 +80,7 @@ bool OBJParser::ParseFile(std::string fileName)
 	return true;
 }
 
-std::shared_ptr<ShapeGroup> OBJParser::MakeGroup()
+std::shared_ptr<RayTracer::ShapeGroup> RayTracer::OBJParser::MakeGroup()
 {
 	//Create a new group of shapes
 	auto shapeGroup = Shape::MakeShared<ShapeGroup>();
@@ -98,7 +98,7 @@ std::shared_ptr<ShapeGroup> OBJParser::MakeGroup()
 	return shapeGroup;
 }
 
-void OBJParser::SetActiveGroup(std::string groupName)
+void RayTracer::OBJParser::SetActiveGroup(std::string groupName)
 {
 	if (!HasGroup(groupName)) {
 		groups.emplace(groupName, std::vector<std::shared_ptr<Triangle>>());
@@ -109,7 +109,7 @@ void OBJParser::SetActiveGroup(std::string groupName)
 
 
 
-bool OBJParser::ParseVertexCommand::operator()(std::string& str, OBJParser& parser)
+bool RayTracer::OBJParser::ParseVertexCommand::operator()(std::string& str, OBJParser& parser)
 {
 	try {
 		auto numbers = Helpers::ParseNumbers<double>(str, 3);
@@ -127,7 +127,7 @@ bool OBJParser::ParseVertexCommand::operator()(std::string& str, OBJParser& pars
 	}
 }
 
-bool OBJParser::ParseFaceCommand::operator()(std::string& str, OBJParser& parser)
+bool RayTracer::OBJParser::ParseFaceCommand::operator()(std::string& str, OBJParser& parser)
 {
 	//Each vertex nr, except the first one, is prefixed with ' '
 	size_t vertexCount = std::count(str.begin(), str.end(), ' ') + 1;
@@ -223,14 +223,14 @@ bool OBJParser::ParseFaceCommand::operator()(std::string& str, OBJParser& parser
 
 }
 
-bool OBJParser::ParseGroupCommand::operator()(std::string & str, OBJParser & parser)
+bool RayTracer::OBJParser::ParseGroupCommand::operator()(std::string & str, OBJParser & parser)
 {
 	parser.SetActiveGroup(str);
 
 	return true;
 }
 
-bool OBJParser::ParseVertexNormalCommand::operator()(std::string & str, OBJParser & parser)
+bool RayTracer::OBJParser::ParseVertexNormalCommand::operator()(std::string & str, OBJParser & parser)
 {
 	try {
 		auto numbers = Helpers::ParseNumbers<double>(str, 3);

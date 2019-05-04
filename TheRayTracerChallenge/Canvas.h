@@ -5,42 +5,43 @@
 #include <vector>
 #include <string>
 
-//Canvas used to store an image
-class Canvas
-{
-public:
-    
-    Canvas() = delete;
-    Canvas(size_t xSize, size_t ySize);
-    ~Canvas() = default;
+namespace RayTracer {
+	//Canvas used to store an image
+	class Canvas
+	{
+	public:
 
-    void WritePixel(Color color, size_t xPosition, size_t yPosition);
-    Color ReadPixel(size_t xPosition, size_t yPosition);
+		Canvas() = delete;
+		Canvas(size_t xSize, size_t ySize);
+		~Canvas() = default;
 
-    size_t GetHeight();
-    size_t GetWidth();
+		void WritePixel(Color color, size_t xPosition, size_t yPosition);
+		Color ReadPixel(size_t xPosition, size_t yPosition);
 
-    std::string ConvertToPPM(unsigned int maxValue = 255, size_t maxLineLength = 70);
+		size_t GetHeight();
+		size_t GetWidth();
 
-	//Save the image as a .ppm file
-    bool SaveToFile(std::string fileName, size_t maxValue = 255, size_t maxLineLength = 70);
+		std::string ConvertToPPM(unsigned int maxValue = 255, size_t maxLineLength = 70);
 
-private:
-    size_t canvasSizeX, canvasSizeY, pixelCount;
-    std::vector<Color> frameBuffer;
-};
+		//Save the image as a .ppm file
+		bool SaveToFile(std::string fileName, size_t maxValue = 255, size_t maxLineLength = 70);
 
-inline void Canvas::WritePixel(Color color, size_t xPosition, size_t yPosition) {
-    if (xPosition >= canvasSizeX) return;
-    if (yPosition >= canvasSizeY) return;
+	private:
+		size_t canvasSizeX, canvasSizeY, pixelCount;
+		std::vector<Color> frameBuffer;
+	};
 
-    frameBuffer[xPosition + yPosition * canvasSizeX] = color;
+	inline void Canvas::WritePixel(Color color, size_t xPosition, size_t yPosition) {
+		if (xPosition >= canvasSizeX) return;
+		if (yPosition >= canvasSizeY) return;
+
+		frameBuffer[xPosition + yPosition * canvasSizeX] = color;
+	}
+
+	inline Color Canvas::ReadPixel(size_t xPosition, size_t yPosition) {
+		if (xPosition >= canvasSizeX) return Color();
+		if (yPosition >= canvasSizeY) return Color();
+
+		return frameBuffer[xPosition + yPosition * canvasSizeX];
+	}
 }
-
-inline Color Canvas::ReadPixel(size_t xPosition, size_t yPosition) {
-    if (xPosition >= canvasSizeX) return Color();
-    if (yPosition >= canvasSizeY) return Color();
-
-    return frameBuffer[xPosition + yPosition * canvasSizeX];
-}
-

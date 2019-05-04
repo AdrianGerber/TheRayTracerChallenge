@@ -6,7 +6,7 @@
 int main(void) {
 
 	auto begin = std::chrono::high_resolution_clock::now();
-	DrawCSGScene();
+	RayTracer::DrawCSGScene();
 	auto end = std::chrono::high_resolution_clock::now();
 
 	std::cout << "Elapsed time: " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << " us";

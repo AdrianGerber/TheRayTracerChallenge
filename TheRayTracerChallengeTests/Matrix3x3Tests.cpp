@@ -5,6 +5,7 @@
 #include <Tuple.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+using namespace RayTracer;
 
 namespace TheRayTracesChallengeTests
 {

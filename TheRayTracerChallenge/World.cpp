@@ -1,17 +1,17 @@
 #include "World.h"
 
 
-World::World()
+RayTracer::World::World()
 {
 	numberOfRaysCast = 0;
 }
 
 
-World::~World()
+RayTracer::World::~World()
 {
 }
 
-void World::LoadDefaultWorld()
+void RayTracer::World::LoadDefaultWorld()
 {
 	lightSources.clear();
 	shapes.clear();
@@ -39,7 +39,7 @@ void World::LoadDefaultWorld()
 }
 
 
-void World::IntersectRay(Ray ray, IntersectionBuffer& buffer)
+void RayTracer::World::IntersectRay(Ray ray, IntersectionBuffer& buffer)
 {
 	numberOfRaysCast++;
 
@@ -48,7 +48,7 @@ void World::IntersectRay(Ray ray, IntersectionBuffer& buffer)
     }
 }
 
-Color World::ShadeHit(const HitCalculations& hitInfo, size_t remainingReflections)
+RayTracer::Color RayTracer::World::ShadeHit(const HitCalculations& hitInfo, size_t remainingReflections)
 {
 	Color lightingColor(0.0, 0.0, 0.0);
 	
@@ -76,7 +76,7 @@ Color World::ShadeHit(const HitCalculations& hitInfo, size_t remainingReflection
 	return lightingColor + reflectedColor + refractedColor;
 }
 
-Color World::FindReflectedColor(const HitCalculations& hitInfo, size_t remainingReflections)
+RayTracer::Color RayTracer::World::FindReflectedColor(const HitCalculations& hitInfo, size_t remainingReflections)
 {
 	Material material = hitInfo.shape->GetMaterial();
 
@@ -97,7 +97,7 @@ Color World::FindReflectedColor(const HitCalculations& hitInfo, size_t remaining
 	return hitColor * material.reflective;
 }
 
-Color World::FindRefractedColor(const HitCalculations& hitInfo, size_t remainingRefractions)
+RayTracer::Color RayTracer::World::FindRefractedColor(const HitCalculations& hitInfo, size_t remainingRefractions)
 {
 	//Maximum number of refractions reached
 	if (remainingRefractions == 0) {
@@ -138,7 +138,7 @@ Color World::FindRefractedColor(const HitCalculations& hitInfo, size_t remaining
 	return color;
 }
 
-bool World::PointIsInShadow(std::shared_ptr<LightSource> lightSource, Point point)
+bool RayTracer::World::PointIsInShadow(std::shared_ptr<LightSource> lightSource, Point point)
 {
 	//Static buffer for memory reuse
 	static IntersectionBuffer intersections;
@@ -172,7 +172,7 @@ bool World::PointIsInShadow(std::shared_ptr<LightSource> lightSource, Point poin
 	return false;
 }
 
-Color World::FindRayColor(Ray ray, size_t remainingReflections)
+RayTracer::Color RayTracer::World::FindRayColor(Ray ray, size_t remainingReflections)
 {
 	//Static buffer in order to reuse allocated memory
 	static IntersectionBuffer intersections;
