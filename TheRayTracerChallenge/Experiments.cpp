@@ -414,3 +414,104 @@ void DrawTriangleScene()
 	std::cout << "\n";
 	std::cout << "Rays: " << std::to_string(world.numberOfRaysCast) << "\n";
 }
+
+void DrawCSGScene()
+{
+	World world;
+
+	//Camera
+	Camera camera(1920, 1080, Constants::PI / 3.0f,
+		Camera::CreateViewTransform(
+			Point::CreatePoint(3.0, 6.0, -5.0),
+			Point::CreatePoint(0.0, 0.0, 0.0),
+			Vector::CreateVector(0.0, 1.0, 0.0)
+		)
+	);
+
+	//Light source
+	auto lightSource = std::make_shared<LightSource>();
+	lightSource->SetIntensity(Color(1.0f, 1.0f, 1.0f));
+	lightSource->SetPosition(Point::CreatePoint(0.0f, 5.0f, 1.0f));
+	world.AddLightSource(lightSource);
+
+	
+	auto s1 = Shape::MakeShared<Cube>();
+	s1->SetTransform(Transform::CreateRotationY(Constants::PI / 3.0).Translate(1.3, 0.0, -0.9));
+	auto s2 = Shape::MakeShared<Sphere>();
+	s2->SetTransform(Transform::CreateTranslation(0.0, 0.0, 0.0));
+	auto s5 = Shape::MakeShared<Cube>();
+	s5->SetTransform(Transform::CreateRotationZ(Constants::PI / -6.0).Translate(0.0, 1.5, 0.0));
+
+
+	Material m;
+	m.pattern = std::make_shared<ColorPattern>(Color(0.4, 0.4, 0.4));
+	s1->SetMaterial(m);
+	m.pattern = std::make_shared<ColorPattern>(Color(0.7, 0.7, 0.7));
+	s2->SetMaterial(m);
+	m.pattern = std::make_shared<CheckerPattern>(Color(0.5, 0.5, 0.9), Color(0.9, 0.9, 0.9));
+	m.pattern->SetTransform(Transform::CreateScale(0.2, 0.2, 0.2));
+	s5->SetMaterial(m);
+
+	auto csgShape = Shape::MakeShared<CSGShape>();
+	auto subCsgShape = Shape::MakeShared<CSGShape>();
+
+	subCsgShape->SetLeft(s2);
+	subCsgShape->SetRight(s1);
+	subCsgShape->SetOperation(CSGShape::Operation::Difference);
+
+	csgShape->SetLeft(subCsgShape);
+	csgShape->SetRight(s5);
+	csgShape->SetOperation(CSGShape::Operation::Difference);
+	csgShape->SetTransform(Transform::CreateRotationY(Constants::PI / -3.0).Translate(2.0, 0.0, 0.0));
+
+	world.AddShape(csgShape);
+
+
+	auto s3 = Shape::MakeShared<Sphere>();
+	auto s4 = Shape::MakeShared<Sphere>();
+	s3->SetTransform(Transform::CreateTranslation(0.5, 0.0, 0.0));
+	s4->SetTransform(Transform::CreateTranslation(-0.5, 0.0, 0.0));
+	m.reflective = 0.2;
+	m.pattern = std::make_shared<ColorPattern>(Color(0.8, 0.8, 0.8));
+	s3->SetMaterial(m);
+	m.pattern = std::make_shared<ColorPattern>(Color(0.8, 0.8, 0.9));
+	s4->SetMaterial(m);
+
+	auto csgShape2 = Shape::MakeShared<CSGShape>();
+	csgShape2->SetLeft(s3);
+	csgShape2->SetRight(s4);
+	csgShape2->SetOperation(CSGShape::Operation::Intersection);
+	csgShape2->SetTransform(Transform::CreateRotationY(Constants::PI / -6.0).Translate(-2.0, 0.0, 0.0));
+
+	world.AddShape(csgShape2);
+	
+
+	auto floorOutside = Shape::MakeShared<Cube>();
+	auto floorInside = Shape::MakeShared<Cube>();
+
+	Material floorMaterial;
+	floorMaterial.reflective = 0.4;
+	floorMaterial.specular = 0.2;
+	floorMaterial.pattern = std::make_shared<ColorPattern>(Color(0.4, 0.4, 0.4));
+	floorMaterial.pattern->SetTransform(Transform::CreateScale(0.1, 0.1, 0.1));
+	floorOutside->SetMaterial(floorMaterial);
+	floorMaterial.pattern = std::make_shared<CheckerPattern>(Color(0.1, 0.1, 0.1), Color(0.4, 0.4, 0.4));
+	floorMaterial.pattern->SetTransform(Transform::CreateScale(0.1, 0.1, 0.1));
+	floorInside->SetMaterial(floorMaterial);
+	floorOutside->SetTransform(Transform::CreateScale(10.0, 2.0, 10.0).Translate(0.0, -4.5, 0.0));
+	floorInside->SetTransform(Transform::CreateScale(6.0, 1.0, 6.0).Translate(0.0, -2.9, 0.0));
+
+
+	auto floorCSG = Shape::MakeShared<CSGShape>();
+	floorCSG->SetLeft(floorOutside);
+	floorCSG->SetRight(floorInside);
+	floorCSG->SetOperation(CSGShape::Operation::Difference);
+	world.AddShape(floorCSG);
+
+	std::cout << "Done\n";
+
+	camera.RenderFrame(world).SaveToFile("CSG");
+
+	std::cout << "\n";
+	std::cout << "Rays: " << std::to_string(world.numberOfRaysCast) << "\n";
+}

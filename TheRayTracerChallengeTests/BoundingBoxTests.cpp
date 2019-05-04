@@ -14,6 +14,7 @@
 #include <BoundingBox.h>
 #include <type_traits>
 #include <vector>
+#include <CSGShape.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -169,15 +170,20 @@ namespace TheRayTracesChallengeTests
 			Assert::IsTrue(box.GetMax() == Point::CreatePoint(4.0, 7.0, 4.5));
 		}
 
-		/*Scenario: A CSG shape has a bounding box that contains its children
-  Given left ? sphere()
-	And right ? sphere() with:
-	  | transform | translation(2, 3, 4) |
-	And shape ? csg("difference", left, right)
-  When box ? bounds_of(shape)
-  Then box.min = point(-1, -1, -1)
-	And box.max = point(3, 4, 5)*/
+		TEST_METHOD(CSGBounds) {
+			auto s1 = Shape::MakeShared<Sphere>();
+			auto s2 = Shape::MakeShared<Sphere>();
+			s2->SetTransform(Transform::CreateTranslation(2.0, 3.0, 4.0));
 
+			auto csg = Shape::MakeShared<CSGShape>();
+			csg->SetLeft(s1);
+			csg->SetRight(s2);
+			csg->SetOperation(CSGShape::Operation::Difference);
+
+			auto bounds = csg->GetObjectSpaceBounds();
+			Assert::IsTrue(bounds.GetMin() == Point::CreatePoint(-1.0, -1.0, -1.0));
+			Assert::IsTrue(bounds.GetMax() == Point::CreatePoint(3.0, 4.0, 5.0));
+		}
 
 		TEST_METHOD(BoundingBoxIntersection) {
 			BoundingBox box(Point::CreatePoint(-1.0, -1.0, -1.0), Point::CreatePoint(1.0, 1.0, 1.0));
@@ -249,25 +255,39 @@ namespace TheRayTracesChallengeTests
 			//The shape needs to be checked for intersections
 			Assert::IsTrue(shape->findIntersectionsCalled == true);
 		}
+		TEST_METHOD(CSGMiss) {
+			auto left = Shape::MakeShared<TestShape>();
+			auto right = Shape::MakeShared<TestShape>();
+			auto csg = Shape::MakeShared<CSGShape>();
+			csg->SetLeft(left);
+			csg->SetRight(right);
+			csg->SetOperation(CSGShape::Operation::Difference);
 
+			Ray ray(Point::CreatePoint(0.0, 0.0, -5.0), Vector::CreateVector(0.0, 1.0, 0.0));
+			IntersectionBuffer xs;
+			csg->FindIntersections(ray, xs);
 
-		/*Scenario: Intersecting ray+csg doesn't test children if box is missed
-  Given left ? test_shape()
-    And right ? test_shape()
-    And shape ? csg("difference", left, right)
-    And r ? ray(point(0, 0, -5), vector(0, 1, 0))
-  When xs ? intersect(shape, r)
-  Then left.saved_ray is unset
-    And right.saved_ray is unset
+			//The shapes weren't checked for intersections because the ray misses the bounding box
+			Assert::IsTrue(!left->findIntersectionsCalled);
+			Assert::IsTrue(!right->findIntersectionsCalled);
+		}
 
-Scenario: Intersecting ray+csg tests children if box is hit
-  Given left ? test_shape()
-    And right ? test_shape()
-    And shape ? csg("difference", left, right)
-    And r ? ray(point(0, 0, -5), vector(0, 0, 1))
-  When xs ? intersect(shape, r)
-  Then left.saved_ray is set
-    And right.saved_ray is set*/
+		TEST_METHOD(CSGHit) {
+			auto left = Shape::MakeShared<TestShape>();
+			auto right = Shape::MakeShared<TestShape>();
+			auto csg = Shape::MakeShared<CSGShape>();
+			csg->SetLeft(left);
+			csg->SetRight(right);
+			csg->SetOperation(CSGShape::Operation::Difference);
+
+			Ray ray(Point::CreatePoint(0.0, 0.0, -5.0), Vector::CreateVector(0.0, 0.0, 1.0));
+			IntersectionBuffer xs;
+			csg->FindIntersections(ray, xs);
+
+			//Both shapes were checked for intersections
+			Assert::IsTrue(left->findIntersectionsCalled);
+			Assert::IsTrue(right->findIntersectionsCalled);
+		}
 
 		TEST_METHOD(SplitBox) {
 			//10x10x10 cube

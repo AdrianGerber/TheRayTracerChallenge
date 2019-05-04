@@ -25,13 +25,22 @@ public:
 		shapes.push_back(shape); shape->SetParent(GetPointer());
 		bounds.Add(shape->GetParentSpaceBounds());
 	}
-	bool ContainsShape(std::shared_ptr<Shape> shape) { return std::find(shapes.begin(), shapes.end(), shape) != shapes.end(); }
 
 	BoundingBox GetObjectSpaceBounds() override { return bounds; }
 
 	void PartitionChildren(size_t maximumShapeCount) override;
 
 	void SetMaterial(Material newMaterial) override;
+
+	bool ContainsShape(std::shared_ptr<Shape> shape) override {
+		for (auto currentShape : shapes) {
+			if (currentShape->ContainsShape(shape)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
 
 private:
 	std::vector<std::shared_ptr<Shape>> shapes;

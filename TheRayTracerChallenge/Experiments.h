@@ -29,6 +29,7 @@
 #include "ShapeGroup.h"
 #include "Triangle.h"
 #include "OBJParser.h"
+#include "CSGShape.h"
 
 void DrawWatchface();
 
@@ -41,3 +42,5 @@ void DrawChapter7Scene();
 void DrawBoundingBoxScene();
 
 void DrawTriangleScene();
+
+void DrawCSGScene();

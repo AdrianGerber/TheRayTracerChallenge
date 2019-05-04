@@ -70,6 +70,10 @@ public:
 		return shape;
 	}
 
+	virtual bool ContainsShape(std::shared_ptr<Shape> shape) {
+		return shape == GetPointer();
+	}
+
 	BoundingBox GetParentSpaceBounds() { return GetObjectSpaceBounds().ApplyTransform(transform); }
 
 	virtual BoundingBox GetObjectSpaceBounds() = 0;
