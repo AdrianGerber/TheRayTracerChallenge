@@ -106,65 +106,13 @@ void OBJParser::SetActiveGroup(std::string groupName)
 	currentGroup = groupName;
 }
 
-//Templates to parse numbers
-template<typename T> static T StrToNr(std::string& str);
 
-template<> static double StrToNr<double>(std::string& str) {
-	return std::stod(str);
-}
-
-template<> static size_t StrToNr<size_t>(std::string& str) {
-	return std::stoul(str);
-}
-
-template<typename T>
-static std::vector<T> ParseNumbers(const std::string& str, size_t count) {
-	std::vector<T> values;
-	values.reserve(count);
-
-	size_t startOfNumber = 0;
-	size_t endOfNumber = str.find_first_of(" /");
-	std::string numberString = "";
-	T currentNumber;
-
-	for (size_t numberIndex = 0; numberIndex < count; numberIndex++) {
-
-		//Read the number
-		numberString = str.substr(startOfNumber, endOfNumber - startOfNumber + 1);
-		currentNumber = StrToNr<T>(numberString);
-
-		values.push_back(currentNumber);
-
-		//Find the position of the next number
-		//Was the last digit reached?
-		if (endOfNumber == str.length() - 1) {
-			if (numberIndex == count - 1) {
-				//Success
-				break;
-			}
-			else {
-				//End of string reached, but not enough numbers read...
-				throw std::invalid_argument("String is not formatted correctly");
-			}
-		}
-
-		startOfNumber = endOfNumber;
-		endOfNumber = str.find_first_of(" /", startOfNumber + 1);
-
-		//Last digit of the string is the end of the next number (no trailing whitespace)
-		if (endOfNumber == std::string::npos) {
-			endOfNumber = str.length() - 1;
-		}
-	}
-
-	return values;
-}
 
 
 bool OBJParser::ParseVertexCommand::operator()(std::string& str, OBJParser& parser)
 {
 	try {
-		auto numbers = ParseNumbers<double>(str, 3);
+		auto numbers = Helpers::ParseNumbers<double>(str, 3);
 
 		//Store the vertex for later
 		parser.AddVertex(Point::CreatePoint(
@@ -204,7 +152,7 @@ bool OBJParser::ParseFaceCommand::operator()(std::string& str, OBJParser& parser
 			for (size_t i = 0; i < vertexCount; i++) {
 				//Vertex Index
 				numberString = str.substr(numberStart, numberEnd - numberStart + 1);
-				vertexIndices.push_back(StrToNr<size_t>(numberString));
+				vertexIndices.push_back(Helpers::StrToNr<size_t>(numberString));
 
 				//Texture Coordinate
 				numberStart = numberEnd + 1;
@@ -225,7 +173,7 @@ bool OBJParser::ParseFaceCommand::operator()(std::string& str, OBJParser& parser
 				}
 
 				numberString = str.substr(numberStart, numberEnd - numberStart + 1);
-				normalIndices.push_back(StrToNr<size_t>(numberString));
+				normalIndices.push_back(Helpers::StrToNr<size_t>(numberString));
 				
 
 				//Prepare next vertex index
@@ -235,7 +183,7 @@ bool OBJParser::ParseFaceCommand::operator()(std::string& str, OBJParser& parser
 		}
 		//Face command only contains vertex indices
 		else {
-			vertexIndices = ParseNumbers<size_t>(str, vertexCount);
+			vertexIndices = Helpers::ParseNumbers<size_t>(str, vertexCount);
 		}
 
 		//Only use normal vectors if they were parsed correctly
@@ -285,7 +233,7 @@ bool OBJParser::ParseGroupCommand::operator()(std::string & str, OBJParser & par
 bool OBJParser::ParseVertexNormalCommand::operator()(std::string & str, OBJParser & parser)
 {
 	try {
-		auto numbers = ParseNumbers<double>(str, 3);
+		auto numbers = Helpers::ParseNumbers<double>(str, 3);
 
 		parser.AddNormal(Vector::CreateVector(
 			numbers[0],
